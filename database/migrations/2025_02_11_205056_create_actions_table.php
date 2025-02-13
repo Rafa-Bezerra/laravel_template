@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')->nullable()->constrained(table: 'roles', indexName: 'users_role_id');
+        Schema::create('actions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('route');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('users_role_id_foreign');
-        });
+        Schema::dropIfExists('roles');
     }
 };

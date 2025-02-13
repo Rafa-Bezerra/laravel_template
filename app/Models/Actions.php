@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Roles extends Authenticatable
+class Actions extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +18,7 @@ class Roles extends Authenticatable
      *
      * @var list<string>
      */
-    protected $table = 'roles';
+    protected $table = 'actions';
 
     /**
      * The attributes that are mass assignable.
@@ -27,7 +27,7 @@ class Roles extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'active',
+        'route',
     ];
 
     public function actions()
@@ -35,7 +35,7 @@ class Roles extends Authenticatable
         return $this->belongsToMany(
             RolesActions::class,
             'roles_actions',
-            'user_id',
-            'action_id');
+            'action_id',
+            'user_id');
     }
 }

@@ -28,7 +28,6 @@ class User extends Authenticatable
         'auth_token',
         'auth_token_expiration',
         'remember_token',
-        'role_id',
     ];
 
     /**
@@ -52,5 +51,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(
+            UsersRoles::class,
+            'users_roles',
+            'user_id',
+            'role_id');
     }
 }

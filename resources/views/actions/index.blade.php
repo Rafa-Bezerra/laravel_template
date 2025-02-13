@@ -10,7 +10,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Acessos') }}
+            {{ __('Ações') }}
         </h2>
     </x-slot>
 
@@ -18,13 +18,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
                 <div align="right">
-                    <x-nav-link :href="route('roles.create')">{{ __('Novo acesso') }}</x-nav-link>      
+                    <x-nav-link :href="route('actions.create')">{{ __('Nova ação') }}</x-nav-link>      
                 </div>      
                 <table id="minhaTabela" class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
+                            <th>Rota</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -38,14 +39,15 @@
         $('#minhaTabela').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ route('roles.json') }}",
+            "ajax": "{{ route('actions.json') }}",
             "columns": [
                 { "data": "id" },
                 { "data": "name" },
+                { "data": "route" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/roles/editar/${data}">Editar</a> <a href="/roles/actions/${data}">Ações</a>`;
+                        return `<a href="/actions/editar/${data}">Editar</a>`;
                     }
                 }
             ],

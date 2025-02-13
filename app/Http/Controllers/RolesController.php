@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\DB;
 use DataTables;
 
 class RolesController extends Controller
@@ -51,5 +52,16 @@ class RolesController extends Controller
         event(new Registered($role));
 
         return redirect(route('roles.index', absolute: false));
+    }
+    
+
+    public function actions(Request $request, string $id): View
+    {
+        $actions = DB::table('actions')->get();
+        $roles_actions = DB::table('roles_actions')->where('role_id',$id)->get();
+        dd($actions);
+        return view('roles.actions', [
+            'user' => $request->user(),
+        ]);
     }
 }

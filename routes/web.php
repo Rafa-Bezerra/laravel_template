@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MateriaisController;
+use App\Http\Controllers\ActionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,9 +46,18 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/roles', [RolesController::class, 'index'])->name('roles.index');
     Route::get('/roles/json', [RolesController::class, 'getRoles'])->name('roles.json');
+    Route::get('/roles/actions/{id}', [RolesController::class, 'actions'])->name('roles.actions');
 
     Route::get('/new_role', [RolesController::class, 'create'])->name('roles.create');
     Route::post('/new_role', [RolesController::class, 'register'])->name('roles.insert');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/actions', [ActionController::class, 'index'])->name('actions.index');
+    Route::get('/actions/json', [ActionController::class, 'getActions'])->name('actions.json');
+
+    Route::get('/new_action', [ActionController::class, 'create'])->name('actions.create');
+    Route::post('/new_action', [ActionController::class, 'register'])->name('actions.insert');
 });
 
 require __DIR__.'/auth.php';

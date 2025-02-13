@@ -10,6 +10,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <x-nav-link :href="route('roles.index')">{{ __('Acessos') }}</x-nav-link>
+                    <x-nav-link :href="route('actions.index')">{{ __('Ações') }}</x-nav-link>
                     <x-nav-link :href="route('home')">{{ __('Pessoas') }}</x-nav-link>
                     <x-nav-link :href="route('materiais.index')">{{ __('Materiais') }}</x-nav-link>
                     <x-nav-link :href="route('usuarios.index')">{{ __('Usuários') }}</x-nav-link>
