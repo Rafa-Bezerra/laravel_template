@@ -38,7 +38,6 @@ class ActionController extends Controller
 
     public function create(Request $request): View
     {
-        $roles = DB::table('roles')->where('active',1)->get();
         return view('actions.create', [
             'user' => $request->user(),
         ]);
@@ -55,6 +54,34 @@ class ActionController extends Controller
             "name" => $request->name,
             "route" => $request->route
         ]);
+
+        event(new Registered($action));
+
+        return redirect(route('actions.index', absolute: false));
+    }
+
+    public function edit(Request $request, string $id): View
+    {
+        // $data = DB::table('actions')->where('id',$id)->get();
+        $data = Actions::findOrFail($id);
+        // dd($data);
+        return view('actions.edit', [
+            'user' => $request->user(),
+            'data' => $data,
+        ]);
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'route' => ['required', 'string', 'lowercase', 'max:255'],
+        ]);
+        
+        $action = Actions::findOrFail($request->id);
+        $action->name = $request->name;
+        $action->route = $request->route;
+        $action->save();
 
         event(new Registered($action));
 

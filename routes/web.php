@@ -55,9 +55,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/actions', [ActionController::class, 'index'])->name('actions.index');
     Route::get('/actions/json', [ActionController::class, 'getActions'])->name('actions.json');
+    
+    Route::get('/actions/create', [ActionController::class, 'create'])->name('actions.create');
+    Route::post('/actions/create', [ActionController::class, 'register'])->name('actions.insert');
 
-    Route::get('/new_action', [ActionController::class, 'create'])->name('actions.create');
-    Route::post('/new_action', [ActionController::class, 'register'])->name('actions.insert');
+    Route::get('/actions/edit/{id}', [ActionController::class, 'edit'])->name('actions.edit');
+    Route::post('/actions/edit', [ActionController::class, 'update'])->name('actions.update');
 });
 
 require __DIR__.'/auth.php';
