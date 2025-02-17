@@ -45,7 +45,7 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/roles/editar/${data}">Editar</a> <a href="/roles/actions/${data}">Ações</a>`;
+                        return `<a href="/roles/actions/${data}">Ações</a> <a href="/roles/edit/${data}">Editar</a> <a href="/roles/delete/${data}">Excluir</a>`;
                     }
                 }
             ],

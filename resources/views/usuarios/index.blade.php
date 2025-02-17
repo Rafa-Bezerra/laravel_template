@@ -47,7 +47,7 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/usuarios/editar/${data}">Editar</a>`;
+                        return `<a href="/usuarios/roles/${data}">Acessos</a> <a href="/usuarios/edit/${data}">Editar</a> <a href="/usuarios/delete/${data}">Excluir</a>`;
                     }
                 }
             ],

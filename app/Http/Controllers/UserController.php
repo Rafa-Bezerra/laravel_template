@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use App\Models\Roles;
+use App\Models\UsersRoles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,80 @@ class UserController extends Controller
         ]);
 
         event(new Registered($user));
+
+        return redirect(route('usuarios.index', absolute: false));
+    }
+    
+    public function edit(Request $request, string $id): View
+    {
+        $data = User::findOrFail($id);
+        return view('usuarios.edit', [
+            'user' => $request->user(),
+            'data' => $data,
+        ]);
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        ]);
+        
+        $action = User::findOrFail($request->id);
+        $action->name = $request->name;
+        $action->email = $request->email;
+        $action->save();
+
+        event(new Registered($action));
+
+        return redirect(route('usuarios.index', absolute: false));
+    }
+
+    public function delete(Request $request, string $id): RedirectResponse
+    {
+        UsersRoles::where('user_id', $id)->delete();
+        $data = User::findOrFail($id)->delete();
+        return redirect(route('usuarios.index', absolute: false));
+    }
+
+    public function roles(Request $request, string $id): View
+    {
+        $roles = DB::table('roles')->get();
+        $users_roles = DB::table('users_roles')->where('user_id',$id)->get();
+        // dd($roles_actions);
+        foreach ($roles as $key => $value) {
+            $checked = false;
+            foreach ($users_roles as $ra_key => $ra_value) {
+                if($value->id == $ra_value->role_id) $checked = true;
+            }
+            $roles[$key]->checked = $checked;
+        }
+        // dd($actions);
+        return view('usuarios.roles', [
+            'user' => $request->user(),
+            'user_id' => $id,
+            'roles' => $roles,
+        ]);
+    }
+
+    public function update_roles(Request $request): RedirectResponse
+    {
+        // dd($request->all());
+        UsersRoles::where('user_id', $request->user_id)->delete();
+
+        foreach ($request->all() as $key => $value) {
+            if($key != '_token' && $key != 'user_id') {
+                $role = UsersRoles::create([
+                    "user_id" => $request->user_id,
+                    "role_id" => $key,
+                ]);
+                event(new Registered($role));
+            }
+        }
+        // $action = Roles::findOrFail($request->id);
+        // $action->name = $request->name;
+        // $action->save();
 
         return redirect(route('usuarios.index', absolute: false));
     }

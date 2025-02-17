@@ -87,4 +87,13 @@ class ActionController extends Controller
 
         return redirect(route('actions.index', absolute: false));
     }
+
+    public function delete(Request $request, string $id): RedirectResponse
+    {
+        // $data = DB::table('actions')->where('id',$id)->get();
+        $data = Actions::findOrFail($id)->delete();
+        // dd($data);
+
+        return redirect(route('actions.index', absolute: false));
+    }
 }

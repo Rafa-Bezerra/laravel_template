@@ -47,7 +47,7 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/actions/edit/${data}">Editar</a>`;
+                        return `<a href="/actions/edit/${data}">Editar</a> <a href="/actions/delete/${data}">Excluir</a>`;
                     }
                 }
             ],
