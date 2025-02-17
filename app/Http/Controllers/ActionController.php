@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\Actions;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,8 +21,13 @@ class ActionController extends Controller
      */
     public function index(Request $request): View
     {
+        $tittle = 'Ações';
+        
+        if (! User::hasPermission('actions')) return view('forbbiden', ['tittle' => $tittle]);
+
         return view('actions.index', [
             'user' => $request->user(),
+            'tittle' => $tittle,
         ]);
     }
 
@@ -61,10 +67,9 @@ class ActionController extends Controller
     }
 
     public function edit(Request $request, string $id): View
-    {
-        // $data = DB::table('actions')->where('id',$id)->get();
+    {        
+        // dd($request->path());
         $data = Actions::findOrFail($id);
-        // dd($data);
         return view('actions.edit', [
             'user' => $request->user(),
             'data' => $data,

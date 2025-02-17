@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Actions;
 
 class Roles extends Authenticatable
 {
@@ -33,9 +34,9 @@ class Roles extends Authenticatable
     public function actions()
     {
         return $this->belongsToMany(
-            RolesActions::class,
+            Actions::class,
             'roles_actions',
-            'user_id',
+            'role_id',
             'action_id');
     }
 }

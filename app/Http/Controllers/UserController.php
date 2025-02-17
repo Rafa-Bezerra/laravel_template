@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use DataTables;
 
 class UserController extends Controller
@@ -22,14 +23,13 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
+        $user = User::find(4);
+        $actions = $user->actions();
+        dd($actions);
+        dd($request->path());
         return view('usuarios.index', [
             'user' => $request->user(),
         ]);
-    }
-
-    public function role(): HasOne
-    {
-        return $this->hasOne(Roles::class);
     }
 
     public function getUsuarios()
@@ -56,7 +56,7 @@ class UserController extends Controller
        
         $user = User::create([
             "name" => $request->name,
-            "password" => null,
+            "password" => Hash::make('12345'),
             "email" => $request->email,
             "password_expiration" => date("Y-m-d H:i:s", strtotime("+30 days")),
             "active" => true
@@ -69,6 +69,7 @@ class UserController extends Controller
     
     public function edit(Request $request, string $id): View
     {
+        
         $data = User::findOrFail($id);
         return view('usuarios.edit', [
             'user' => $request->user(),
