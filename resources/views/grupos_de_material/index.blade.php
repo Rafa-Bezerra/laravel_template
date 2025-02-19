@@ -18,15 +18,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
                 <div align="right">
-                    <x-nav-link :href="route('materiais.create')">{{ __('Novo material') }}</x-nav-link>      
+                    <x-nav-link :href="route('grupos_de_material.create')">{{ __('Novo grupo de material') }}</x-nav-link>      
                 </div>      
                 <table id="minhaTabela" class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
-                            <th>U.M.</th>
-                            <th>Grupo</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -40,16 +38,14 @@
         $('#minhaTabela').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ route('materiais.json') }}",
+            "ajax": "{{ route('grupos_de_material.json') }}",
             "columns": [
                 { "data": "id" },
                 { "data": "name" },
-                { "data": "unidade_de_medida" },
-                { "data": "grupo_de_material_id" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/materiais/edit/${data}">Editar</a> <a href="/materiais/delete/${data}">Excluir</a>`;
+                        return `<a href="/grupos_de_material/edit/${data}">Editar</a> <a href="/grupos_de_material/delete/${data}">Excluir</a>`;
                     }
                 }
             ],
