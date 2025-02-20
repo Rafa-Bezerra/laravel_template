@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MateriaisController;
 use App\Http\Controllers\ActionController;
 use App\Http\Controllers\GruposDeMaterialController;
+use App\Http\Controllers\DivisoesController;
+use App\Http\Controllers\EmpresasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -83,6 +85,40 @@ Route::middleware('auth')->group(function () {
     Route::get('/materiais/edit/{id}', [MateriaisController::class, 'edit'])->name('materiais.edit');
     Route::post('/materiais/edit', [MateriaisController::class, 'update'])->name('materiais.update');
     Route::get('/materiais/delete/{id}', [MateriaisController::class, 'delete'])->name('materiais.delete');
+});
+
+//DIVISÕES
+Route::middleware('auth')->group(function () {
+    Route::get('/divisoes', [DivisoesController::class, 'index'])->name('divisoes.index');
+    Route::get('/divisoes/json', [DivisoesController::class, 'getListagem'])->name('divisoes.json');    
+    Route::get('/divisoes/create', [DivisoesController::class, 'create'])->name('divisoes.create');
+    Route::post('/divisoes/create', [DivisoesController::class, 'register'])->name('divisoes.insert');
+    Route::get('/divisoes/edit/{id}', [DivisoesController::class, 'edit'])->name('divisoes.edit');
+    Route::post('/divisoes/edit', [DivisoesController::class, 'update'])->name('divisoes.update');
+    Route::get('/divisoes/delete/{id}', [DivisoesController::class, 'delete'])->name('divisoes.delete');
+});
+
+//EMPRESAS
+Route::middleware('auth')->group(function () {
+    Route::get('/empresas', [EmpresasController::class, 'index'])->name('empresas.index');
+
+    Route::get('/empresas/json', [EmpresasController::class, 'getListagem'])->name('empresas.json');    
+    Route::get('/empresas/contatos/json', [EmpresasController::class, 'getListagemContatos'])->name('empresas_contatos.json');    
+    Route::get('/empresas/enderecos/json', [EmpresasController::class, 'getListagemEnderecos'])->name('empresas_enderecos.json');    
+
+    Route::get('/empresas/create', [EmpresasController::class, 'create'])->name('empresas.create');
+    Route::post('/empresas/create', [EmpresasController::class, 'register'])->name('empresas.insert');
+    Route::post('/empresas/contatos/create', [EmpresasController::class, 'registerContatos'])->name('empresas_contatos.create');  
+    Route::post('/empresas/enderecos/create', [EmpresasController::class, 'registerEnderecos'])->name('empresas_enderecos.create');  
+
+    Route::get('/empresas/edit/{id}', [EmpresasController::class, 'edit'])->name('empresas.edit');
+    Route::post('/empresas/edit', [EmpresasController::class, 'update'])->name('empresas.update');
+    Route::post('/empresas/contatos/edit', [EmpresasController::class, 'updateContatos'])->name('empresas_contatos.edit');
+    Route::post('/empresas/enderecos/edit', [EmpresasController::class, 'updateEnderecos'])->name('empresas_enderecos.edit');  
+
+    Route::get('/empresas/delete/{id}', [EmpresasController::class, 'delete'])->name('empresas.delete');
+    Route::get('/empresas/contatos/delete/{id}', [EmpresasController::class, 'deleteContatos'])->name('empresas_contatos.delete');   
+    Route::get('/empresas/enderecos/delete/{id}', [EmpresasController::class, 'deleteEnderecos'])->name('empresas_enderecos.delete');  
 });
 
 require __DIR__.'/auth.php';
