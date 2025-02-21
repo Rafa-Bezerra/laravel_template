@@ -35,6 +35,20 @@ class EmpresasController extends Controller
         return datatables()->of($listagem)->toJson();
     }
 
+    public function getListagemContatos(Request $request)
+    {
+        $empresa_id = $request->input('empresa_id');
+        $listagem = EmpresasContatos::where('empresa_id', $empresa_id);
+        return datatables()->of($listagem)->toJson();
+    }
+
+    public function getListagemEnderecos(Request $request)
+    {
+        $empresa_id = $request->input('empresa_id');
+        $listagem = EmpresasEnderecos::where('empresa_id', $empresa_id);
+        return datatables()->of($listagem)->toJson();
+    }
+
     public function create(Request $request): View
     {
         $tittle = 'Nova empresa';
@@ -73,52 +87,77 @@ class EmpresasController extends Controller
         return redirect(route('empresas.index', absolute: false));
     }
 
-    public function registerContatos(Request $request)
+    public function submitContatos(Request $request)
     {
         $request->validate([
-            'empresa_id' => ['required'],
-            'contato' => ['required', 'string', 'max:255'],
-            'fone' => ['required', 'max:255'],
-            'email' => ['string', 'max:255'],
-            'observacao' => ['string', 'max:255'],
+            'contato_empresa_id' => ['required'],
+            'contato_contato' => ['required', 'string', 'max:255'],
+            'contato_fone' => ['required', 'max:255'],
+            'contato_email' => ['string', 'max:255'],
+            'contato_observacao' => ['string', 'max:255'],
         ]);
 
-        $action = EmpresasContatos::create([
-            "empresa_id" => $request->empresa_id,
-            "contato" => $request->contato,
-            "fone" => $request->fone,
-            "email" => $request->email,
-            "observacao" => $request->observacao,
-        ]);
+        if ($request->contato_id == null) {
+            $action = EmpresasContatos::create([
+                "empresa_id" => $request->contato_empresa_id,
+                "contato" => $request->contato_contato,
+                "fone" => $request->contato_fone,
+                "email" => $request->contato_email,
+                "observacao" => $request->contato_observacao,
+            ]);
+
+        } else {
+            $action = EmpresasContatos::findOrFail($request->contato_id);
+            $action->empresa_id = $request->contato_empresa_id;
+            $action->contato = $request->contato_contato;
+            $action->fone = $request->contato_fone;
+            $action->email = $request->contato_email;
+            $action->observacao = $request->contato_observacao;
+            $action->save();
+        }
 
         event(new Registered($action));
 
         return;
     }
 
-    public function registerEnderecos(Request $request)
+    public function submitEnderecos(Request $request)
     {
         $request->validate([
-            'empresa_id' => ['required'],
-            'cep' => ['required', 'string', 'max:255'],
-            'estado' => ['required', 'max:255'],
-            'cidade' => ['string', 'max:255'],
-            'rua' => ['string', 'max:255'],
-            'numero' => ['required', 'max:255'],
-            'complemento' => ['string', 'max:255'],
-            'observacao' => ['string', 'max:255'],
+            'endereco_empresa_id' => ['required'],
+            'endereco_cep' => ['required', 'string', 'max:255'],
+            'endereco_estado' => ['required', 'max:255'],
+            'endereco_cidade' => ['string', 'max:255'],
+            'endereco_rua' => ['string', 'max:255'],
+            'endereco_numero' => ['required', 'max:255'],
+            'endereco_complemento' => ['string', 'max:255'],
+            'endereco_observacao' => ['string', 'max:255'],
         ]);
 
-        $action = EmpresasEnderecos::create([
-            "empresa_id" => $request->empresa_id,
-            "cep" => $request->cep,
-            "estado" => $request->estado,
-            "cidade" => $request->cidade,
-            "rua" => $request->rua,
-            "numero" => $request->numero,
-            "complemento" => $request->complemento,
-            "observacao" => $request->observacao,
-        ]);
+        if ($request->endereco_id == null) {
+            $action = EmpresasEnderecos::create([
+                "empresa_id" => $request->endereco_empresa_id,
+                "cep" => $request->endereco_cep,
+                "estado" => $request->endereco_estado,
+                "cidade" => $request->endereco_cidade,
+                "rua" => $request->endereco_rua,
+                "numero" => $request->endereco_numero,
+                "complemento" => $request->endereco_complemento,
+                "observacao" => $request->endereco_observacao,
+            ]);
+
+        } else {
+            $action = EmpresasEnderecos::findOrFail($request->endereco_id);
+            $action->empresa_id = $request->endereco_empresa_id;
+            $action->cep = $request->endereco_cep;
+            $action->estado = $request->endereco_estado;
+            $action->cidade = $request->endereco_cidade;
+            $action->rua = $request->endereco_rua;
+            $action->numero = $request->endereco_numero;
+            $action->complemento = $request->endereco_complemento;
+            $action->observacao = $request->endereco_observacao;
+            $action->save();
+        }
 
         event(new Registered($action));
 
@@ -131,12 +170,23 @@ class EmpresasController extends Controller
         if (! User::hasPermission('empresas_edit')) return view('forbbiden', ['tittle' => $tittle]);
         
         $data = Empresas::findOrFail($id);
-        
+        $divisoes = Divisoes::all();
         return view('empresas.edit', [
             'user' => $request->user(),
             'tittle' => $tittle,
             'data' => $data,
+            'divisoes' => $divisoes,
         ]);
+    }
+
+    public function getContato(Request $request, string $id)
+    {     
+        return EmpresasContatos::findOrFail($id)->toJson();
+    }
+
+    public function getEndereco(Request $request, string $id)
+    {     
+        return EmpresasEnderecos::findOrFail($id)->toJson();
     }
 
     public function update(Request $request)
@@ -168,61 +218,6 @@ class EmpresasController extends Controller
         return;
     }
 
-    public function updateContatos(Request $request)
-    {
-        
-        $request->validate([
-            'empresa_id' => ['required'],
-            'contato' => ['required', 'string', 'max:255'],
-            'fone' => ['required', 'max:255'],
-            'email' => ['string', 'max:255'],
-            'observacao' => ['string', 'max:255'],
-        ]);
-        
-        $action = EmpresasContatos::findOrFail($request->id);
-        $action->empresa_id = $request->empresa_id;
-        $action->contato = $request->contato;
-        $action->fone = $request->fone;
-        $action->email = $request->email;
-        $action->observacao = $request->observacao;
-        $action->save();
-
-        event(new Registered($action));
-
-        // return redirect(route('empresas.index', absolute: false));
-        return;
-    }
-
-    public function updateEnderecos(Request $request)
-    {
-        $request->validate([
-            'empresa_id' => ['required'],
-            'cep' => ['required', 'string', 'max:255'],
-            'estado' => ['required', 'max:255'],
-            'cidade' => ['string', 'max:255'],
-            'rua' => ['string', 'max:255'],
-            'numero' => ['required', 'max:255'],
-            'complemento' => ['string', 'max:255'],
-            'observacao' => ['string', 'max:255'],
-        ]);
-        
-        $action = EmpresasEnderecos::findOrFail($request->id);
-        $action->empresa_id = $request->empresa_id;
-        $action->cep = $request->cep;
-        $action->estado = $request->estado;
-        $action->cidade = $request->cidade;
-        $action->rua = $request->rua;
-        $action->numero = $request->numero;
-        $action->complemento = $request->complemento;
-        $action->observacao = $request->observacao;
-        $action->save();
-
-        event(new Registered($action));
-
-        // return redirect(route('empresas.index', absolute: false));
-        return;
-    }
-
     public function delete(Request $request, string $id): RedirectResponse
     {
         EmpresasContatos::where('empresa_id', $id)->delete();
@@ -236,8 +231,8 @@ class EmpresasController extends Controller
         return EmpresasContatos::findOrFail($id)->delete();
     }
 
-    public function deleteEmpresas(Request $request, string $id): RedirectResponse
+    public function deleteEnderecos(Request $request, string $id): RedirectResponse
     {
-        return EmpresasEmpresas::findOrFail($id)->delete();
+        return EmpresasEnderecos::findOrFail($id)->delete();
     }
 }

@@ -108,13 +108,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/empresas/create', [EmpresasController::class, 'create'])->name('empresas.create');
     Route::post('/empresas/create', [EmpresasController::class, 'register'])->name('empresas.insert');
-    Route::post('/empresas/contatos/create', [EmpresasController::class, 'registerContatos'])->name('empresas_contatos.create');  
-    Route::post('/empresas/enderecos/create', [EmpresasController::class, 'registerEnderecos'])->name('empresas_enderecos.create');  
+    Route::post('/empresas/contatos/submit', [EmpresasController::class, 'submitContatos'])->name('empresas_contatos.submit');  
+    Route::post('/empresas/enderecos/submit', [EmpresasController::class, 'submitEnderecos'])->name('empresas_enderecos.submit');  
 
     Route::get('/empresas/edit/{id}', [EmpresasController::class, 'edit'])->name('empresas.edit');
     Route::post('/empresas/edit', [EmpresasController::class, 'update'])->name('empresas.update');
-    Route::post('/empresas/contatos/edit', [EmpresasController::class, 'updateContatos'])->name('empresas_contatos.edit');
-    Route::post('/empresas/enderecos/edit', [EmpresasController::class, 'updateEnderecos'])->name('empresas_enderecos.edit');  
+    Route::get('/empresas/contatos/get/{id}', [EmpresasController::class, 'getContato'])->name('empresas_contatos.get');  
+    Route::get('/empresas/enderecos/get/{id}', [EmpresasController::class, 'getEndereco'])->name('empresas_enderecos.get');  
 
     Route::get('/empresas/delete/{id}', [EmpresasController::class, 'delete'])->name('empresas.delete');
     Route::get('/empresas/contatos/delete/{id}', [EmpresasController::class, 'deleteContatos'])->name('empresas_contatos.delete');   
