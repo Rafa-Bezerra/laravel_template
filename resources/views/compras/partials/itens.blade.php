@@ -87,6 +87,25 @@
     </table>
 </section>
 <script>
+    function formatarMoeda(valor) {
+        if (!valor) return "R$ 0,00"; // Caso o valor seja null ou undefined
+        return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatarNumero(valor) {
+        if (!valor) return "0"; // Evita exibição de "NaN"
+    return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    }
+    
+    function formatarData(dataHora) {
+        if (!dataHora) return ""; // Se for null ou undefined, retorna string vazia
+        let partes = dataHora.split(" "); // Divide a data e hora
+        let data = partes[0]; // Pega apenas a parte da data (YYYY-MM-DD)
+        let partesData = data.split("-");
+        return partesData[2] + "/" + partesData[1] + "/" + partesData[0]; // Converte para DD/MM/YYYY
+    }
+
     function editarItem(id) {
         $.ajax({
             url: "/compras/itens/get/"+id,
@@ -95,12 +114,13 @@
             dataType: "json",
             success: function (response) {
                 $('#item_id').val(response.id);
-                $('#item_data').val(response.data);
+                $('#item_data').val(formatarData(response.data));
                 $('#item_material_id').val(response.material_id);
                 $('#item_quantidade').val(response.quantidade);
                 $('#item_preco_unitario').val(response.preco_unitario);
                 $('#item_valor_desconto').val(response.valor_desconto);
                 $('#item_valor_total').val(response.valor_total);
+                // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true}).trigger('input');
             }
         });
     }
@@ -137,6 +157,8 @@
     });
 
     $(document).ready(function () {
+        // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true});
+        
         $('#minhaTabelaItens').DataTable({
             "processing": true,
             "serverSide": true,
@@ -149,12 +171,32 @@
             },
             "columns": [
                 { "data": "id" },
-                { "data": "data" },
+                { "data": "data" ,
+                    "render": function (data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('pt-BR') : "";
+                    } 
+                },
                 { "data": "material_name" },
-                { "data": "quantidade" },
-                { "data": "preco_unitario" },
-                { "data": "valor_desconto" },
-                { "data": "valor_total" },
+                { "data": "quantidade" ,
+                    "render": function (data) {
+                        return formatarNumero(data);
+                    }
+                },
+                { "data": "preco_unitario",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
+                { "data": "valor_desconto",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    }
+                },
+                { "data": "valor_total",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
@@ -176,21 +218,30 @@
                 dataType: "json",
                 complete: function (response) {
                     $('#minhaTabelaItens').DataTable().ajax.reload();
-                    // $('#itensForm')[0].reset();
+                    $('#itensForm')[0].reset();
+                                        
+                    $('#valor_itens').val(response.responseJSON.valor_itens);
+                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
+                    $('#valor_total').val(response.responseJSON.valor_total);
                 }
             });
         });
 
-        $('#item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true});
 
         $('.totalizador').on('input', function() {
-            let quantidade = parseFloat($('#item_quantidade').val()) || 0;
-            let preco = parseFloat($('#item_preco_unitario').val().replace('.', '').replace(',', '.')) || 0;
-            let desconto = parseFloat($('#item_valor_desconto').val().replace('.', '').replace(',', '.')) || 0;
+            // let quantidade = parseFloat($('#item_quantidade').val()) || 0;
+            // let preco = parseFloat($('#item_preco_unitario').val().replace('.', '').replace(',', '.')) || 0;
+            // let desconto = parseFloat($('#item_valor_desconto').val().replace('.', '').replace(',', '.')) || 0;
+
+            let quantidade = $('#item_quantidade').val();
+            let preco = $('#item_preco_unitario').val();
+            let desconto = $('#item_valor_desconto').val();
 
             let total = (quantidade * preco) - desconto;
 
-            $('#item_valor_total').val(total.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+            // $('#item_valor_total').val(total.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
+
+            $('#item_valor_total').val(total);
         });
     });
 </script>

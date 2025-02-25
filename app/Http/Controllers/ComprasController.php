@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Materiais;
 use App\Models\Compras;
 use App\Models\ComprasItens;
+use App\Models\Estoque;
 
 class ComprasController extends Controller
 {
@@ -132,33 +133,99 @@ class ComprasController extends Controller
             'item_valor_total' => ['required'],
         ]);
 
+        $quantidade = 0;
         if ($request->item_id == null) {
+            $quantidade = str_replace(['.', ','], ['', '.'], $request->item_quantidade);
             $action = ComprasItens::create([
                 "compra_id" => $request->item_compra_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
                 "material_id" => $request->item_material_id,
+                // "quantidade" => str_replace(['.', ','], ['', '.'], $request->item_quantidade),
+                // "preco_unitario" => str_replace(['.', ','], ['', '.'], $request->item_preco_unitario),
+                // "valor_desconto" => str_replace(['.', ','], ['', '.'], $request->item_valor_desconto),
+                // "valor_total" => str_replace(['.', ','], ['', '.'], $request->item_valor_total),
                 "quantidade" => $request->item_quantidade,
-                "preco_unitario" => str_replace(['.', ','], ['', '.'], $request->item_preco_unitario),
-                "valor_desconto" => str_replace(['.', ','], ['', '.'], $request->item_valor_desconto),
-                "valor_total" => str_replace(['.', ','], ['', '.'], $request->item_valor_total),
+                "preco_unitario" => $request->item_preco_unitario,
+                "valor_desconto" => $request->item_valor_desconto,
+                "valor_total" => $request->item_valor_total,
                 "observacao" => $request->item_observacao,
             ]);
-
         } else {
             $action = ComprasItens::findOrFail($request->item_id);
+            $quantidade = $request->item_quantidade - $action->quantidade;
             $action->compra_id = $request->item_compra_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
             $action->material_id = $request->item_material_id;
             $action->quantidade = $request->item_quantidade;
-            $action->preco_unitario = str_replace(['.', ','], ['', '.'], $request->item_preco_unitario);
-            $action->valor_desconto = str_replace(['.', ','], ['', '.'], $request->item_valor_desconto);
-            $action->valor_total = str_replace(['.', ','], ['', '.'], $request->item_valor_total);
+            $action->preco_unitario = $request->item_preco_unitario;
+            $action->valor_desconto = $request->item_valor_desconto;
+            $action->valor_total = $request->item_valor_total;
             $action->observacao = $request->item_observacao;
             $action->save();
         }
 
+        $this->entrada_estoque($request->item_material_id, $quantidade);
+
+        $valores = $this->atualiza_total($request->item_compra_id);
+
         event(new Registered($action));
 
+        return $valores->toJson();
+    }
+
+    public function entrada_estoque($material_id, $quantidade) {
+        $estoque = Estoque::where('material_id', $material_id)->first();
+
+        if(!$estoque) {
+            $estoque = Estoque::create([
+                "material_id" => $material_id,
+                "quantidade" => $quantidade,
+                "orcamento_id" => null,
+            ]);
+        } else {
+            $estoque->quantidade += $quantidade;
+            $estoque->save();
+        }
+
+        event(new Registered($estoque));
+
         return;
+    }
+    
+    public function atualiza_total($compra_id) {
+        $itens = ComprasItens::where('compra_id', $compra_id)->get();
+
+        $valor_itens = 0;
+        $valor_desconto = 0;
+        $valor_total = 0;
+
+        foreach ($itens as $key => $value) {
+            $valor_itens += $value->quantidade * $value->preco_unitario;
+            $valor_desconto += $value->valor_desconto;
+            $valor_total += $value->valor_total;
+        }
+
+        $compra = Compras::findOrFail($compra_id);
+        $compra->valor_itens = $valor_itens;
+        $compra->valor_desconto = $valor_desconto;
+        $compra->valor_total = $valor_total;
+        $compra->save();
+
+        event(new Registered($compra));
+        
+        return $compra;
+    }
+
+    public function getItem(Request $request, string $id)
+    {     
+        return ComprasItens::findOrFail($id)->toJson();
+    }
+
+    public function deleteItem(Request $request, string $id)
+    {
+        $item = ComprasItens::findOrFail($id);
+        $quantidade = $item->quantidade * -1;
+        $this->entrada_estoque($item->material_id, $quantidade);
+        return $item->delete();
     }
 }

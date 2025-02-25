@@ -37,7 +37,7 @@ class Estoque extends Authenticatable
         return $this->belongsTo(Orcamentos::class);
     }
 
-    public function material(): BelongsTo
+    public function material()
     {
         return $this->belongsTo(Materiais::class);
     }

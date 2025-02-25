@@ -17,6 +17,7 @@
                     <x-nav-link :href="route('usuarios.index')">{{ __('Usuários') }}</x-nav-link>
                     <x-nav-link :href="route('divisoes.index')">{{ __('Divisões') }}</x-nav-link>
                     <x-nav-link :href="route('empresas.index')">{{ __('Empresas') }}</x-nav-link>
+                    <x-nav-link :href="route('estoque')">{{ __('Estoque') }}</x-nav-link>
                 </div>
             </div>
         </div>

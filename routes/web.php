@@ -9,6 +9,7 @@ use App\Http\Controllers\GruposDeMaterialController;
 use App\Http\Controllers\DivisoesController;
 use App\Http\Controllers\EmpresasController;
 use App\Http\Controllers\ComprasController;
+use App\Http\Controllers\EstoqueController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -118,7 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/empresas/enderecos/delete/{id}', [EmpresasController::class, 'deleteEnderecos'])->name('empresas_enderecos.delete');  
 });
 
-//DIVISÕES
+//COMPRAS
 Route::middleware('auth')->group(function () {
     Route::get('/compras', [ComprasController::class, 'index'])->name('compras');
     Route::get('/compras/json', [ComprasController::class, 'getListagem'])->name('compras.json');    
@@ -131,6 +132,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/compras/edit', [ComprasController::class, 'update'])->name('compras.update');
     Route::get('/compras/delete/{id}', [ComprasController::class, 'delete'])->name('compras.delete');
     Route::get('/compras/itens/delete/{id}', [ComprasController::class, 'deleteItem'])->name('compras_itens.delete');
+});
+
+//ESTOQUE
+Route::middleware('auth')->group(function () {
+    Route::get('/estoque', [EstoqueController::class, 'index'])->name('estoque');
+    Route::get('/estoque/json', [EstoqueController::class, 'getListagem'])->name('estoque.json');    
+    Route::get('/estoque/edit/{id}', [EstoqueController::class, 'edit'])->name('estoque.edit');
+    Route::post('/estoque/edit', [EstoqueController::class, 'update'])->name('estoque.update');
 });
 
 require __DIR__.'/auth.php';
