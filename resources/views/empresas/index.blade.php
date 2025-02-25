@@ -51,7 +51,7 @@
                 { "data": "pessoa" },
                 { "data": "cpf" },
                 { "data": "cnpj" },
-                { "data": "divisao_id" },
+                { "data": "divisao_name" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {

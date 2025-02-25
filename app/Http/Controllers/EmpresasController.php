@@ -20,7 +20,6 @@ class EmpresasController extends Controller
     public function index(Request $request): View
     {
         $tittle = 'Empresas';
-        
         if (! User::hasPermission('empresas')) return view('forbbiden', ['tittle' => $tittle]);
 
         return view('empresas.index', [
@@ -31,8 +30,12 @@ class EmpresasController extends Controller
 
     public function getListagem()
     {
-        $listagem = Empresas::all();
-        return datatables()->of($listagem)->toJson();
+        $listagem = Empresas::with('divisao')->get();
+        return datatables()->of($listagem)
+            ->addColumn('divisao_name', function ($empresa) {
+                return $empresa->divisao->name ?? 'Sem divisão';
+            })
+        ->toJson();
     }
 
     public function getListagemContatos(Request $request)
@@ -81,10 +84,10 @@ class EmpresasController extends Controller
             "divisao_id" => $request->divisao_id,
             "observacao" => $request->observacao,
         ]);
-
+        
         event(new Registered($action));
 
-        return redirect(route('empresas.index', absolute: false));
+        return redirect('/empresas/edit/'.$action->id);
     }
 
     public function submitContatos(Request $request)
@@ -221,7 +224,7 @@ class EmpresasController extends Controller
     public function delete(Request $request, string $id): RedirectResponse
     {
         EmpresasContatos::where('empresa_id', $id)->delete();
-        EmpresasEmpresas::where('empresa_id', $id)->delete();
+        EmpresasEnderecos::where('empresa_id', $id)->delete();
         $data = Empresas::findOrFail($id)->delete();
         return redirect(route('empresas.index', absolute: false));
     }

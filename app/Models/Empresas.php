@@ -37,7 +37,7 @@ class Empresas extends Authenticatable
         'observacao',
     ];
 
-    public function divisao(): BelongsTo
+    public function divisao()
     {
         return $this->belongsTo(Divisoes::class);
     }

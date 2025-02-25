@@ -42,7 +42,7 @@ class ComprasItens extends Authenticatable
         return $this->belongsTo(Compras::class);
     }
 
-    public function material(): BelongsTo
+    public function material()
     {
         return $this->belongsTo(Materiais::class);
     }

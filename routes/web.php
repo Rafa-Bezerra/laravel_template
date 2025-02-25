@@ -8,6 +8,7 @@ use App\Http\Controllers\ActionController;
 use App\Http\Controllers\GruposDeMaterialController;
 use App\Http\Controllers\DivisoesController;
 use App\Http\Controllers\EmpresasController;
+use App\Http\Controllers\ComprasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -101,24 +102,35 @@ Route::middleware('auth')->group(function () {
 //EMPRESAS
 Route::middleware('auth')->group(function () {
     Route::get('/empresas', [EmpresasController::class, 'index'])->name('empresas.index');
-
     Route::get('/empresas/json', [EmpresasController::class, 'getListagem'])->name('empresas.json');    
     Route::get('/empresas/contatos/json', [EmpresasController::class, 'getListagemContatos'])->name('empresas_contatos.json');    
-    Route::get('/empresas/enderecos/json', [EmpresasController::class, 'getListagemEnderecos'])->name('empresas_enderecos.json');    
-
+    Route::get('/empresas/enderecos/json', [EmpresasController::class, 'getListagemEnderecos'])->name('empresas_enderecos.json');  
     Route::get('/empresas/create', [EmpresasController::class, 'create'])->name('empresas.create');
     Route::post('/empresas/create', [EmpresasController::class, 'register'])->name('empresas.insert');
     Route::post('/empresas/contatos/submit', [EmpresasController::class, 'submitContatos'])->name('empresas_contatos.submit');  
     Route::post('/empresas/enderecos/submit', [EmpresasController::class, 'submitEnderecos'])->name('empresas_enderecos.submit');  
-
     Route::get('/empresas/edit/{id}', [EmpresasController::class, 'edit'])->name('empresas.edit');
     Route::post('/empresas/edit', [EmpresasController::class, 'update'])->name('empresas.update');
     Route::get('/empresas/contatos/get/{id}', [EmpresasController::class, 'getContato'])->name('empresas_contatos.get');  
     Route::get('/empresas/enderecos/get/{id}', [EmpresasController::class, 'getEndereco'])->name('empresas_enderecos.get');  
-
     Route::get('/empresas/delete/{id}', [EmpresasController::class, 'delete'])->name('empresas.delete');
     Route::get('/empresas/contatos/delete/{id}', [EmpresasController::class, 'deleteContatos'])->name('empresas_contatos.delete');   
     Route::get('/empresas/enderecos/delete/{id}', [EmpresasController::class, 'deleteEnderecos'])->name('empresas_enderecos.delete');  
+});
+
+//DIVISÕES
+Route::middleware('auth')->group(function () {
+    Route::get('/compras', [ComprasController::class, 'index'])->name('compras');
+    Route::get('/compras/json', [ComprasController::class, 'getListagem'])->name('compras.json');    
+    Route::get('/compras/itens/json', [ComprasController::class, 'getListagemItens'])->name('compras_itens.json');    
+    Route::get('/compras/create', [ComprasController::class, 'create'])->name('compras.create');
+    Route::post('/compras/create', [ComprasController::class, 'register'])->name('compras.insert');
+    Route::post('/compras/itens/submit', [ComprasController::class, 'submitItens'])->name('compras_itens.submit');  
+    Route::get('/compras/edit/{id}', [ComprasController::class, 'edit'])->name('compras.edit');
+    Route::get('/compras/itens/get/{id}', [ComprasController::class, 'getItem'])->name('compras_itens.get'); 
+    Route::post('/compras/edit', [ComprasController::class, 'update'])->name('compras.update');
+    Route::get('/compras/delete/{id}', [ComprasController::class, 'delete'])->name('compras.delete');
+    Route::get('/compras/itens/delete/{id}', [ComprasController::class, 'deleteItem'])->name('compras_itens.delete');
 });
 
 require __DIR__.'/auth.php';
