@@ -11,14 +11,14 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <x-nav-link :href="route('roles.index')">{{ __('Acessos') }}</x-nav-link>
                     <x-nav-link :href="route('actions.index')">{{ __('Ações') }}</x-nav-link>
-                    <x-nav-link :href="route('home')">{{ __('Pessoas') }}</x-nav-link>
                     <x-nav-link :href="route('grupos_de_material.index')">{{ __('Grupos de Material') }}</x-nav-link>
                     <x-nav-link :href="route('materiais.index')">{{ __('Materiais') }}</x-nav-link>
                     <x-nav-link :href="route('usuarios.index')">{{ __('Usuários') }}</x-nav-link>
                     <x-nav-link :href="route('divisoes.index')">{{ __('Divisões') }}</x-nav-link>
                     <x-nav-link :href="route('empresas.index')">{{ __('Empresas') }}</x-nav-link>
                     <x-nav-link :href="route('estoque')">{{ __('Estoque') }}</x-nav-link>
-                </div>
+                    <x-nav-link :href="route('servicos')">{{ __('Serviços') }}</x-nav-link>
+                    <x-nav-link :href="route('comissoes')">{{ __('Comissões') }}</x-nav-link>
             </div>
         </div>
     </div>

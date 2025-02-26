@@ -10,6 +10,8 @@ use App\Http\Controllers\DivisoesController;
 use App\Http\Controllers\EmpresasController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\EstoqueController;
+use App\Http\Controllers\ServicosController;
+use App\Http\Controllers\ComissoesController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -78,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/grupos_de_material/delete/{id}', [GruposDeMaterialController::class, 'delete'])->name('grupos_de_material.delete');
 });
 
-//GRUPOS DE MATERIAL
+//MATERIAIS
 Route::middleware('auth')->group(function () {
     Route::get('/materiais', [MateriaisController::class, 'index'])->name('materiais.index');
     Route::get('/materiais/json', [MateriaisController::class, 'getListagem'])->name('materiais.json');    
@@ -140,6 +142,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/estoque/json', [EstoqueController::class, 'getListagem'])->name('estoque.json');    
     Route::get('/estoque/edit/{id}', [EstoqueController::class, 'edit'])->name('estoque.edit');
     Route::post('/estoque/edit', [EstoqueController::class, 'update'])->name('estoque.update');
+});
+
+//SERVICOS
+Route::middleware('auth')->group(function () {
+    Route::get('/servicos', [ServicosController::class, 'index'])->name('servicos');
+    Route::get('/servicos/json', [ServicosController::class, 'getListagem'])->name('servicos.json');    
+    Route::get('/servicos/create', [ServicosController::class, 'create'])->name('servicos.create');
+    Route::post('/servicos/create', [ServicosController::class, 'register'])->name('servicos.insert');
+    Route::get('/servicos/edit/{id}', [ServicosController::class, 'edit'])->name('servicos.edit');
+    Route::post('/servicos/edit', [ServicosController::class, 'update'])->name('servicos.update');
+    Route::get('/servicos/delete/{id}', [ServicosController::class, 'delete'])->name('servicos.delete');
+});
+
+//COMISSOES
+Route::middleware('auth')->group(function () {
+    Route::get('/comissoes', [ComissoesController::class, 'index'])->name('comissoes');
+    Route::get('/comissoes/json', [ComissoesController::class, 'getListagem'])->name('comissoes.json');    
+    Route::get('/comissoes/create', [ComissoesController::class, 'create'])->name('comissoes.create');
+    Route::post('/comissoes/create', [ComissoesController::class, 'register'])->name('comissoes.insert');
+    Route::get('/comissoes/edit/{id}', [ComissoesController::class, 'edit'])->name('comissoes.edit');
+    Route::post('/comissoes/edit', [ComissoesController::class, 'update'])->name('comissoes.update');
+    Route::get('/comissoes/delete/{id}', [ComissoesController::class, 'delete'])->name('comissoes.delete');
 });
 
 require __DIR__.'/auth.php';
