@@ -37,12 +37,12 @@ class OrcamentosItens extends Authenticatable
         'observacao',
     ];
 
-    public function orcamento(): BelongsTo
+    public function orcamento()
     {
         return $this->belongsTo(Orcamentos::class);
     }
 
-    public function material(): BelongsTo
+    public function material()
     {
         return $this->belongsTo(Materiais::class);
     }

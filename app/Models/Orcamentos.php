@@ -38,13 +38,13 @@ class Orcamentos extends Authenticatable
         'observacao',
     ];
 
-    public function empresa(): BelongsTo
+    public function empresa()
     {
         return $this->belongsTo(Empresas::class);
     }
 
-    public function endereco(): BelongsTo
+    public function endereco()
     {
-        return $this->belongsTo(EmpresasEnderecos::class);
+        return $this->belongsTo(EmpresasEnderecos::class, 'empresas_endereco_id', 'id');
     }
 }

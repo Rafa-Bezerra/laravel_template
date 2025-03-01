@@ -133,8 +133,6 @@ class EmpresasController extends Controller
             'endereco_cidade' => ['string', 'max:255'],
             'endereco_rua' => ['string', 'max:255'],
             'endereco_numero' => ['required', 'max:255'],
-            'endereco_complemento' => ['string', 'max:255'],
-            'endereco_observacao' => ['string', 'max:255'],
         ]);
 
         if ($request->endereco_id == null) {

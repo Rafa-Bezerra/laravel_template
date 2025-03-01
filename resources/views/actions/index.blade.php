@@ -1,12 +1,3 @@
-<style>
-    #minhaTabela {
-        color: white !important;
-    }
-    .dataTables_wrapper {
-        color: white !important;
-    }
-</style>
-
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -20,7 +11,7 @@
                 <div align="right">
                     <x-nav-link :href="route('actions.create')">{{ __('Nova ação') }}</x-nav-link>      
                 </div>      
-                <table id="minhaTabela" class="table table-striped">
+                <table id="minhaTabela" class="table table-striped datatable">
                     <thead>
                         <tr>
                             <th>ID</th>

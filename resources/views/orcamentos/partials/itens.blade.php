@@ -8,7 +8,7 @@
     <form id="itensForm">
         @csrf
         <x-text-input id="item_id" type="hidden" name="item_id"/>
-        <x-text-input id="item_compra_id" type="hidden" name="item_compra_id" :value="$data->id"/>             
+        <x-text-input id="item_orcamento_id" type="hidden" name="item_orcamento_id" :value="$data->id"/>             
 
         <!-- DT. Item -->
         <div>
@@ -87,17 +87,6 @@
     </table>
 </section>
 <script>
-    function formatarMoeda(valor) {
-        if (!valor) return "R$ 0,00"; // Caso o valor seja null ou undefined
-        return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
-
-    function formatarNumero(valor) {
-        if (!valor) return "0"; // Evita exibição de "NaN"
-    return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    }
-    
     function formatarData(dataHora) {
         if (!dataHora) return ""; // Se for null ou undefined, retorna string vazia
         let partes = dataHora.split(" "); // Divide a data e hora
@@ -108,7 +97,7 @@
 
     function editarItem(id) {
         $.ajax({
-            url: "/compras/itens/get/"+id,
+            url: "/orcamentos/itens/get/"+id,
             type: "GET",
             data: $(this).serialize(),
             dataType: "json",
@@ -126,14 +115,15 @@
     }
 
     function excluirItem(id) {
+        console.log('a');
         $.ajax({
-            url: "/compras/itens/delete/"+id,
+            url: "/orcamentos/itens/delete/"+id,
             type: "GET",
             data: $(this).serialize(),
             dataType: "json",
             complete: function (response) {
                 $('#minhaTabelaItens').DataTable().ajax.reload();
-                $('#itensForm')[0].reset();           
+                $('#itensForm')[0].reset();               
                 
                 $('#valor_itens').val(response.responseJSON.valor_itens);
                 $('#valor_desconto').val(response.responseJSON.valor_desconto);
@@ -167,10 +157,10 @@
             "processing": true,
             "serverSide": true,
             "ajax": {
-                "url": "{{ route('compras_itens.json') }}",
+                "url": "{{ route('orcamentos_itens.json') }}",
                 "type": "GET",
                 "data": function (d) {
-                    d.compra_id = {{ $data->id ?? 'null' }}; 
+                    d.orcamento_id = {{ $data->id ?? 'null' }}; 
                 }
             },
             "columns": [
@@ -216,7 +206,7 @@
         $('#itensForm').submit(function (e) {
             e.preventDefault();
             $.ajax({
-                url: "{{ route('compras_itens.submit') }}",
+                url: "{{ route('orcamentos_itens.submit') }}",
                 type: "POST",
                 data: $(this).serialize(),
                 dataType: "json",
@@ -246,6 +236,28 @@
             // $('#item_valor_total').val(total.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
 
             $('#item_valor_total').val(total);
+        });
+
+        $('#item_quantidade').on('input', function () {
+            let quantidade = parseFloat($('#item_quantidade').val());
+            let materialId = $('#item_material_id').val();
+            $.ajax({
+                url: "{{ route('orcamentos_itens.estoque') }}",
+                type: "POST",
+                data: {
+                    material_id : materialId,
+                    _token: "{{ csrf_token() }}"
+                },
+                dataType: "json",
+                complete: function (response) {
+                    console.log(quantidade); //5
+                    console.log(response.responseJSON.data[0].quantidade); //1000.00
+                    if (quantidade > response.responseJSON.data[0].quantidade) {
+                        $('#item_quantidade').val(response.responseJSON.data[0].quantidade);
+                        alert('Quantidade excede o estoque!');
+                    }
+                }
+            });
         });
     });
 </script>

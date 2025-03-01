@@ -12,6 +12,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ServicosController;
 use App\Http\Controllers\ComissoesController;
+use App\Http\Controllers\OrcamentosController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -125,12 +126,12 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/compras', [ComprasController::class, 'index'])->name('compras');
     Route::get('/compras/json', [ComprasController::class, 'getListagem'])->name('compras.json');    
-    Route::get('/compras/itens/json', [ComprasController::class, 'getListagemItens'])->name('compras_itens.json');    
+    Route::get('/compras/itens/json', [ComprasController::class, 'getListagemItens'])->name('compras_itens.json');
     Route::get('/compras/create', [ComprasController::class, 'create'])->name('compras.create');
     Route::post('/compras/create', [ComprasController::class, 'register'])->name('compras.insert');
     Route::post('/compras/itens/submit', [ComprasController::class, 'submitItens'])->name('compras_itens.submit');  
     Route::get('/compras/edit/{id}', [ComprasController::class, 'edit'])->name('compras.edit');
-    Route::get('/compras/itens/get/{id}', [ComprasController::class, 'getItem'])->name('compras_itens.get'); 
+    Route::get('/compras/itens/get/{id}', [ComprasController::class, 'getItem'])->name('compras_itens.get');
     Route::post('/compras/edit', [ComprasController::class, 'update'])->name('compras.update');
     Route::get('/compras/delete/{id}', [ComprasController::class, 'delete'])->name('compras.delete');
     Route::get('/compras/itens/delete/{id}', [ComprasController::class, 'deleteItem'])->name('compras_itens.delete');
@@ -164,6 +165,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/comissoes/edit/{id}', [ComissoesController::class, 'edit'])->name('comissoes.edit');
     Route::post('/comissoes/edit', [ComissoesController::class, 'update'])->name('comissoes.update');
     Route::get('/comissoes/delete/{id}', [ComissoesController::class, 'delete'])->name('comissoes.delete');
+});
+
+//ORCAMENTOS
+Route::middleware('auth')->group(function () {
+    Route::get('/orcamentos', [OrcamentosController::class, 'index'])->name('orcamentos');
+    Route::get('/orcamentos/json', [OrcamentosController::class, 'getListagem'])->name('orcamentos.json'); 
+    Route::post('/orcamentos/empresas/enderecos/json', [OrcamentosController::class, 'getEnderecos'])->name('orcamentos.getEnderecos');    
+    Route::get('/orcamentos/create', [OrcamentosController::class, 'create'])->name('orcamentos.create');
+    Route::post('/orcamentos/create', [OrcamentosController::class, 'register'])->name('orcamentos.insert');    
+    Route::get('/orcamentos/edit/{id}', [OrcamentosController::class, 'edit'])->name('orcamentos.edit');
+    Route::post('/orcamentos/edit', [OrcamentosController::class, 'update'])->name('orcamentos.update');    
+    Route::get('/orcamentos/delete/{id}', [OrcamentosController::class, 'delete'])->name('orcamentos.delete');
+    
+    Route::get('/orcamentos/itens/json', [OrcamentosController::class, 'getListagemItens'])->name('orcamentos_itens.json');
+    Route::post('/orcamentos/itens/estoque', [OrcamentosController::class, 'getEstoqueMaterial'])->name('orcamentos_itens.estoque');
+    Route::post('/orcamentos/itens/submit', [OrcamentosController::class, 'submitItens'])->name('orcamentos_itens.submit');    
+    Route::get('/orcamentos/itens/get/{id}', [OrcamentosController::class, 'getItem'])->name('orcamentos_itens.get');
+    Route::get('/orcamentos/itens/delete/{id}', [OrcamentosController::class, 'deleteItem'])->name('orcamentos_itens.delete');    
+    
+    Route::get('/orcamentos/servicos/json', [OrcamentosController::class, 'getListagemServicos'])->name('orcamentos_servicos.json');
+    Route::post('/orcamentos/servicos/submit', [OrcamentosController::class, 'submitServicos'])->name('orcamentos_servicos.submit');    
+    Route::get('/orcamentos/servicos/get/{id}', [OrcamentosController::class, 'getServico'])->name('orcamentos_servicos.get');
+    Route::get('/orcamentos/servicos/delete/{id}', [OrcamentosController::class, 'deleteServico'])->name('orcamentos_servicos.delete'); 
+    
+    Route::get('/orcamentos/comissoes/json', [OrcamentosController::class, 'getListagemComissoes'])->name('orcamentos_comissoes.json');
+    Route::post('/orcamentos/comissoes/submit', [OrcamentosController::class, 'submitComissoes'])->name('orcamentos_comissoes.submit');    
+    Route::get('/orcamentos/comissoes/get/{id}', [OrcamentosController::class, 'getComissao'])->name('orcamentos_comissoes.get');
+    Route::get('/orcamentos/comissoes/delete/{id}', [OrcamentosController::class, 'deleteComissao'])->name('orcamentos_comissoes.delete');      
 });
 
 require __DIR__.'/auth.php';

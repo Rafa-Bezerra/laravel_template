@@ -66,7 +66,7 @@
         </div>
     </form>
 
-    <table id="minhaTabelaEnderecos" class="table table-striped">
+    <table id="minhaTabelaEnderecos" class="table table-striped datatable">
         <thead>
             <tr>
                 <th>ID</th>

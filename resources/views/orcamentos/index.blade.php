@@ -9,15 +9,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
                 <div align="right">
-                    <x-nav-link :href="route('compras.create')">{{ __('Nova compra') }}</x-nav-link>      
+                    <x-nav-link :href="route('orcamentos.create')">{{ __('Novo orçamento') }}</x-nav-link>      
                 </div>      
                 <table id="minhaTabela" class="table table-striped datatable">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Observação</th>
-                            <th>Orçamento</th>
-                            <th>DT. Compra</th>
+                            <th>Empresa</th>
+                            <th>Endereço</th>
+                            <th>DT. Venda</th>
                             <th>DT. Prazo</th>
                             <th>DT. Entrega</th>
                             <th>VL. Itens</th>
@@ -32,38 +32,59 @@
     </div>
 </x-app-layout>
 <script>
+    function formatarMoeda(valor) {
+        if (!valor) return "R$ 0,00"; // Caso o valor seja null ou undefined
+        return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatarNumero(valor) {
+        if (!valor) return "0"; // Evita exibição de "NaN"
+    return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    }
     $(document).ready(function () {
-        // $.fn.dataTable.moment('DD/MM/YYYY');
         $('#minhaTabela').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ route('compras.json') }}",
+            "ajax": "{{ route('orcamentos.json') }}",
             "columns": [
                 { "data": "id" },
-                { "data": "observacao" },
-                { "data": "orcamento_id" },
-                { "data": "data_compra",
-                    "render": function (data, type, row) {
-                        return data ? new Date(data).toLocaleDateString('pt-BR') : "";
-                    } 
-                },
-                { "data": "data_prazo",
+                { "data": "empresa_name" },
+                { "data": "empresas_endereco_descricao" },
+                { "data": "data_venda",
                     "render": function (data, type, row) {
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     }  
                 },
-                { "data": "data_entrega",
+                { "data": "data_prazo" ,
                     "render": function (data, type, row) {
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     } 
                 },
-                { "data": "valor_itens" },
-                { "data": "valor_desconto" },
-                { "data": "valor_total" },
+                { "data": "data_entrega" ,
+                    "render": function (data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('pt-BR') : "";
+                    } 
+                },
+                { "data": "valor_itens",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    }
+                },
+                { "data": "valor_desconto",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    }
+                },
+                { "data": "valor_total",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    }
+                },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a href="/compras/edit/${data}">Editar</a> <a href="/compras/delete/${data}">Excluir</a>`;
+                        return `<a href="/orcamentos/edit/${data}">Editar</a> <a href="/orcamentos/delete/${data}">Excluir</a>`;
                     }
                 }
             ],

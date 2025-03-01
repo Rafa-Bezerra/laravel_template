@@ -1,11 +1,3 @@
-<style>
-    .table {
-        color: white !important;
-    }
-    .dataTables_wrapper {
-        color: white !important;
-    }
-</style>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">

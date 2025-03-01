@@ -224,8 +224,11 @@ class ComprasController extends Controller
     public function deleteItem(Request $request, string $id)
     {
         $item = ComprasItens::findOrFail($id);
+        $compra = $item->compra_id;
         $quantidade = $item->quantidade * -1;
-        $this->entrada_estoque($item->material_id, $quantidade);
-        return $item->delete();
+        $this->saida_estoque($item->material_id, $quantidade);
+        $item->delete();
+        $valores = $this->atualiza_total($compra);
+        return $valores->toJson();
     }
 }

@@ -45,7 +45,7 @@
         </div>
     </form>
 
-    <table id="minhaTabelaContatos" class="table table-striped">
+    <table id="minhaTabelaContatos" class="table table-striped datatable">
         <thead>
             <tr>
                 <th>ID</th>
