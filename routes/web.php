@@ -13,6 +13,7 @@ use App\Http\Controllers\EstoqueController;
 use App\Http\Controllers\ServicosController;
 use App\Http\Controllers\ComissoesController;
 use App\Http\Controllers\OrcamentosController;
+use App\Http\Controllers\RelatoriosController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -176,23 +177,28 @@ Route::middleware('auth')->group(function () {
     Route::post('/orcamentos/create', [OrcamentosController::class, 'register'])->name('orcamentos.insert');    
     Route::get('/orcamentos/edit/{id}', [OrcamentosController::class, 'edit'])->name('orcamentos.edit');
     Route::post('/orcamentos/edit', [OrcamentosController::class, 'update'])->name('orcamentos.update');    
-    Route::get('/orcamentos/delete/{id}', [OrcamentosController::class, 'delete'])->name('orcamentos.delete');
-    
+    Route::get('/orcamentos/delete/{id}', [OrcamentosController::class, 'delete'])->name('orcamentos.delete');    
     Route::get('/orcamentos/itens/json', [OrcamentosController::class, 'getListagemItens'])->name('orcamentos_itens.json');
     Route::post('/orcamentos/itens/estoque', [OrcamentosController::class, 'getEstoqueMaterial'])->name('orcamentos_itens.estoque');
     Route::post('/orcamentos/itens/submit', [OrcamentosController::class, 'submitItens'])->name('orcamentos_itens.submit');    
     Route::get('/orcamentos/itens/get/{id}', [OrcamentosController::class, 'getItem'])->name('orcamentos_itens.get');
-    Route::get('/orcamentos/itens/delete/{id}', [OrcamentosController::class, 'deleteItem'])->name('orcamentos_itens.delete');    
-    
+    Route::get('/orcamentos/itens/delete/{id}', [OrcamentosController::class, 'deleteItem'])->name('orcamentos_itens.delete');      
     Route::get('/orcamentos/servicos/json', [OrcamentosController::class, 'getListagemServicos'])->name('orcamentos_servicos.json');
     Route::post('/orcamentos/servicos/submit', [OrcamentosController::class, 'submitServicos'])->name('orcamentos_servicos.submit');    
     Route::get('/orcamentos/servicos/get/{id}', [OrcamentosController::class, 'getServico'])->name('orcamentos_servicos.get');
-    Route::get('/orcamentos/servicos/delete/{id}', [OrcamentosController::class, 'deleteServico'])->name('orcamentos_servicos.delete'); 
-    
+    Route::get('/orcamentos/servicos/delete/{id}', [OrcamentosController::class, 'deleteServico'])->name('orcamentos_servicos.delete');     
     Route::get('/orcamentos/comissoes/json', [OrcamentosController::class, 'getListagemComissoes'])->name('orcamentos_comissoes.json');
     Route::post('/orcamentos/comissoes/submit', [OrcamentosController::class, 'submitComissoes'])->name('orcamentos_comissoes.submit');    
     Route::get('/orcamentos/comissoes/get/{id}', [OrcamentosController::class, 'getComissao'])->name('orcamentos_comissoes.get');
     Route::get('/orcamentos/comissoes/delete/{id}', [OrcamentosController::class, 'deleteComissao'])->name('orcamentos_comissoes.delete');      
+});
+
+//RELATÓRIOS
+Route::middleware('auth')->group(function () {
+    Route::get('/relatorios', [RelatoriosController::class, 'index'])->name('relatorios');
+    Route::get('/relatorios/orcamentos_por_cliente', [RelatoriosController::class, 'orcamentos_por_cliente'])->name('orcamentos_por_cliente');
+    Route::get('/relatorios/compras_por_material', [RelatoriosController::class, 'compras_por_material'])->name('compras_por_material');
+    Route::get('/relatorios/movimentacoes_de_estoque', [RelatoriosController::class, 'movimentacoes_de_estoque'])->name('movimentacoes_de_estoque');
 });
 
 require __DIR__.'/auth.php';

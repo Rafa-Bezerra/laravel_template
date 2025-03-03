@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Divisoes;
 use App\Models\EmpresasEnderecos;
 use App\Models\EmpresasContatos;
+use App\Models\Orcamentos;
 
 class Empresas extends Authenticatable
 {
@@ -50,5 +51,10 @@ class Empresas extends Authenticatable
     public function contatos(): HasMany
     {
         return $this->hasMany(EmpresasContatos::class,'empresa_id','id');
+    }
+    
+    public function orcamentos()
+    {
+        return $this->hasMany(Orcamentos::class, 'empresa_id');
     }
 }
