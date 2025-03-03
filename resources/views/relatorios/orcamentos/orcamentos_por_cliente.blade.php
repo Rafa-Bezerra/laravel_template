@@ -34,9 +34,9 @@
                                     <td class="px-4 py-2">{{ formatar_data($orcamento->data_venda) }}</td>
                                     <td class="px-4 py-2">{{ formatar_data($orcamento->data_prazo) }}</td>
                                     <td class="px-4 py-2">{{ formatar_data($orcamento->data_entrega) }}</td>
-                                    <td class="px-4 py-2">{{ number_format($orcamento->valor_itens, 2, ',', '.') }}</td>
-                                    <td class="px-4 py-2">{{ number_format($orcamento->valor_desconto, 2, ',', '.') }}</td>
-                                    <td class="px-4 py-2">{{ number_format($orcamento->valor_total, 2, ',', '.') }}</td>
+                                    <td class="px-4 py-2">{{ 'R$ '.number_format($orcamento->valor_itens, 2, ',', '.') }}</td>
+                                    <td class="px-4 py-2">{{ 'R$ '.number_format($orcamento->valor_desconto, 2, ',', '.') }}</td>
+                                    <td class="px-4 py-2">{{ 'R$ '.number_format($orcamento->valor_total, 2, ',', '.') }}</td>
                                 </tr>
                             @endforeach
                         @endforeach
