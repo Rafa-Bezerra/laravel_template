@@ -69,8 +69,14 @@
             data: $(this).serialize(),
             dataType: "json",
             complete: function (response) {
-                $('#minhaTabelaServicos').DataTable().ajax.reload();
-                $('#servicosForm')[0].reset();        
+                $('.datatable').DataTable().ajax.reload();
+                $('#servicosForm')[0].reset();  
+                
+                $('#valor_itens').val(response.responseJSON.valor_itens);
+                $('#valor_desconto').val(response.responseJSON.valor_desconto);
+                $('#valor_total').val(response.responseJSON.valor_total);
+                $('#valor_servicos').val(response.responseJSON.valor_servicos);
+                $('#valor_saldo').val(response.responseJSON.valor_saldo);
             }
         });
     }
@@ -114,8 +120,15 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 complete: function (response) {
-                    $('#minhaTabelaServicos').DataTable().ajax.reload();
+                    $('.datatable').DataTable().ajax.reload();
                     $('#servicosForm')[0].reset();
+                    $('#servico_id').val('');
+                
+                    $('#valor_itens').val(response.responseJSON.valor_itens);
+                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
+                    $('#valor_total').val(response.responseJSON.valor_total);
+                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
+                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
                 }
             });
         });

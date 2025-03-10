@@ -15,6 +15,7 @@ use App\Models\Materiais;
 use App\Models\Compras;
 use App\Models\ComprasItens;
 use App\Models\Estoque;
+use App\Models\Pagamentos;
 
 class ComprasController extends Controller
 {
@@ -230,5 +231,74 @@ class ComprasController extends Controller
         $item->delete();
         $valores = $this->atualiza_total($compra);
         return $valores->toJson();
+    }
+
+    public function getListagemPagamentos(Request $request)
+    {
+        $compra_id = $request->input('compra_id');
+        $listagem = Pagamentos::where('compra_id', $compra_id)->get();
+        // dd($listagem);
+        return datatables()->of($listagem)->toJson();
+    }
+
+    public function submitPagamentos(Request $request)
+    {
+        $request->validate([
+            'pagamento_valor' => ['required'],
+            'pagamento_quantidade' => ['required'],
+            'pagamento_data' => ['required'],
+        ]);
+
+        if ($request->pagamento_id == null) {
+            if($request->pagamento_quantidade > 1) {
+                $valor_parcela = round($request->pagamento_valor / $request->pagamento_quantidade, 2);
+                $soma_parcelas = $valor_parcela * $request->pagamento_quantidade;
+                $resto = round($request->pagamento_valor - $soma_parcelas, 2);
+                $data_pagamento = DateTime::createFromFormat('d/m/Y', $request->pagamento_data);
+                for ($i=1; $i <= $request->pagamento_quantidade; $i++) {
+                    $valor_parcela = ($i == $request->pagamento_quantidade) ? ($valor_parcela + $resto) : $valor_parcela;
+                    $action = Pagamentos::create([
+                        "compra_id" => $request->pagamento_compra_id,
+                        "controle" => $request->pagamento_controle,
+                        "data" => $data_pagamento->format('Y-m-d'),
+                        "valor" => $valor_parcela,
+                        "especie" => 'compra',
+                        "parcela" => $i,
+                    ]);
+                    event(new Registered($action));
+                    $data_pagamento->modify('+1 month');
+                }
+            } else {
+                $action = Pagamentos::create([
+                    "compra_id" => $request->pagamento_compra_id,
+                    "controle" => $request->pagamento_controle,
+                    "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
+                    "valor" => $request->pagamento_valor,
+                    "especie" => 'venda',
+                    "parcela" => 1,
+                ]);
+                event(new Registered($action));
+            }
+        } else {
+            $action = Pagamentos::findOrFail($request->pagamento_id);
+            $action->valor = $request->pagamento_valor;
+            $action->controle = $request->pagamento_controle;
+            $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');
+            $action->save();
+            event(new Registered($action));
+        }
+
+        return;
+    }
+
+    public function getPagamento(Request $request, string $id)
+    {     
+        return Pagamentos::findOrFail($id)->toJson();
+    }
+
+    public function deletePagamento(Request $request, string $id)
+    {
+        $pagamento = Pagamentos::findOrFail($id);
+        return $pagamento->delete();
     }
 }

@@ -14,14 +14,15 @@ use App\Http\Controllers\ServicosController;
 use App\Http\Controllers\ComissoesController;
 use App\Http\Controllers\OrcamentosController;
 use App\Http\Controllers\RelatoriosController;
+use App\Http\Controllers\PagamentosController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('home.dashboard');
 })->middleware(['auth', 'verified'])->name('home');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('home.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -135,7 +136,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/compras/itens/get/{id}', [ComprasController::class, 'getItem'])->name('compras_itens.get');
     Route::post('/compras/edit', [ComprasController::class, 'update'])->name('compras.update');
     Route::get('/compras/delete/{id}', [ComprasController::class, 'delete'])->name('compras.delete');
-    Route::get('/compras/itens/delete/{id}', [ComprasController::class, 'deleteItem'])->name('compras_itens.delete');
+    Route::get('/compras/itens/delete/{id}', [ComprasController::class, 'deleteItem'])->name('compras_itens.delete');       
+    Route::get('/compras/pagamentos/json', [ComprasController::class, 'getListagemPagamentos'])->name('compras_pagamentos.json');
+    Route::post('/compras/pagamentos/submit', [ComprasController::class, 'submitPagamentos'])->name('compras_pagamentos.submit');    
+    Route::get('/compras/pagamentos/get/{id}', [ComprasController::class, 'getPagamento'])->name('compras_pagamentos.get');
+    Route::get('/compras/pagamentos/delete/{id}', [ComprasController::class, 'deletePagamento'])->name('compras_pagamentos.delete'); 
 });
 
 //ESTOQUE
@@ -191,6 +196,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/orcamentos/comissoes/submit', [OrcamentosController::class, 'submitComissoes'])->name('orcamentos_comissoes.submit');    
     Route::get('/orcamentos/comissoes/get/{id}', [OrcamentosController::class, 'getComissao'])->name('orcamentos_comissoes.get');
     Route::get('/orcamentos/comissoes/delete/{id}', [OrcamentosController::class, 'deleteComissao'])->name('orcamentos_comissoes.delete');      
+    Route::get('/orcamentos/socios/json', [OrcamentosController::class, 'getListagemSocios'])->name('orcamentos_socios.json');
+    Route::post('/orcamentos/socios/submit', [OrcamentosController::class, 'submitSocios'])->name('orcamentos_socios.submit');    
+    Route::get('/orcamentos/socios/get/{id}', [OrcamentosController::class, 'getSocio'])->name('orcamentos_socios.get');
+    Route::get('/orcamentos/socios/delete/{id}', [OrcamentosController::class, 'deleteSocio'])->name('orcamentos_socios.delete');          
+    Route::get('/orcamentos/pagamentos/json', [OrcamentosController::class, 'getListagemPagamentos'])->name('orcamentos_pagamentos.json');
+    Route::post('/orcamentos/pagamentos/submit', [OrcamentosController::class, 'submitPagamentos'])->name('orcamentos_pagamentos.submit');    
+    Route::get('/orcamentos/pagamentos/get/{id}', [OrcamentosController::class, 'getPagamento'])->name('orcamentos_pagamentos.get');
+    Route::get('/orcamentos/pagamentos/delete/{id}', [OrcamentosController::class, 'deletePagamento'])->name('orcamentos_pagamentos.delete');  
 });
 
 //RELATÓRIOS
@@ -199,6 +212,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/relatorios/orcamentos_por_cliente', [RelatoriosController::class, 'orcamentos_por_cliente'])->name('orcamentos_por_cliente');
     Route::get('/relatorios/compras_por_material', [RelatoriosController::class, 'compras_por_material'])->name('compras_por_material');
     Route::get('/relatorios/movimentacoes_de_estoque', [RelatoriosController::class, 'movimentacoes_de_estoque'])->name('movimentacoes_de_estoque');
+});
+
+//RELATÓRIOS
+Route::middleware('auth')->group(function () {
+    Route::get('/pagamentos/json', [PagamentosController::class, 'getListagem'])->name('pagamentos.json');
 });
 
 require __DIR__.'/auth.php';

@@ -87,14 +87,6 @@
     </table>
 </section>
 <script>
-    function formatarData(dataHora) {
-        if (!dataHora) return ""; // Se for null ou undefined, retorna string vazia
-        let partes = dataHora.split(" "); // Divide a data e hora
-        let data = partes[0]; // Pega apenas a parte da data (YYYY-MM-DD)
-        let partesData = data.split("-");
-        return partesData[2] + "/" + partesData[1] + "/" + partesData[0]; // Converte para DD/MM/YYYY
-    }
-
     function editarItem(id) {
         $.ajax({
             url: "/orcamentos/itens/get/"+id,
@@ -122,12 +114,14 @@
             data: $(this).serialize(),
             dataType: "json",
             complete: function (response) {
-                $('#minhaTabelaItens').DataTable().ajax.reload();
+                $('.datatable').DataTable().ajax.reload();
                 $('#itensForm')[0].reset();               
                 
                 $('#valor_itens').val(response.responseJSON.valor_itens);
                 $('#valor_desconto').val(response.responseJSON.valor_desconto);
                 $('#valor_total').val(response.responseJSON.valor_total);
+                $('#valor_servicos').val(response.responseJSON.valor_servicos);
+                $('#valor_saldo').val(response.responseJSON.valor_saldo);
             }
         });
     }
@@ -211,12 +205,15 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 complete: function (response) {
-                    $('#minhaTabelaItens').DataTable().ajax.reload();
+                    $('.datatable').DataTable().ajax.reload();
                     $('#itensForm')[0].reset();
-                                        
+                    $('#item_id').val('');
+
                     $('#valor_itens').val(response.responseJSON.valor_itens);
                     $('#valor_desconto').val(response.responseJSON.valor_desconto);
                     $('#valor_total').val(response.responseJSON.valor_total);
+                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
+                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
                 }
             });
         });

@@ -16,7 +16,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Observação</th>
-                            <th>Orçamento</th>
+                            {{-- <th>Orçamento</th> --}}
                             <th>DT. Compra</th>
                             <th>DT. Prazo</th>
                             <th>DT. Entrega</th>
@@ -41,7 +41,7 @@
             "columns": [
                 { "data": "id" },
                 { "data": "observacao" },
-                { "data": "orcamento_id" },
+                // { "data": "orcamento_id" },
                 { "data": "data_compra",
                     "render": function (data, type, row) {
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";

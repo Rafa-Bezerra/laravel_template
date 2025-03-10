@@ -7,14 +7,15 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-x-auto">    
                 <div align="right">
                     <x-nav-link :href="route('orcamentos.create')">{{ __('Novo orçamento') }}</x-nav-link>      
                 </div>      
-                <table id="minhaTabela" class="table table-striped datatable">
+                <table id="minhaTabela" class="table nowrap table-striped datatable w-full">
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Controle</th>
                             <th>Empresa</th>
                             <th>Endereço</th>
                             <th>DT. Venda</th>
@@ -49,6 +50,7 @@
             "ajax": "{{ route('orcamentos.json') }}",
             "columns": [
                 { "data": "id" },
+                { "data": "controle" },
                 { "data": "empresa_name" },
                 { "data": "empresas_endereco_descricao" },
                 { "data": "data_venda",

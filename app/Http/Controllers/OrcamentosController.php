@@ -21,6 +21,8 @@ use App\Models\Comissoes;
 use App\Models\OrcamentosComissoes;
 use App\Models\Servicos;
 use App\Models\Estoque;
+use App\Models\Pagamentos;
+use App\Models\OrcamentosSocios;
 
 class OrcamentosController extends Controller
 {
@@ -78,6 +80,8 @@ class OrcamentosController extends Controller
             "data_venda" => DateTime::createFromFormat('d/m/Y', $request->data_venda)->format('Y-m-d'),
             "data_prazo" => DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d'),
             "observacao" => $request->observacao,
+            "valor_orcamento" => $request->valor_orcamento,
+            "controle" => 'pendente',
         ]);
 
         event(new Registered($action));
@@ -123,17 +127,25 @@ class OrcamentosController extends Controller
         $action->data_prazo = DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d');
         $action->data_entrega = DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d');
         $action->observacao = $request->observacao;
+        $action->valor_orcamento = $request->valor_orcamento;
+        $action->valor_impostos = $request->valor_impostos;
+        $action->controle = $request->controle;
         $action->save();
 
         event(new Registered($action));
-
-        return;
+        
+        $valores = $this->atualiza_total($request->id);
+        return $valores->toJson();
     }
 
     public function delete(Request $request, string $id): RedirectResponse
     {
         OrcamentosItens::where('orcamento_id', $id)->delete();
         OrcamentosServicos::where('orcamento_id', $id)->delete();
+        OrcamentosComissoes::where('orcamento_id', $id)->delete();
+        OrcamentosSocios::where('orcamento_id', $id)->delete();
+        Pagamentos::where('orcamento_id', $id)->delete();
+
         $data = Orcamentos::findOrFail($id)->delete();
         return redirect(route('orcamentos', absolute: false));
     }
@@ -218,29 +230,26 @@ class OrcamentosController extends Controller
     }
     
     public function atualiza_total($orcamento_id) {
-        $itens = OrcamentosItens::where('orcamento_id', $orcamento_id)->get();
+        
+        $valor_itens = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_total');
+        $valor_desconto = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_desconto');
+        $valor_servicos = OrcamentosServicos::where('orcamento_id', $orcamento_id)->sum('preco');
+        $valor_total = $valor_itens + $valor_servicos;
 
-        $valor_itens = 0;
-        $valor_desconto = 0;
-        $valor_total = 0;
+        $orcamento = Orcamentos::findOrFail($orcamento_id);
+        $valor_total = round($valor_total * (1 + ($orcamento->valor_impostos/100)),2);
+        $orcamento->valor_itens = $valor_itens;
+        $orcamento->valor_desconto = $valor_desconto;
+        $orcamento->valor_total = $valor_total;
+        $orcamento->valor_servicos = $valor_servicos;
+        $orcamento->valor_saldo = $orcamento->valor_orcamento - $valor_total;
+        $orcamento->save();
 
-        foreach ($itens as $key => $value) {
-            $valor_itens += $value->quantidade * $value->preco_unitario;
-            $valor_desconto += $value->valor_desconto;
-            $valor_total += $value->valor_total;
-        }
-
-        $compra = Orcamentos::findOrFail($orcamento_id);
-        $compra->valor_itens = $valor_itens;
-        $compra->valor_desconto = $valor_desconto;
-        $compra->valor_total = $valor_total;
-        $compra->save();
-
-        event(new Registered($compra));
+        event(new Registered($orcamento));
 
         $this->atualiza_comissoes($orcamento_id);
         
-        return $compra;
+        return $orcamento;
     }
 
     public function getItem(Request $request, string $id)
@@ -300,9 +309,10 @@ class OrcamentosController extends Controller
 
         event(new Registered($action));
 
-        $this->atualiza_comissoes($request->servico_orcamento_id);
+        $this->atualiza_total($request->servico_orcamento_id);
 
-        return;
+        $valores = $this->atualiza_total($request->servico_orcamento_id);
+        return $valores->toJson();
     }
 
     public function getServico(Request $request, string $id)
@@ -315,8 +325,10 @@ class OrcamentosController extends Controller
         $servico = OrcamentosServicos::findOrFail($id);
         $orcamento = $servico->orcamento_id;
         $servico->delete();
-        $this->atualiza_comissoes($orcamento);
-        return;
+        $this->atualiza_total($orcamento);
+
+        $valores = $this->atualiza_total($orcamento);
+        return $valores->toJson();
     }
 
     public function getListagemComissoes(Request $request)
@@ -361,7 +373,7 @@ class OrcamentosController extends Controller
 
         event(new Registered($action));
 
-        $this->atualiza_comissoes($request->comissao_orcamento_id);
+        $this->atualiza_total($request->comissao_orcamento_id);
 
         return;
     }
@@ -376,7 +388,7 @@ class OrcamentosController extends Controller
         $servico = OrcamentosComissoes::findOrFail($id);
         $orcamento = $servico->orcamento_id;
         $servico->delete();
-        $this->atualiza_comissoes($orcamento);
+        $this->atualiza_total($orcamento);
         return;
     }
 
@@ -414,5 +426,148 @@ class OrcamentosController extends Controller
             $value->valor_total = $valor_total;
             $value->save();
         }
+
+        $this->atualiza_socios($orcamento);
+    }
+
+    public function getListagemSocios(Request $request)
+    {
+        $orcamento_id = $request->input('orcamento_id');
+        $listagem = OrcamentosSocios::where('orcamento_id', $orcamento_id);
+        // dd($listagem->material);
+        return datatables()->of($listagem)
+            ->addColumn('empresa_name', function ($item) {
+                return $item->empresa->name ?? 'Sem serviço';
+            })
+        ->toJson();
+    }
+
+    public function submitSocios(Request $request)
+    {
+        $request->validate([
+            'socio_empresa_id' => ['required'],
+            'socio_porcentagem' => ['required'],
+        ]);
+
+        if ($request->socio_id == null) {
+            $action = OrcamentosSocios::create([
+                "orcamento_id" => $request->socio_orcamento_id,
+                "empresa_id" => $request->socio_empresa_id,
+                "porcentagem" => $request->socio_porcentagem,
+                "valor_total" => 0,
+            ]);
+        } else {
+            $action = OrcamentosSocios::findOrFail($request->socio_id);
+            $action->orcamento_id = $request->socio_orcamento_id;
+            $action->empresa_id = $request->socio_empresa_id;
+            $action->porcentagem = $request->socio_porcentagem;
+            $action->save();
+        }
+
+        event(new Registered($action));
+
+        $this->atualiza_total($request->socio_orcamento_id);
+
+        return;
+    }
+
+    public function getSocio(Request $request, string $id)
+    {     
+        return OrcamentosSocios::findOrFail($id)->toJson();
+    }
+
+    public function deleteSocio(Request $request, string $id)
+    {
+        $servico = OrcamentosSocios::findOrFail($id);
+        $orcamento = $servico->orcamento_id;
+        $servico->delete();
+        $this->atualiza_total($orcamento);
+        return;
+    }
+
+    public function atualiza_socios(int $orcamento)
+    {
+        $orcamento = Orcamentos::findOrFail($orcamento);
+        
+        $total_recebido = Pagamentos::where('orcamento_id', $orcamento->id)->where('controle', 'pago')->sum('valor');
+        $lucro = $total_recebido - $orcamento->valor_total;
+        $listagem = OrcamentosSocios::where('orcamento_id', $orcamento->id)->get();
+        // dd($lucro);
+        foreach ($listagem as $key => $value) {
+            $value->valor_total = $lucro * ($value->porcentagem/100);
+            $value->save();
+        }
+    }
+
+    public function getListagemPagamentos(Request $request)
+    {
+        $orcamento_id = $request->input('orcamento_id');
+        $listagem = Pagamentos::where('orcamento_id', $orcamento_id)->get();
+        // dd($listagem);
+        return datatables()->of($listagem)->toJson();
+    }
+
+    public function submitPagamentos(Request $request)
+    {
+        $request->validate([
+            'pagamento_valor' => ['required'],
+            'pagamento_quantidade' => ['required'],
+            'pagamento_data' => ['required'],
+        ]);
+
+        if ($request->pagamento_id == null) {
+            if($request->pagamento_quantidade > 1) {
+                $valor_parcela = round($request->pagamento_valor / $request->pagamento_quantidade, 2);
+                $soma_parcelas = $valor_parcela * $request->pagamento_quantidade;
+                $resto = round($request->pagamento_valor - $soma_parcelas, 2);
+                $data_pagamento = DateTime::createFromFormat('d/m/Y', $request->pagamento_data);
+                for ($i=1; $i <= $request->pagamento_quantidade; $i++) {
+                    $valor_parcela = ($i == $request->pagamento_quantidade) ? ($valor_parcela + $resto) : $valor_parcela;
+                    $action = Pagamentos::create([
+                        "orcamento_id" => $request->pagamento_orcamento_id,
+                        "controle" => $request->pagamento_controle,
+                        "data" => $data_pagamento->format('Y-m-d'),
+                        "valor" => $valor_parcela,
+                        "especie" => 'venda',
+                        "parcela" => $i,
+                    ]);
+                    event(new Registered($action));
+                    $data_pagamento->modify('+1 month');
+                }
+            } else {
+                $action = Pagamentos::create([
+                    "orcamento_id" => $request->pagamento_orcamento_id,
+                    "controle" => $request->pagamento_controle,
+                    "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
+                    "valor" => $request->pagamento_valor,
+                    "especie" => 'venda',
+                    "parcela" => 1,
+                ]);
+                event(new Registered($action));
+            }
+        } else {
+            $action = Pagamentos::findOrFail($request->pagamento_id);
+            $action->valor = $request->pagamento_valor;
+            $action->controle = $request->pagamento_controle;
+            $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');
+            $action->save();
+            event(new Registered($action));
+        }
+
+        $valores = $this->atualiza_total($request->pagamento_orcamento_id);
+        return $valores->toJson();
+    }
+
+    public function getPagamento(Request $request, string $id)
+    {     
+        return Pagamentos::findOrFail($id)->toJson();
+    }
+
+    public function deletePagamento(Request $request, string $id)
+    {
+        $pagamento = Pagamentos::findOrFail($id);
+        $pagamento->delete();
+        $valores = $this->atualiza_total($pagamento->orcamento_id);
+        return $valores->toJson();
     }
 }

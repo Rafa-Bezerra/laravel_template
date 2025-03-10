@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Orcamentos;
 use App\Models\Empresas;
-use App\Models\EmpresasEnderecos;
 
-class Orcamentos extends Authenticatable
+class OrcamentosSocios extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -19,7 +19,7 @@ class Orcamentos extends Authenticatable
      *
      * @var list<string>
      */
-    protected $table = 'orcamentos';
+    protected $table = 'orcamentos_socios';
 
     /**
      * The attributes that are mass assignable.
@@ -27,28 +27,19 @@ class Orcamentos extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'orcamento_id',
         'empresa_id',
-        'empresas_endereco_id',
-        'data_venda',
-        'data_prazo',
-        'data_entrega',
-        'valor_itens',
-        'valor_desconto',
+        'porcentagem',
         'valor_total',
-        'valor_servicos',
-        'valor_orcamento',
-        'valor_impostos',
-        'valor_saldo',
-        'observacao',
     ];
+
+    public function orcamento()
+    {
+        return $this->belongsTo(Orcamentos::class);
+    }
 
     public function empresa()
     {
         return $this->belongsTo(Empresas::class);
-    }
-
-    public function endereco()
-    {
-        return $this->belongsTo(EmpresasEnderecos::class, 'empresas_endereco_id', 'id');
     }
 }
