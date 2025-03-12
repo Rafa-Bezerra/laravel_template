@@ -20,11 +20,18 @@ class EmpresasController extends Controller
     public function index(Request $request): View
     {
         $tittle = 'Empresas';
-        if (! User::hasPermission('empresas')) return view('forbbiden', ['tittle' => $tittle]);
+        
+        $this->hasPermission('empresas',$tittle,true);
+        $insert = $this->hasPermission('empresas_insert');
+        $update = $this->hasPermission('empresas_update');
+        $delete = $this->hasPermission('empresas_delete');
 
         return view('empresas.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -55,7 +62,7 @@ class EmpresasController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Nova empresa';
-        if (! User::hasPermission('empresas_create')) return view('forbbiden', ['tittle' => $tittle]);
+        // if (! User::hasPermission('empresas_create')) return view('forbbiden', ['tittle' => $tittle]);
 
         $divisoes = Divisoes::all();
         return view('empresas.create', [
@@ -168,15 +175,21 @@ class EmpresasController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar empresa';
-        if (! User::hasPermission('empresas_edit')) return view('forbbiden', ['tittle' => $tittle]);
-        
+        $this->hasPermission('empresas_update',$tittle,true);
+
+        $contatos = $this->hasPermission('empresas_contatos');
+        $enderecos = $this->hasPermission('empresas_enderecos');
+
         $data = Empresas::findOrFail($id);
         $divisoes = Divisoes::all();
+
         return view('empresas.edit', [
             'user' => $request->user(),
             'tittle' => $tittle,
             'data' => $data,
             'divisoes' => $divisoes,
+            'contatos' => $contatos,
+            'enderecos' => $enderecos,
         ]);
     }
 

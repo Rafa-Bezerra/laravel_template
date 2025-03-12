@@ -23,6 +23,7 @@ use App\Models\Servicos;
 use App\Models\Estoque;
 use App\Models\Pagamentos;
 use App\Models\OrcamentosSocios;
+use App\Models\Bancos;
 
 class OrcamentosController extends Controller
 {
@@ -30,11 +31,17 @@ class OrcamentosController extends Controller
     {
         $tittle = 'Orçamentos';
         
-        if (! User::hasPermission('orcamentos')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('orcamentos',$tittle,true);
+        $insert = $this->hasPermission('orcamentos_insert');
+        $update = $this->hasPermission('orcamentos_update');
+        $delete = $this->hasPermission('orcamentos_delete');
 
         return view('orcamentos.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -56,7 +63,8 @@ class OrcamentosController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Novo orçamento';
-        if (! User::hasPermission('orcamentos_create')) return view('forbbiden', ['tittle' => $tittle]);
+
+        $this->hasPermission('orcamentos_insert',$tittle,true);
         
         $empresas = Empresas::all();
 
@@ -92,7 +100,14 @@ class OrcamentosController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar orçamento';
-        if (! User::hasPermission('orcamentos_edit')) return view('forbbiden', ['tittle' => $tittle]);
+
+        $this->hasPermission('orcamentos_update',$tittle,true);
+        
+        $permissao_comissoes = $this->hasPermission('orcamentos_comissoes');
+        $permissao_itens = $this->hasPermission('orcamentos_itens');
+        $permissao_servicos = $this->hasPermission('orcamentos_servicos');
+        $permissao_socios = $this->hasPermission('orcamentos_socios');
+        $permissao_pagamentos = $this->hasPermission('orcamentos_pagamentos');
 
         $data = Orcamentos::findOrFail($id);
         $empresas = Empresas::all();
@@ -100,7 +115,8 @@ class OrcamentosController extends Controller
         $materiais = Materiais::all();
         $comissoes = Comissoes::all();
         $servicos = Servicos::all();
-        // dd($empresas_enderecos);
+        $bancos = Bancos::all();
+        
         return view('orcamentos.edit', [
             'user' => $request->user(),
             'tittle' => $tittle,
@@ -110,6 +126,12 @@ class OrcamentosController extends Controller
             'materiais' => $materiais,
             'comissoes' => $comissoes,
             'servicos' => $servicos,
+            'bancos' => $bancos,
+            'permissao_comissoes' => $permissao_comissoes,
+            'permissao_itens' => $permissao_itens,
+            'permissao_servicos' => $permissao_servicos,
+            'permissao_socios' => $permissao_socios,
+            'permissao_pagamentos' => $permissao_pagamentos,
         ]);
     }
 
@@ -123,9 +145,9 @@ class OrcamentosController extends Controller
         $action = Orcamentos::findOrFail($request->id);
         $action->empresa_id = $request->empresa_id;
         $action->empresas_endereco_id = $request->empresas_endereco_id;
-        $action->data_venda = DateTime::createFromFormat('d/m/Y', $request->data_venda)->format('Y-m-d');
-        $action->data_prazo = DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d');
-        $action->data_entrega = DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d');
+        $action->data_venda = $request->data_venda != null ? DateTime::createFromFormat('d/m/Y', $request->data_venda)->format('Y-m-d') : $request->data_venda;
+        $action->data_prazo = $request->data_prazo != null ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : $request->data_prazo;
+        $action->data_entrega = $request->data_entrega != null ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : $request->data_entrega;
         $action->observacao = $request->observacao;
         $action->valor_orcamento = $request->valor_orcamento;
         $action->valor_impostos = $request->valor_impostos;
@@ -502,9 +524,16 @@ class OrcamentosController extends Controller
     public function getListagemPagamentos(Request $request)
     {
         $orcamento_id = $request->input('orcamento_id');
-        $listagem = Pagamentos::where('orcamento_id', $orcamento_id)->get();
+        $listagem = Pagamentos::where('orcamento_id', $orcamento_id)->with('banco')->get();
         // dd($listagem);
-        return datatables()->of($listagem)->toJson();
+        return datatables()->of($listagem)
+            ->addColumn('banco_name', function ($pagamento) {
+                if ($pagamento->banco) {
+                    return "{$pagamento->banco->name} - {$pagamento->banco->agencia}-{$pagamento->banco->conta}";
+                }
+                return 'Sem banco';
+            })
+        ->toJson();
     }
 
     public function submitPagamentos(Request $request)
@@ -513,6 +542,7 @@ class OrcamentosController extends Controller
             'pagamento_valor' => ['required'],
             'pagamento_quantidade' => ['required'],
             'pagamento_data' => ['required'],
+            'pagamento_banco_id' => ['required'],
         ]);
 
         if ($request->pagamento_id == null) {
@@ -526,6 +556,7 @@ class OrcamentosController extends Controller
                     $action = Pagamentos::create([
                         "orcamento_id" => $request->pagamento_orcamento_id,
                         "controle" => $request->pagamento_controle,
+                        "banco_id" => $request->pagamento_banco_id,
                         "data" => $data_pagamento->format('Y-m-d'),
                         "valor" => $valor_parcela,
                         "especie" => 'venda',
@@ -538,6 +569,7 @@ class OrcamentosController extends Controller
                 $action = Pagamentos::create([
                     "orcamento_id" => $request->pagamento_orcamento_id,
                     "controle" => $request->pagamento_controle,
+                    "banco_id" => $request->pagamento_banco_id,
                     "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
                     "valor" => $request->pagamento_valor,
                     "especie" => 'venda',
@@ -549,6 +581,7 @@ class OrcamentosController extends Controller
             $action = Pagamentos::findOrFail($request->pagamento_id);
             $action->valor = $request->pagamento_valor;
             $action->controle = $request->pagamento_controle;
+            $action->banco_id = $request->pagamento_banco_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');
             $action->save();
             event(new Registered($action));

@@ -5,66 +5,68 @@
         </h2>
     </header>
 
-    <form id="enderecoForm">
-        @csrf
-        <x-text-input id="endereco_id" type="hidden" name="endereco_id"/>
-        <x-text-input id="endereco_empresa_id" type="hidden" name="endereco_empresa_id" :value="$data->id"/>      
+    @if ($enderecos)
+        <form id="enderecoForm">
+            @csrf
+            <x-text-input id="endereco_id" type="hidden" name="endereco_id"/>
+            <x-text-input id="endereco_empresa_id" type="hidden" name="endereco_empresa_id" :value="$data->id"/>      
 
-        <!-- CEP -->
-        <div>
-            <x-input-label for="endereco_cep" :value="__('CEP')" />
-            <x-text-input id="endereco_cep" class="block mt-1 w-full" type="text" name="endereco_cep" :value="old('endereco_cep')" required autofocus autocomplete="endereco_cep" />
-            <x-input-error :messages="$errors->get('endereco_cep')" class="mt-2" />
-        </div>
+            <!-- CEP -->
+            <div>
+                <x-input-label for="endereco_cep" :value="__('CEP')" />
+                <x-text-input id="endereco_cep" class="block mt-1 w-full" type="text" name="endereco_cep" :value="old('endereco_cep')" required autofocus autocomplete="endereco_cep" />
+                <x-input-error :messages="$errors->get('endereco_cep')" class="mt-2" />
+            </div>
 
-        <!-- Estado -->
-        <div>
-            <x-input-label for="endereco_estado" :value="__('Estado')" />
-            <x-text-input id="endereco_estado" class="block mt-1 w-full" type="text" name="endereco_estado" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('endereco_estado')" class="mt-2" />
-        </div>
+            <!-- Estado -->
+            <div>
+                <x-input-label for="endereco_estado" :value="__('Estado')" />
+                <x-text-input id="endereco_estado" class="block mt-1 w-full" type="text" name="endereco_estado" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('endereco_estado')" class="mt-2" />
+            </div>
 
-        <!-- Cidade -->
-        <div>
-            <x-input-label for="endereco_cidade" :value="__('Cidade')" />
-            <x-text-input id="endereco_cidade" class="block mt-1 w-full" type="text" name="endereco_cidade" :value="old('endereco_cidade')" />
-            <x-input-error :messages="$errors->get('endereco_cidade')" class="mt-2" />
-        </div>
-        
-        <!-- Rua -->
-        <div>
-            <x-input-label for="endereco_rua" :value="__('Rua')" />
-            <x-text-input id="endereco_rua" class="block mt-1 w-full" type="text" name="endereco_rua" :value="old('endereco_rua')" />
-            <x-input-error :messages="$errors->get('endereco_rua')" class="mt-2" />
-        </div>
-
-        <!-- Número -->
-        <div>
-            <x-input-label for="endereco_numero" :value="__('Número')" />
-            <x-text-input id="endereco_numero" class="block mt-1 w-full" type="text" name="endereco_numero" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('endereco_numero')" class="mt-2" />
-        </div>
-
-        <!-- Complemento -->
-        <div>
-            <x-input-label for="endereco_complemento" :value="__('Complemento')" />
-            <x-text-input id="endereco_complemento" class="block mt-1 w-full" type="text" name="endereco_complemento" :value="old('endereco_complemento')" />
-            <x-input-error :messages="$errors->get('endereco_complemento')" class="mt-2" />
-        </div>
-
-        <!-- Observação -->
-        <div>
-            <x-input-label for="endereco_observacao" :value="__('Observação')" />
-            <x-text-input id="endereco_observacao" class="block mt-1 w-full" type="text" name="endereco_observacao" :value="old('endereco_observacao')" />
-            <x-input-error :messages="$errors->get('endereco_observacao')" class="mt-2" />
-        </div>
+            <!-- Cidade -->
+            <div>
+                <x-input-label for="endereco_cidade" :value="__('Cidade')" />
+                <x-text-input id="endereco_cidade" class="block mt-1 w-full" type="text" name="endereco_cidade" :value="old('endereco_cidade')" />
+                <x-input-error :messages="$errors->get('endereco_cidade')" class="mt-2" />
+            </div>
             
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <!-- Rua -->
+            <div>
+                <x-input-label for="endereco_rua" :value="__('Rua')" />
+                <x-text-input id="endereco_rua" class="block mt-1 w-full" type="text" name="endereco_rua" :value="old('endereco_rua')" />
+                <x-input-error :messages="$errors->get('endereco_rua')" class="mt-2" />
+            </div>
+
+            <!-- Número -->
+            <div>
+                <x-input-label for="endereco_numero" :value="__('Número')" />
+                <x-text-input id="endereco_numero" class="block mt-1 w-full" type="text" name="endereco_numero" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('endereco_numero')" class="mt-2" />
+            </div>
+
+            <!-- Complemento -->
+            <div>
+                <x-input-label for="endereco_complemento" :value="__('Complemento')" />
+                <x-text-input id="endereco_complemento" class="block mt-1 w-full" type="text" name="endereco_complemento" :value="old('endereco_complemento')" />
+                <x-input-error :messages="$errors->get('endereco_complemento')" class="mt-2" />
+            </div>
+
+            <!-- Observação -->
+            <div>
+                <x-input-label for="endereco_observacao" :value="__('Observação')" />
+                <x-text-input id="endereco_observacao" class="block mt-1 w-full" type="text" name="endereco_observacao" :value="old('endereco_observacao')" />
+                <x-input-error :messages="$errors->get('endereco_observacao')" class="mt-2" />
+            </div>
+                
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaEnderecos" class="table table-striped datatable">
         <thead>
@@ -136,7 +138,12 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a onclick="editarEndereco(${data})">Editar</a> <a onclick="excluirEndereco(${data})">Excluir</a>`;
+                        let enderecos = @json($enderecos);          
+                        let actions = '';
+                        if (enderecos) {
+                            actions += `<a onclick="editarEndereco(${data})">Editar</a> <a onclick="excluirEndereco(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

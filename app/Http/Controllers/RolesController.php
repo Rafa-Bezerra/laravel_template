@@ -21,8 +21,20 @@ class RolesController extends Controller
      */
     public function index(Request $request): View
     {
+        $tittle = 'Acessos';
+        
+        $this->hasPermission('roles',$tittle,true);
+        $insert = $this->hasPermission('roles_insert');
+        $update = $this->hasPermission('roles_update');
+        $delete = $this->hasPermission('roles_delete');
+        $actions = $this->hasPermission('roles_actions');
+        
         return view('roles.index', [
             'user' => $request->user(),
+            'insert' => $insert,
+            'update' => $update,
+            'actions' => $actions,
+            'delete' => $delete,
         ]);
     }
 
@@ -34,6 +46,9 @@ class RolesController extends Controller
 
     public function create(Request $request): View
     {
+        $tittle = 'Novo acesso';
+        $this->hasPermission('roles_insert',$tittle,true);
+        
         return view('roles.create', [
             'user' => $request->user(),
         ]);
@@ -57,6 +72,9 @@ class RolesController extends Controller
     
     public function edit(Request $request, string $id): View
     {
+        $tittle = 'Editar acesso';
+        $this->hasPermission('roles_update',$tittle,true);
+
         $data = Roles::findOrFail($id);
         return view('roles.edit', [
             'user' => $request->user(),

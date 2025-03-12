@@ -23,11 +23,20 @@ class DivisoesController extends Controller
     {
         $tittle = 'Divisões';
         
+        $this->hasPermission('divisoes',$tittle,true);
+        $insert = $this->hasPermission('divisoes_insert');
+        $update = $this->hasPermission('divisoes_update');
+        $delete = $this->hasPermission('divisoes_delete');
+        $itens = $this->hasPermission('divisoes_itens');
+        
         if (! User::hasPermission('divisoes')) return view('forbbiden', ['tittle' => $tittle]);
 
         return view('divisoes.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -41,8 +50,6 @@ class DivisoesController extends Controller
     {
         $tittle = 'Nova divisão';
         
-        if (! User::hasPermission('divisoes_create')) return view('forbbiden', ['tittle' => $tittle]);
-
         return view('divisoes.create', [
             'user' => $request->user(),
             'tittle' => $tittle,
@@ -68,7 +75,7 @@ class DivisoesController extends Controller
     {        
         $tittle = 'Editar divisão';
         
-        if (! User::hasPermission('divisoes_edit')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('divisoes_update',$tittle,true);
 
         $data = Divisoes::findOrFail($id);
         return view('divisoes.edit', [

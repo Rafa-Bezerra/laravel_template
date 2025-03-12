@@ -5,45 +5,47 @@
         </h2>
     </header>
 
-    <form id="contatosForm">
-        @csrf
-        <x-text-input id="contato_id" type="hidden" name="contato_id"/>
-        <x-text-input id="contato_empresa_id" type="hidden" name="contato_empresa_id" :value="$data->id"/>        
-            
-        <!-- Name -->
-        <div>
-            <x-input-label for="contato_contato" :value="__('Nome')" />
-            <x-text-input id="contato_contato" class="block mt-1 w-full" type="text" name="contato_contato" :value="old('contato_contato')" required autofocus autocomplete="contato_contato" />
-            <x-input-error :messages="$errors->get('contato_contato')" class="mt-2" />
-        </div>
+    @if ($contatos)
+        <form id="contatosForm">
+            @csrf
+            <x-text-input id="contato_id" type="hidden" name="contato_id"/>
+            <x-text-input id="contato_empresa_id" type="hidden" name="contato_empresa_id" :value="$data->id"/>        
+                
+            <!-- Name -->
+            <div>
+                <x-input-label for="contato_contato" :value="__('Nome')" />
+                <x-text-input id="contato_contato" class="block mt-1 w-full" type="text" name="contato_contato" :value="old('contato_contato')" required autofocus autocomplete="contato_contato" />
+                <x-input-error :messages="$errors->get('contato_contato')" class="mt-2" />
+            </div>
 
-        <!-- Fone -->
-        <div>
-            <x-input-label for="contato_fone" :value="__('Fone')" />
-            <x-text-input id="contato_fone" class="block mt-1 w-full" type="text" name="contato_fone" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('contato_fone')" class="mt-2" />
-        </div>
+            <!-- Fone -->
+            <div>
+                <x-input-label for="contato_fone" :value="__('Fone')" />
+                <x-text-input id="contato_fone" class="block mt-1 w-full" type="text" name="contato_fone" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('contato_fone')" class="mt-2" />
+            </div>
 
-        <!-- Email -->
-        <div>
-            <x-input-label for="contato_email" :value="__('Email')" />
-            <x-text-input id="contato_email" class="block mt-1 w-full" type="email" name="contato_email" :value="old('contato_email')" />
-            <x-input-error :messages="$errors->get('contato_email')" class="mt-2" />
-        </div>
+            <!-- Email -->
+            <div>
+                <x-input-label for="contato_email" :value="__('Email')" />
+                <x-text-input id="contato_email" class="block mt-1 w-full" type="email" name="contato_email" :value="old('contato_email')" />
+                <x-input-error :messages="$errors->get('contato_email')" class="mt-2" />
+            </div>
 
-        <!-- Observação -->
-        <div>
-            <x-input-label for="contato_observacao" :value="__('Observação')" />
-            <x-text-input id="contato_observacao" class="block mt-1 w-full" type="text" name="contato_observacao" :value="old('contato_observacao')" />
-            <x-input-error :messages="$errors->get('contato_observacao')" class="mt-2" />
-        </div>
-            
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <!-- Observação -->
+            <div>
+                <x-input-label for="contato_observacao" :value="__('Observação')" />
+                <x-text-input id="contato_observacao" class="block mt-1 w-full" type="text" name="contato_observacao" :value="old('contato_observacao')" />
+                <x-input-error :messages="$errors->get('contato_observacao')" class="mt-2" />
+            </div>
+                
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaContatos" class="table table-striped datatable">
         <thead>
@@ -106,7 +108,12 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a onclick="editarContato(${data})">Editar</a> <a onclick="excluirContato(${data})">Excluir</a>`;
+                        let contatos = @json($contatos);          
+                        let actions = '';
+                        if (contatos) {
+                            actions += `<a onclick="editarContato(${data})">Editar</a> <a onclick="excluirContato(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

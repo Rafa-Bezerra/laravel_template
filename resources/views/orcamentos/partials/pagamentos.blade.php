@@ -1,54 +1,68 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Pagamentos') }}
+            {{ __('Recebimentos') }}
         </h2>
     </header>
 
-    <form id="pagamentoForm">
-        @csrf
-        <x-text-input id="pagamento_id" type="hidden" name="pagamento_id"/>
-        <x-text-input id="pagamento_orcamento_id" type="hidden" name="pagamento_orcamento_id" :value="$data->id"/>   
-        
-        <!-- Valor -->
-        <div>
-            <x-input-label for="pagamento_valor" :value="__('Valor')" />
-            <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
-            <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
-        </div>
-        
-        <!-- Parcelas -->
-        <div>
-            <x-input-label for="pagamento_quantidade" :value="__('Parcelas')" />
-            <x-text-input id="pagamento_quantidade" class="block mt-1 w-full totalizador" type="text" name="pagamento_quantidade" :value="old('pagamento_quantidade') ? old('pagamento_quantidade') : 1"   />
-            <x-input-error :messages="$errors->get('pagamento_quantidade')" class="mt-2" />
-        </div>
+    @if ($permissao_pagamentos)
+        <form id="pagamentoForm">
+            @csrf
+            <x-text-input id="pagamento_id" type="hidden" name="pagamento_id"/>
+            <x-text-input id="pagamento_orcamento_id" type="hidden" name="pagamento_orcamento_id" :value="$data->id"/>   
+            
+            <!-- Valor -->
+            <div>
+                <x-input-label for="pagamento_valor" :value="__('Valor')" />
+                <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
+                <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
+            </div>
+            
+            <!-- Parcelas -->
+            <div>
+                <x-input-label for="pagamento_quantidade" :value="__('Parcelas')" />
+                <x-text-input id="pagamento_quantidade" class="block mt-1 w-full totalizador" type="text" name="pagamento_quantidade" :value="old('pagamento_quantidade') ? old('pagamento_quantidade') : 1"   />
+                <x-input-error :messages="$errors->get('pagamento_quantidade')" class="mt-2" />
+            </div>
 
-        <!-- Vencimento -->
-        <div>
-            <x-input-label for="pagamento_data" :value="__('Vencimento')" />
-            <x-text-input id="pagamento_data" class="block mt-1 w-full totalizador" type="text" name="pagamento_data" :value="old('pagamento_data')"  />
-            <x-input-error :messages="$errors->get('pagamento_data')" class="mt-2" />
-        </div>
-        
-        {{-- Controle --}}
-        <div>
-            <x-input-label for="pagamento_controle" :value="__('Controle')" />
-            <x-select-input id="pagamento_controle" class="block mt-1 w-full" name="pagamento_controle" :value="old('pagamento_controle')">
-                <option value="pendente">Pendente</option>
-                <option value="pago">Pago</option>
-                <option value="cancelado">Cancelado</option>
-            </x-select-input>
-            <x-input-error :messages="$errors->get('pagamento_controle')" class="mt-2" />
-        </div>
+            <!-- Vencimento -->
+            <div>
+                <x-input-label for="pagamento_data" :value="__('Vencimento')" />
+                <x-text-input id="pagamento_data" class="block mt-1 w-full totalizador" type="text" name="pagamento_data" :value="old('pagamento_data')"  />
+                <x-input-error :messages="$errors->get('pagamento_data')" class="mt-2" />
+            </div>
+            
+            {{-- Controle --}}
+            <div>
+                <x-input-label for="pagamento_controle" :value="__('Controle')" />
+                <x-select-input id="pagamento_controle" class="block mt-1 w-full" name="pagamento_controle" :value="old('pagamento_controle')">
+                    <option value="pendente">Pendente</option>
+                    <option value="pago">Pago</option>
+                    <option value="cancelado">Cancelado</option>
+                </x-select-input>
+                <x-input-error :messages="$errors->get('pagamento_controle')" class="mt-2" />
+            </div>
+            
+            {{-- Controle --}}
+            <div>
+                <x-input-label for="pagamento_banco_id" :value="__('Banco')" />
+                <x-select-input id="pagamento_banco_id" class="block mt-1 w-full" name="pagamento_banco_id" :value="old('pagamento_banco_id')">
+                    <option></option>
+                    @foreach ($bancos as $item)
+                        <option value="{{$item->id}}">{{$item->name." - ".$item->agencia."-".$item->conta}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('pagamento_banco_id')" class="mt-2" />
+            </div>
 
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaPagamentos" class="table table-striped datatable">
         <thead>
@@ -57,6 +71,7 @@
                 <th>Valor</th>
                 <th>Parcela</th>
                 <th>Vencimento</th>
+                <th>Banco</th>
                 <th>Controle</th>
                 <th>Ações</th>
             </tr>
@@ -76,6 +91,7 @@
                 $('#pagamento_quantidade').val(1);
                 $('#pagamento_data').val(formatarData(response.data));
                 $('#pagamento_controle').val(response.controle);
+                $('#pagamento_banco_id').val(response.banco_id);
             }
         });
     }
@@ -130,11 +146,17 @@
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     } 
                 },
+                { "data": "banco_name"},
                 { "data": "controle"},
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a onclick="editarPagamento(${data})">Editar</a> <a onclick="excluirPagamento(${data})">Excluir</a>`;
+                    "render": function (data, type, row) {    
+                        let permissao_pagamentos = @json($permissao_pagamentos);   
+                        let actions = '';
+                        if (permissao_pagamentos) {
+                            actions += `<a onclick="editarPagamento(${data})">Editar</a> <a onclick="excluirPagamento(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

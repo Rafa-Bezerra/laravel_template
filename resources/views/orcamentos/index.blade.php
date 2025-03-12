@@ -8,9 +8,11 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-x-auto">    
-                <div align="right">
-                    <x-nav-link :href="route('orcamentos.create')">{{ __('Novo orçamento') }}</x-nav-link>      
-                </div>      
+                @if ($insert)
+                    <div align="right">
+                        <x-nav-link :href="route('orcamentos.create')">{{ __('Novo orçamento') }}</x-nav-link>      
+                    </div>  
+                @endif    
                 <table id="minhaTabela" class="table nowrap table-striped datatable w-full">
                     <thead>
                         <tr>
@@ -85,8 +87,15 @@
                 },
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a href="/orcamentos/edit/${data}">Editar</a> <a href="/orcamentos/delete/${data}">Excluir</a>`;
+                    "render": function (data, type, row) {               
+                        let actions = '';
+                        if ({{$update}}) {
+                            actions += `<a href="/orcamentos/edit/${data}">Editar</a> `;
+                        }
+                        if ({{$delete}}) {
+                            actions += `<a href="/orcamentos/delete/${data}">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

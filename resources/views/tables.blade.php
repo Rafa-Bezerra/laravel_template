@@ -13,6 +13,7 @@
                         <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Empresas') }}</h2></header>
                     </section>
                     <x-nav-link :href="route('divisoes.index')">{{ __('Divisões') }}</x-nav-link>
+                    <x-nav-link :href="route('bancos')">{{ __('Bancos') }}</x-nav-link>
                     <x-nav-link :href="route('empresas.index')">{{ __('Empresas') }}</x-nav-link>
                 </div>
             </div>

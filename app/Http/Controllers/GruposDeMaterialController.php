@@ -18,11 +18,17 @@ class GruposDeMaterialController extends Controller
     {
         $tittle = 'Grupos de Material';
         
-        if (! User::hasPermission('grupos_de_material')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('grupos_de_material',$tittle,true);
+        $insert = $this->hasPermission('grupos_de_material_insert');
+        $update = $this->hasPermission('grupos_de_material_update');
+        $delete = $this->hasPermission('grupos_de_material_delete');
 
         return view('grupos_de_material.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -35,7 +41,6 @@ class GruposDeMaterialController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Novo grupo de material';
-        if (! User::hasPermission('grupos_de_material_create')) return view('forbbiden', ['tittle' => $tittle]);
 
         return view('grupos_de_material.create', [
             'user' => $request->user(),
@@ -61,7 +66,7 @@ class GruposDeMaterialController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar grupos de material';
-        if (! User::hasPermission('grupos_de_material_edit')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('grupos_de_material_update',$tittle,true);
         
         $data = GruposDeMaterial::findOrFail($id);
         return view('grupos_de_material.edit', [

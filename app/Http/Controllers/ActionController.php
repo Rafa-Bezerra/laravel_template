@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserUpdateRequest;
 use App\Models\Actions;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +22,17 @@ class ActionController extends Controller
     {
         $tittle = 'Ações';
         
-        if (! User::hasPermission('actions')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('actions',$tittle,true);
+        $insert = $this->hasPermission('actions_insert');
+        $update = $this->hasPermission('actions_update');
+        $delete = $this->hasPermission('actions_delete');
 
         return view('actions.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -68,7 +73,9 @@ class ActionController extends Controller
 
     public function edit(Request $request, string $id): View
     {        
-        // dd($request->path());
+               
+        $tittle = 'Editar ação';
+        $this->hasPermission('actions_update',$tittle,true);
         $data = Actions::findOrFail($id);
         return view('actions.edit', [
             'user' => $request->user(),
@@ -95,10 +102,7 @@ class ActionController extends Controller
 
     public function delete(Request $request, string $id): RedirectResponse
     {
-        // $data = DB::table('actions')->where('id',$id)->get();
         $data = Actions::findOrFail($id)->delete();
-        // dd($data);
-
         return redirect(route('actions.index', absolute: false));
     }
 }

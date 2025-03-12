@@ -1,29 +1,31 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RolesController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\MateriaisController;
-use App\Http\Controllers\ActionController;
-use App\Http\Controllers\GruposDeMaterialController;
-use App\Http\Controllers\DivisoesController;
-use App\Http\Controllers\EmpresasController;
-use App\Http\Controllers\ComprasController;
-use App\Http\Controllers\EstoqueController;
-use App\Http\Controllers\ServicosController;
-use App\Http\Controllers\ComissoesController;
-use App\Http\Controllers\OrcamentosController;
-use App\Http\Controllers\RelatoriosController;
-use App\Http\Controllers\PagamentosController;
+use App\Http\Controllers\{
+    DashboardController,
+    ProfileController,
+    RolesController,
+    UserController,
+    MateriaisController,
+    ActionController,
+    GruposDeMaterialController,
+    DivisoesController,
+    EmpresasController,
+    ComprasController,
+    EstoqueController,
+    ServicosController,
+    ComissoesController,
+    OrcamentosController,
+    RelatoriosController,
+    PagamentosController,
+    BancosController
+};
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home.dashboard');
-})->middleware(['auth', 'verified'])->name('home');
-
-Route::get('/dashboard', function () {
-    return view('home.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -217,6 +219,17 @@ Route::middleware('auth')->group(function () {
 //RELATÓRIOS
 Route::middleware('auth')->group(function () {
     Route::get('/pagamentos/json', [PagamentosController::class, 'getListagem'])->name('pagamentos.json');
+});
+
+//BANCOS
+Route::middleware('auth')->group(function () {
+    Route::get('/bancos', [BancosController::class, 'index'])->name('bancos');
+    Route::get('/bancos/json', [BancosController::class, 'getListagem'])->name('bancos.json');    
+    Route::get('/bancos/create', [BancosController::class, 'create'])->name('bancos.create');
+    Route::post('/bancos/create', [BancosController::class, 'register'])->name('bancos.insert');
+    Route::get('/bancos/edit/{id}', [BancosController::class, 'edit'])->name('bancos.edit');
+    Route::post('/bancos/edit', [BancosController::class, 'update'])->name('bancos.update');
+    Route::get('/bancos/delete/{id}', [BancosController::class, 'delete'])->name('bancos.delete');
 });
 
 require __DIR__.'/auth.php';

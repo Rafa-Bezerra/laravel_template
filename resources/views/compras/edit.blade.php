@@ -35,7 +35,7 @@
 
                     <!-- DT. Entrega -->
                     <div>
-                        <x-input-label for="data_entrega" :value="__('DT. Prazo')" />
+                        <x-input-label for="data_entrega" :value="__('DT. Entrega')" />
                         <x-text-input id="data_entrega" class="block mt-1 w-full" type="text" name="data_entrega" :value="old('data_entrega') ? old('data_entrega') : $data->data_entrega"  />
                         <x-input-error :messages="$errors->get('data_entrega')" class="mt-2" />
                     </div>
@@ -121,7 +121,9 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 complete: function (response) {
-                    // console.log('s');
+                    $('#valor_itens').val(response.responseJSON.valor_itens);
+                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
+                    $('#valor_total').val(response.responseJSON.valor_total);
                 }
             });
         });

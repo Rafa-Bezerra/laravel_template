@@ -23,11 +23,17 @@ class ComprasController extends Controller
     {
         $tittle = 'Compras';
         
-        if (! User::hasPermission('compras')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('compras',$tittle,true);
+        $insert = $this->hasPermission('compras_insert');
+        $update = $this->hasPermission('compras_update');
+        $delete = $this->hasPermission('compras_delete');
 
         return view('compras.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -40,7 +46,7 @@ class ComprasController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Nova compra';
-        if (! User::hasPermission('compras_create')) return view('forbbiden', ['tittle' => $tittle]);
+        
 
         return view('compras.create', [
             'user' => $request->user(),
@@ -73,7 +79,11 @@ class ComprasController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar compra N°'.$id;
-        if (! User::hasPermission('materiais_edit')) return view('forbbiden', ['tittle' => $tittle]);
+        
+
+        $this->hasPermission('compras_update',$tittle,true);
+        $itens = $this->hasPermission('compras_itens');
+        $pagamentos = $this->hasPermission('compras_pagamentos');
         
         $materiais = Materiais::all();
         $data = Compras::findOrFail($id);
@@ -82,10 +92,12 @@ class ComprasController extends Controller
             'tittle' => $tittle,
             'materiais' => $materiais,
             'data' => $data,
+            'itens' => $itens,
+            'pagamentos' => $pagamentos,
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request)
     {
         $request->validate([
             'data_compra' => ['required'],
@@ -99,9 +111,11 @@ class ComprasController extends Controller
         $action->observacao = $request->observacao;
         $action->save();
 
+        $valores = $this->atualiza_total($request->id);
+
         event(new Registered($action));
 
-        return redirect(route('materiais.index', absolute: false));
+        return $valores->toJson();
     }
 
     public function delete(Request $request, string $id): RedirectResponse

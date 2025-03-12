@@ -34,8 +34,12 @@
                 { "data": "quantidade" },
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a href="/estoque/edit/${data}">Editar</a>`;
+                    "render": function (data, type, row) {                 
+                        let actions = '';
+                        if ({{$update}}) {
+                            actions += `<a href="/estoque/edit/${data}">Editar</a> `;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

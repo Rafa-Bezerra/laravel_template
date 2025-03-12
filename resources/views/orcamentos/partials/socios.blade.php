@@ -5,36 +5,38 @@
         </h2>
     </header>
 
-    <form id="socioForm">
-        @csrf
-        <x-text-input id="socio_id" type="hidden" name="socio_id"/>
-        <x-text-input id="socio_orcamento_id" type="hidden" name="socio_orcamento_id" :value="$data->id"/>    
-        
-        {{-- Empresas --}}
-        <div>
-            <x-input-label for="socio_empresa_id" :value="__('Empresa')" />
-            <x-select-input id="socio_empresa_id" class="block mt-1 w-full" name="socio_empresa_id" :value="old('socio_empresa_id')">
-                <option></option>
-                @foreach ($empresas as $item)
-                    <option value="{{$item->id}}">{{$item->name}}</option>
-                @endforeach
-            </x-select-input>
-            <x-input-error :messages="$errors->get('socio_empresa_id')" class="mt-2" />
-        </div>
+    @if ($permissao_socios)
+        <form id="socioForm">
+            @csrf
+            <x-text-input id="socio_id" type="hidden" name="socio_id"/>
+            <x-text-input id="socio_orcamento_id" type="hidden" name="socio_orcamento_id" :value="$data->id"/>    
+            
+            {{-- Empresas --}}
+            <div>
+                <x-input-label for="socio_empresa_id" :value="__('Empresa')" />
+                <x-select-input id="socio_empresa_id" class="block mt-1 w-full" name="socio_empresa_id" :value="old('socio_empresa_id')">
+                    <option></option>
+                    @foreach ($empresas as $item)
+                        <option value="{{$item->id}}">{{$item->name}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('socio_empresa_id')" class="mt-2" />
+            </div>
 
-        <!-- Porcentagem -->
-        <div>
-            <x-input-label for="socio_porcentagem" :value="__('Porcentagem')" />
-            <x-text-input id="socio_porcentagem" class="block mt-1 w-full totalizador" type="text" name="socio_porcentagem" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('socio_porcentagem')" class="mt-2" />
-        </div>
+            <!-- Porcentagem -->
+            <div>
+                <x-input-label for="socio_porcentagem" :value="__('Porcentagem')" />
+                <x-text-input id="socio_porcentagem" class="block mt-1 w-full totalizador" type="text" name="socio_porcentagem" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('socio_porcentagem')" class="mt-2" />
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaSocios" class="table table-striped datatable">
         <thead>
@@ -110,7 +112,12 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a onclick="editarSocio(${data})">Editar</a> <a onclick="excluirSocio(${data})">Excluir</a>`;
+                        let permissao_socios = @json($permissao_socios);   
+                        let actions = '';
+                        if (permissao_socios) {
+                            actions += `<a onclick="editarSocio(${data})">Editar</a> <a onclick="excluirSocio(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

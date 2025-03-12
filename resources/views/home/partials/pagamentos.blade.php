@@ -15,6 +15,7 @@
                 <th>Valor</th>
                 <th>Parcela</th>
                 <th>Vencimento</th>
+                <th>Banco</th>
                 <th>Controle</th>
             </tr>
         </thead>
@@ -57,6 +58,7 @@
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     } 
                 },
+                { "data": "banco_name"},
                 { "data": "controle"},
             ],
             "language": {

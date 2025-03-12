@@ -8,9 +8,11 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
-                <div align="right">
-                    <x-nav-link :href="route('divisoes.create')">{{ __('Nova divisão') }}</x-nav-link>      
-                </div>      
+                @if ($insert)
+                    <div align="right">
+                        <x-nav-link :href="route('divisoes.create')">{{ __('Nova divisão') }}</x-nav-link>      
+                    </div> 
+                @endif     
                 <table id="minhaTabela" class="table table-striped datatable">
                     <thead>
                         <tr>
@@ -35,8 +37,15 @@
                 { "data": "name" },
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a href="/divisoes/edit/${data}">Editar</a> <a href="/divisoes/delete/${data}">Excluir</a>`;
+                    "render": function (data, type, row) {                   
+                        let actions = '';
+                        if ({{$update}}) {
+                            actions += `<a href="/divisoes/edit/${data}">Editar</a> `;
+                        }
+                        if ({{$delete}}) {
+                            actions += `<a href="/divisoes/delete/${data}">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

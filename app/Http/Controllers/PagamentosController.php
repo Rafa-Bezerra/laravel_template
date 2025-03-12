@@ -18,7 +18,14 @@ class PagamentosController extends Controller
 
     public function getListagem()
     {
-        $listagem = Pagamentos::all();
-        return datatables()->of($listagem)->toJson();
+        $listagem = Pagamentos::with('banco')->get();
+        return datatables()->of($listagem)
+            ->addColumn('banco_name', function ($pagamento) {
+                if ($pagamento->banco) {
+                    return "{$pagamento->banco->name} - {$pagamento->banco->agencia}-{$pagamento->banco->conta}";
+                }
+                return 'Sem banco';
+            })
+        ->toJson();
     }
 }

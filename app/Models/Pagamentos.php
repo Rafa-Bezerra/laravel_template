@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Bancos;
 
 class Pagamentos extends Authenticatable
 {
@@ -27,10 +28,16 @@ class Pagamentos extends Authenticatable
     protected $fillable = [
         'orcamento_id',
         'compra_id',
+        'banco_id',
         'parcela',
         'data',
         'valor',
         'especie',
         'controle',
     ];
+
+    public function banco()
+    {
+        return $this->belongsTo(Bancos::class);
+    }
 }

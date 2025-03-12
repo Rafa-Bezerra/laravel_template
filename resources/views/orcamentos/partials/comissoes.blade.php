@@ -5,48 +5,50 @@
         </h2>
     </header>
 
-    <form id="comissaoForm">
-        @csrf
-        <x-text-input id="comissao_id" type="hidden" name="comissao_id"/>
-        <x-text-input id="comissao_orcamento_id" type="hidden" name="comissao_orcamento_id" :value="$data->id"/>    
-        
-        {{-- Empresas --}}
-        <div>
-            <x-input-label for="comissao_empresa_id" :value="__('Empresa')" />
-            <x-select-input id="comissao_empresa_id" class="block mt-1 w-full" name="comissao_empresa_id" :value="old('comissao_empresa_id')">
-                <option></option>
-                @foreach ($empresas as $item)
-                    <option value="{{$item->id}}">{{$item->name}}</option>
-                @endforeach
-            </x-select-input>
-            <x-input-error :messages="$errors->get('comissao_empresa_id')" class="mt-2" />
-        </div>
-        
-        {{-- Comissão --}}
-        <div>
-            <x-input-label for="comissao_comissao_id" :value="__('Comissão')" />
-            <x-select-input id="comissao_comissao_id" class="block mt-1 w-full" name="comissao_comissao_id" :value="old('comissao_comissao_id')">
-                <option></option>
-                @foreach ($comissoes as $item)
-                    <option value="{{$item->id}}">{{$item->name}}</option>
-                @endforeach
-            </x-select-input>
-            <x-input-error :messages="$errors->get('comissao_comissao_id')" class="mt-2" />
-        </div>
+    @if ($permissao_comissoes)
+        <form id="comissaoForm">
+            @csrf
+            <x-text-input id="comissao_id" type="hidden" name="comissao_id"/>
+            <x-text-input id="comissao_orcamento_id" type="hidden" name="comissao_orcamento_id" :value="$data->id"/>    
+            
+            {{-- Empresas --}}
+            <div>
+                <x-input-label for="comissao_empresa_id" :value="__('Empresa')" />
+                <x-select-input id="comissao_empresa_id" class="block mt-1 w-full" name="comissao_empresa_id" :value="old('comissao_empresa_id')">
+                    <option></option>
+                    @foreach ($empresas as $item)
+                        <option value="{{$item->id}}">{{$item->name}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('comissao_empresa_id')" class="mt-2" />
+            </div>
+            
+            {{-- Comissão --}}
+            <div>
+                <x-input-label for="comissao_comissao_id" :value="__('Comissão')" />
+                <x-select-input id="comissao_comissao_id" class="block mt-1 w-full" name="comissao_comissao_id" :value="old('comissao_comissao_id')">
+                    <option></option>
+                    @foreach ($comissoes as $item)
+                        <option value="{{$item->id}}">{{$item->name}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('comissao_comissao_id')" class="mt-2" />
+            </div>
 
-        <!-- Porcentagem -->
-        <div>
-            <x-input-label for="comissao_porcentagem" :value="__('Porcentagem')" />
-            <x-text-input id="comissao_porcentagem" class="block mt-1 w-full totalizador" type="text" name="comissao_porcentagem" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('comissao_porcentagem')" class="mt-2" />
-        </div>
+            <!-- Porcentagem -->
+            <div>
+                <x-input-label for="comissao_porcentagem" :value="__('Porcentagem')" />
+                <x-text-input id="comissao_porcentagem" class="block mt-1 w-full totalizador" type="text" name="comissao_porcentagem" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('comissao_porcentagem')" class="mt-2" />
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaComissoes" class="table table-striped datatable">
         <thead>
@@ -124,7 +126,12 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a onclick="editarComissao(${data})">Editar</a> <a onclick="excluirComissao(${data})">Excluir</a>`;
+                        let permissao_comissoes = @json($permissao_comissoes);          
+                        let actions = '';
+                        if (permissao_comissoes) {
+                            actions += `<a onclick="editarComissao(${data})">Editar</a> <a onclick="excluirComissao(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

@@ -5,50 +5,52 @@
         </h2>
     </header>
 
-    <form id="pagamentoForm">
-        @csrf
-        <x-text-input id="pagamento_id" type="hidden" name="pagamento_id"/>
-        <x-text-input id="pagamento_compra_id" type="hidden" name="pagamento_compra_id" :value="$data->id"/>   
-        
-        <!-- Valor -->
-        <div>
-            <x-input-label for="pagamento_valor" :value="__('Valor')" />
-            <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
-            <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
-        </div>
-        
-        <!-- Parcelas -->
-        <div>
-            <x-input-label for="pagamento_quantidade" :value="__('Parcelas')" />
-            <x-text-input id="pagamento_quantidade" class="block mt-1 w-full totalizador" type="text" name="pagamento_quantidade" :value="old('pagamento_quantidade') ? old('pagamento_quantidade') : 1"   />
-            <x-input-error :messages="$errors->get('pagamento_quantidade')" class="mt-2" />
-        </div>
+    @if ($pagamentos)
+        <form id="pagamentoForm">
+            @csrf
+            <x-text-input id="pagamento_id" type="hidden" name="pagamento_id"/>
+            <x-text-input id="pagamento_compra_id" type="hidden" name="pagamento_compra_id" :value="$data->id"/>   
+            
+            <!-- Valor -->
+            <div>
+                <x-input-label for="pagamento_valor" :value="__('Valor')" />
+                <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
+                <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
+            </div>
+            
+            <!-- Parcelas -->
+            <div>
+                <x-input-label for="pagamento_quantidade" :value="__('Parcelas')" />
+                <x-text-input id="pagamento_quantidade" class="block mt-1 w-full totalizador" type="text" name="pagamento_quantidade" :value="old('pagamento_quantidade') ? old('pagamento_quantidade') : 1"   />
+                <x-input-error :messages="$errors->get('pagamento_quantidade')" class="mt-2" />
+            </div>
 
-        <!-- Vencimento -->
-        <div>
-            <x-input-label for="pagamento_data" :value="__('Vencimento')" />
-            <x-text-input id="pagamento_data" class="block mt-1 w-full totalizador" type="text" name="pagamento_data" :value="old('pagamento_data')"  />
-            <x-input-error :messages="$errors->get('pagamento_data')" class="mt-2" />
-        </div>
-        
-        {{-- Controle --}}
-        <div>
-            <x-input-label for="pagamento_controle" :value="__('Controle')" />
-            <x-select-input id="pagamento_controle" class="block mt-1 w-full" name="pagamento_controle" :value="old('pagamento_controle')">
-                <option value="pendente">Pendente</option>
-                <option value="pago">Pago</option>
-                <option value="cancelado">Cancelado</option>
-            </x-select-input>
-            <x-input-error :messages="$errors->get('pagamento_controle')" class="mt-2" />
-        </div>
+            <!-- Vencimento -->
+            <div>
+                <x-input-label for="pagamento_data" :value="__('Vencimento')" />
+                <x-text-input id="pagamento_data" class="block mt-1 w-full totalizador" type="text" name="pagamento_data" :value="old('pagamento_data')"  />
+                <x-input-error :messages="$errors->get('pagamento_data')" class="mt-2" />
+            </div>
+            
+            {{-- Controle --}}
+            <div>
+                <x-input-label for="pagamento_controle" :value="__('Controle')" />
+                <x-select-input id="pagamento_controle" class="block mt-1 w-full" name="pagamento_controle" :value="old('pagamento_controle')">
+                    <option value="pendente">Pendente</option>
+                    <option value="pago">Pago</option>
+                    <option value="cancelado">Cancelado</option>
+                </x-select-input>
+                <x-input-error :messages="$errors->get('pagamento_controle')" class="mt-2" />
+            </div>
 
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaPagamentos" class="table table-striped datatable">
         <thead>
@@ -127,8 +129,13 @@
                 { "data": "controle"},
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a onclick="editarPagamento(${data})">Editar</a> <a onclick="excluirPagamento(${data})">Excluir</a>`;
+                    "render": function (data, type, row) {          
+                        let pagamentos = @json($pagamentos);          
+                        let actions = '';
+                        if (pagamentos) {
+                            actions += `<a onclick="editarPagamento(${data})">Editar</a> <a onclick="excluirPagamento(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

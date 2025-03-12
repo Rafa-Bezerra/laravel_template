@@ -23,7 +23,7 @@ class RelatoriosController extends Controller
     {
         $tittle = 'Relatórios';
         
-        if (! User::hasPermission('relatorios')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('relatorios',$tittle,true);
 
         return view('relatorios.index', [
             'user' => $request->user(),
@@ -35,7 +35,7 @@ class RelatoriosController extends Controller
     {
         $tittle = 'Orçamentos por cliente';
         
-        if (! User::hasPermission('relatorios_orcamentos_por_cliente')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('relatorios_orcamentos_por_cliente',$tittle,true);
 
         $data = Empresas::with(['orcamentos.endereco'])->get();
         

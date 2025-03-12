@@ -18,11 +18,17 @@ class ServicosController extends Controller
     {
         $tittle = 'Serviços';
         
-        if (! User::hasPermission('servicos')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('servicos',$tittle,true);
+        $insert = $this->hasPermission('servicos_insert');
+        $update = $this->hasPermission('servicos_update');
+        $delete = $this->hasPermission('servicos_delete');
 
         return view('servicos.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -36,7 +42,7 @@ class ServicosController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Novo serviço';
-        if (! User::hasPermission('servicos_create')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('servicos_insert',$tittle,true);
         
         return view('servicos.create', [
             'user' => $request->user(),
@@ -62,7 +68,7 @@ class ServicosController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar serviço';
-        if (! User::hasPermission('servicos_edit')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('servicos_update',$tittle,true);
 
         $data = Servicos::findOrFail($id);
         return view('servicos.edit', [

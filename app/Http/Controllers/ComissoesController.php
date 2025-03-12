@@ -18,11 +18,17 @@ class ComissoesController extends Controller
     {
         $tittle = 'Serviços';
         
-        if (! User::hasPermission('comissoes')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('comissoes',$tittle,true);
+        $insert = $this->hasPermission('comissoes_insert');
+        $update = $this->hasPermission('comissoes_update');
+        $delete = $this->hasPermission('comissoes_delete');
 
         return view('comissoes.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -36,7 +42,7 @@ class ComissoesController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Nova comissão';
-        if (! User::hasPermission('comissoes_create')) return view('forbbiden', ['tittle' => $tittle]);
+        
         
         return view('comissoes.create', [
             'user' => $request->user(),
@@ -62,7 +68,8 @@ class ComissoesController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar serviço';
-        if (! User::hasPermission('comissoes_edit')) return view('forbbiden', ['tittle' => $tittle]);
+
+        $this->hasPermission('comissoes_update',$tittle,true);
 
         $data = Comissoes::findOrFail($id);
         return view('comissoes.edit', [

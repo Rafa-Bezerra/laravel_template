@@ -23,11 +23,13 @@ class EstoqueController extends Controller
     {
         $tittle = 'Estoque';
         
-        if (! User::hasPermission('estoque')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('estoque',$tittle,true);
+        $update = $this->hasPermission('estoque_update');
 
         return view('estoque.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'update' => $update,
         ]);
     }
 
@@ -45,6 +47,8 @@ class EstoqueController extends Controller
     {        
         $tittle = 'Estoque editar';
 
+        $this->hasPermission('estoque_update',$tittle,true);
+        
         $data = Estoque::findOrFail($id);
 
         return view('estoque.edit', [

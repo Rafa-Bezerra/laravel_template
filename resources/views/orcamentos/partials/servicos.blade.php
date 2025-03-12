@@ -5,35 +5,37 @@
         </h2>
     </header>
 
-    <form id="servicosForm">
-        @csrf
-        <x-text-input id="servico_id" type="hidden" name="servico_id"/>
-        <x-text-input id="servico_orcamento_id" type="hidden" name="servico_orcamento_id" :value="$data->id"/>   
-        
-        {{-- Serviços --}}
-        <div>
-            <x-input-label for="servico_servico_id" :value="__('Serviço')" />
-            <x-select-input id="servico_servico_id" class="block mt-1 w-full" name="servico_servico_id" :value="old('servico_servico_id')">
-                <option></option>
-                @foreach ($servicos as $item)
-                    <option value="{{$item->id}}">{{$item->name}}</option>
-                @endforeach
-            </x-select-input>
-            <x-input-error :messages="$errors->get('servico_servico_id')" class="mt-2" />
-        </div>
+    @if ($permissao_servicos)
+        <form id="servicosForm">
+            @csrf
+            <x-text-input id="servico_id" type="hidden" name="servico_id"/>
+            <x-text-input id="servico_orcamento_id" type="hidden" name="servico_orcamento_id" :value="$data->id"/>   
+            
+            {{-- Serviços --}}
+            <div>
+                <x-input-label for="servico_servico_id" :value="__('Serviço')" />
+                <x-select-input id="servico_servico_id" class="block mt-1 w-full" name="servico_servico_id" :value="old('servico_servico_id')">
+                    <option></option>
+                    @foreach ($servicos as $item)
+                        <option value="{{$item->id}}">{{$item->name}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('servico_servico_id')" class="mt-2" />
+            </div>
 
-        <!-- Preço -->
-        <div>
-            <x-input-label for="servico_preco" :value="__('Preço')" />
-            <x-text-input id="servico_preco" class="block mt-1 w-full totalizador" type="text" name="servico_preco" :value="old('fone')"  />
-            <x-input-error :messages="$errors->get('servico_preco')" class="mt-2" />
-        </div>
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Salvar') }}
-            </x-primary-button>
-        </div>
-    </form>
+            <!-- Preço -->
+            <div>
+                <x-input-label for="servico_preco" :value="__('Preço')" />
+                <x-text-input id="servico_preco" class="block mt-1 w-full totalizador" type="text" name="servico_preco" :value="old('fone')"  />
+                <x-input-error :messages="$errors->get('servico_preco')" class="mt-2" />
+            </div>
+            <div class="flex items-center justify-end mt-4">
+                <x-primary-button class="ms-4">
+                    {{ __('Salvar') }}
+                </x-primary-button>
+            </div>
+        </form>
+    @endif
 
     <table id="minhaTabelaServicos" class="table table-striped datatable">
         <thead>
@@ -103,7 +105,12 @@
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
-                        return `<a onclick="editarServico(${data})">Editar</a> <a onclick="excluirServico(${data})">Excluir</a>`;
+                        let permissao_servicos = @json($permissao_servicos);   
+                        let actions = '';
+                        if (permissao_servicos) {
+                            actions += `<a onclick="editarServico(${data})">Editar</a> <a onclick="excluirServico(${data})">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],

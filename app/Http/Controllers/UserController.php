@@ -22,13 +22,21 @@ class UserController extends Controller
      * Display the user's profile form.
      */
     public function index(Request $request): View
-    {
-        $user = User::find(4);
-        $actions = $user->actions();
-        dd($actions);
-        dd($request->path());
+    {        
+        $tittle = 'Usuários';
+        
+        $this->hasPermission('users',$tittle,true);
+        $insert = $this->hasPermission('users_insert');
+        $update = $this->hasPermission('users_update');
+        $delete = $this->hasPermission('users_delete');
+        $roles = $this->hasPermission('users_roles');
+
         return view('usuarios.index', [
             'user' => $request->user(),
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
+            'roles' => $roles,
         ]);
     }
 
@@ -40,6 +48,9 @@ class UserController extends Controller
 
     public function create(Request $request): View
     {
+        $tittle = 'Novo usuário';
+        $this->hasPermission('users_insert',$tittle,true);
+
         $roles = DB::table('roles')->where('active',1)->get();
         return view('usuarios.create', [
             'user' => $request->user(),
@@ -69,6 +80,8 @@ class UserController extends Controller
     
     public function edit(Request $request, string $id): View
     {
+        $tittle = 'Editar usuário';
+        $this->hasPermission('users_update',$tittle,true);
         
         $data = User::findOrFail($id);
         return view('usuarios.edit', [

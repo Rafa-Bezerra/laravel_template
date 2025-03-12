@@ -19,11 +19,17 @@ class MateriaisController extends Controller
     {
         $tittle = 'Materiais';
         
-        if (! User::hasPermission('materiais')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('materiais_update',$tittle,true);
+        $insert = $this->hasPermission('materiais_insert');
+        $update = $this->hasPermission('materiais_update');
+        $delete = $this->hasPermission('materiais_delete');
 
         return view('materiais.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
+            'update' => $update,
+            'delete' => $delete,
         ]);
     }
 
@@ -37,8 +43,7 @@ class MateriaisController extends Controller
     public function create(Request $request): View
     {
         $tittle = 'Novo material';
-        if (! User::hasPermission('materiais_create')) return view('forbbiden', ['tittle' => $tittle]);
-
+        
         $grupos_de_material = GruposDeMaterial::all();
         return view('materiais.create', [
             'user' => $request->user(),
@@ -68,7 +73,7 @@ class MateriaisController extends Controller
     public function edit(Request $request, string $id): View
     {        
         $tittle = 'Editar material';
-        if (! User::hasPermission('materiais_edit')) return view('forbbiden', ['tittle' => $tittle]);
+        $this->hasPermission('materiais_update',$tittle,true);
         
         $grupos_de_material = GruposDeMaterial::all();
         $data = Materiais::findOrFail($id);

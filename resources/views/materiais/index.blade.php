@@ -7,10 +7,12 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
-                <div align="right">
-                    <x-nav-link :href="route('materiais.create')">{{ __('Novo material') }}</x-nav-link>      
-                </div>      
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                @if ($insert)    
+                    <div align="right">
+                        <x-nav-link :href="route('materiais.create')">{{ __('Novo material') }}</x-nav-link>      
+                    </div>  
+                @endif
                 <table id="minhaTabela" class="table table-striped datatable">
                     <thead>
                         <tr>
@@ -39,8 +41,15 @@
                 { "data": "grupo_de_material_id" },
                 { 
                     "data": "id", 
-                    "render": function (data, type, row) {
-                        return `<a href="/materiais/edit/${data}">Editar</a> <a href="/materiais/delete/${data}">Excluir</a>`;
+                    "render": function (data, type, row) {               
+                        let actions = '';
+                        if ({{$update}}) {
+                            actions += `<a href="/materiais/edit/${data}">Editar</a> `;
+                        }
+                        if ({{$delete}}) {
+                            actions += `<a href="/materiais/delete/${data}">Excluir</a>`;
+                        }
+                        return actions.trim();
                     }
                 }
             ],
