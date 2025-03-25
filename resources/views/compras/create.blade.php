@@ -11,9 +11,9 @@
                 <form method="POST" action="{{ route('compras.insert') }}">
                     @csrf
 
-                    <!-- Observação -->
+                    <!-- Nome da obra -->
                     <div>
-                        <x-input-label for="observacao" :value="__('Observação')" />
+                        <x-input-label for="observacao" :value="__('Nome da obra')" />
                         <x-text-input id="observacao" class="block mt-1 w-full" type="text" name="observacao" :value="old('observacao')" required autofocus autocomplete="observacao" />
                         <x-input-error :messages="$errors->get('observacao')" class="mt-2" />
                     </div>

@@ -65,9 +65,9 @@ class ComprasController extends Controller
             "data_compra" => $request->data_compra ? DateTime::createFromFormat('d/m/Y', $request->data_compra)->format('Y-m-d') : null,
             "data_prazo" => $request->data_prazo ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : null,
             "data_entrega" => $request->data_entrega ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : null,
-            "valor_itens" => $request->valor_itens,
-            "valor_desconto" => $request->valor_desconto,
-            "valor_total" => $request->valor_total,
+            "valor_itens" => formatar_moeda($request->valor_itens),
+            "valor_desconto" => formatar_moeda($request->valor_desconto),
+            "valor_total" => formatar_moeda($request->valor_total),
             "observacao" => $request->observacao,
         ]);
         
@@ -155,10 +155,6 @@ class ComprasController extends Controller
                 "compra_id" => $request->item_compra_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
                 "material_id" => $request->item_material_id,
-                // "quantidade" => str_replace(['.', ','], ['', '.'], $request->item_quantidade),
-                // "preco_unitario" => str_replace(['.', ','], ['', '.'], $request->item_preco_unitario),
-                // "valor_desconto" => str_replace(['.', ','], ['', '.'], $request->item_valor_desconto),
-                // "valor_total" => str_replace(['.', ','], ['', '.'], $request->item_valor_total),
                 "quantidade" => $request->item_quantidade,
                 "preco_unitario" => $request->item_preco_unitario,
                 "valor_desconto" => $request->item_valor_desconto,
@@ -273,6 +269,7 @@ class ComprasController extends Controller
                     $valor_parcela = ($i == $request->pagamento_quantidade) ? ($valor_parcela + $resto) : $valor_parcela;
                     $action = Pagamentos::create([
                         "compra_id" => $request->pagamento_compra_id,
+                        "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                         "controle" => $request->pagamento_controle,
                         "data" => $data_pagamento->format('Y-m-d'),
                         "valor" => $valor_parcela,
@@ -285,6 +282,7 @@ class ComprasController extends Controller
             } else {
                 $action = Pagamentos::create([
                     "compra_id" => $request->pagamento_compra_id,
+                    "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                     "controle" => $request->pagamento_controle,
                     "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
                     "valor" => $request->pagamento_valor,
@@ -297,6 +295,7 @@ class ComprasController extends Controller
             $action = Pagamentos::findOrFail($request->pagamento_id);
             $action->valor = $request->pagamento_valor;
             $action->controle = $request->pagamento_controle;
+            $action->tipo_pagamento = $request->pagamento_tipo_pagamento;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');
             $action->save();
             event(new Registered($action));

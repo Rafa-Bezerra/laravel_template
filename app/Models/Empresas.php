@@ -10,7 +10,7 @@ use App\Models\EmpresasEnderecos;
 use App\Models\EmpresasContatos;
 use App\Models\Orcamentos;
 
-class Empresas extends Authenticatable
+class Empresas extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

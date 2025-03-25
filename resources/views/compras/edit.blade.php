@@ -12,9 +12,9 @@
                     @csrf
                     <x-text-input id="id" type="hidden" name="id" :value="old('id') ? old('id') : $data->id"/>
 
-                    <!-- Observação -->
+                    <!-- Nome da obra -->
                     <div>
-                        <x-input-label for="observacao" :value="__('Observação')" />
+                        <x-input-label for="observacao" :value="__('Nome da obra')" />
                         <x-text-input id="observacao" class="block mt-1 w-full" type="text" name="observacao" :value="old('observacao') ? old('observacao') : $data->observacao" required autofocus autocomplete="observacao" />
                         <x-input-error :messages="$errors->get('observacao')" class="mt-2" />
                     </div>
@@ -43,7 +43,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_itens" :value="__('VL. Itens')" />
-                        <x-text-input id="valor_itens" class="block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens"  />
+                        <x-text-input id="valor_itens" class="moeda block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens"  />
                         <x-input-error :messages="$errors->get('valor_itens')" class="mt-2" />
                     </div>
                     
@@ -51,7 +51,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_desconto" :value="__('VL. Desconto')" />
-                        <x-text-input id="valor_desconto" class="block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto"  />
+                        <x-text-input id="valor_desconto" class="moeda block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto"  />
                         <x-input-error :messages="$errors->get('valor_desconto')" class="mt-2" />
                     </div>
                     
@@ -59,7 +59,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_total" :value="__('VL. Total')" />
-                        <x-text-input id="valor_total" class="block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total"  />
+                        <x-text-input id="valor_total" class="moeda block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total"  />
                         <x-input-error :messages="$errors->get('valor_total')" class="mt-2" />
                     </div>
             
@@ -108,6 +108,22 @@
             let data_prazo_date = new Date(data_prazo_oldValue);
             if (!isNaN(data_prazo_date)) {
                 data_prazo.value = data_prazo_date.toLocaleDateString("pt-BR");
+            }
+        }
+
+        //data_entrega
+        let data_entrega = document.getElementById("data_entrega");
+        data_entrega.addEventListener("input", function (e) {
+            let data_entrega_value = e.target.value.replace(/\D/g, "");
+            if (data_entrega_value.length > 2) data_entrega_value = data_entrega_value.substring(0,2) + "/" + data_entrega_value.substring(2);
+            if (data_entrega_value.length > 5) data_entrega_value = data_entrega_value.substring(0,5) + "/" + data_entrega_value.substring(5,9);
+            e.target.value = data_entrega_value;
+        });
+        let data_entrega_oldValue = "{{ $data->data_entrega }}";
+        if (data_entrega_oldValue) {
+            let data_entrega_date = new Date(data_entrega_oldValue);
+            if (!isNaN(data_entrega_date)) {
+                data_entrega.value = data_entrega_date.toLocaleDateString("pt-BR");
             }
         }
     });

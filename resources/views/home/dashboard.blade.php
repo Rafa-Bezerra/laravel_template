@@ -21,7 +21,7 @@
                         <section>
                             <header>
                                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                    {{ __('À Receber') }}
+                                    {{ __('A Receber') }}
                                 </h2>
                             </header>
                             <span class="datatable">{{$a_receber}}</span>
@@ -31,7 +31,7 @@
                         <section>
                             <header>
                                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                    {{ __('À pagar') }}
+                                    {{ __('A pagar') }}
                                 </h2>
                             </header>
                             <span class="datatable">{{$a_pagar}}</span>

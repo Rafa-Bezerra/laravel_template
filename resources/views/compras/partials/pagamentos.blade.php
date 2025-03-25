@@ -9,7 +9,22 @@
         <form id="pagamentoForm">
             @csrf
             <x-text-input id="pagamento_id" type="hidden" name="pagamento_id"/>
-            <x-text-input id="pagamento_compra_id" type="hidden" name="pagamento_compra_id" :value="$data->id"/>   
+            <x-text-input id="pagamento_compra_id" type="hidden" name="pagamento_compra_id" :value="$data->id"/>  
+                    
+            {{-- Tipo de pagamento --}}
+            <div>
+                <x-input-label for="pagamento_tipo_pagamento" :value="__('Tipo de pagamento')" />
+                <x-select-input id="pagamento_tipo_pagamento" class="block mt-1 w-full" name="pagamento_tipo_pagamento" :value="old('pagamento_tipo_pagamento')">
+                    <option value="boleto">Boleto</option>
+                    <option value="crédito">Crédito</option>
+                    <option value="débito">Débito</option>
+                    <option value="depósito">Depósito</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">Pix</option>
+                    <option value="transferência">Transferência</option>
+                </x-select-input>
+                <x-input-error :messages="$errors->get('pagamento_tipo_pagamento')" class="mt-2" />
+            </div> 
             
             <!-- Valor -->
             <div>
@@ -56,6 +71,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Tipo PG</th>
                 <th>Valor</th>
                 <th>Parcela</th>
                 <th>Vencimento</th>
@@ -78,6 +94,7 @@
                 $('#pagamento_quantidade').val(1);
                 $('#pagamento_data').val(formatarData(response.data));
                 $('#pagamento_controle').val(response.controle);
+                $('#pagamento_tipo_pagamento').val(response.tipo_pagamento);
             }
         });
     }
@@ -119,6 +136,7 @@
             },
             "columns": [
                 { "data": "id" },
+                { "data": "tipo_pagamento" },
                 { "data": "valor" },
                 { "data": "parcela" },
                 { "data": "data" ,

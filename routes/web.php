@@ -17,6 +17,7 @@ use App\Http\Controllers\{
     OrcamentosController,
     RelatoriosController,
     PagamentosController,
+    DespesasController,
     BancosController
 };
 
@@ -230,6 +231,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/bancos/edit/{id}', [BancosController::class, 'edit'])->name('bancos.edit');
     Route::post('/bancos/edit', [BancosController::class, 'update'])->name('bancos.update');
     Route::get('/bancos/delete/{id}', [BancosController::class, 'delete'])->name('bancos.delete');
+});
+
+//DESPESAS
+Route::middleware('auth')->group(function () {
+    Route::get('/despesas', [DespesasController::class, 'index'])->name('despesas');
+    Route::get('/despesas/json', [DespesasController::class, 'getListagem'])->name('despesas.json');    
+    Route::get('/despesas/create', [DespesasController::class, 'create'])->name('despesas.create');
+    Route::post('/despesas/create', [DespesasController::class, 'register'])->name('despesas.insert');
+    Route::get('/despesas/edit/{id}', [DespesasController::class, 'edit'])->name('despesas.edit');
+    Route::post('/despesas/edit', [DespesasController::class, 'update'])->name('despesas.update');
+    Route::get('/despesas/delete/{id}', [DespesasController::class, 'delete'])->name('despesas.delete');
 });
 
 require __DIR__.'/auth.php';

@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Roles;
 use Illuminate\Support\Facades\Auth;
 
-class User extends Authenticatable
+class User extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

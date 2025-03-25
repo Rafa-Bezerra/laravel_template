@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <section>
-                        <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Orçamentos') }}</h2></header>
+                        <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Obras') }}</h2></header>
                     </section>
                     <x-nav-link :href="route('orcamentos_por_cliente')">{{ __('Por cliente') }}</x-nav-link>
                     <x-nav-link :href="route('orcamentos_por_cliente')">{{ __('Comissões') }}</x-nav-link>

@@ -29,7 +29,7 @@ class OrcamentosController extends Controller
 {
     public function index(Request $request): View
     {
-        $tittle = 'Orçamentos';
+        $tittle = 'Obras';
         
         $this->hasPermission('orcamentos',$tittle,true);
         $insert = $this->hasPermission('orcamentos_insert');
@@ -202,7 +202,9 @@ class OrcamentosController extends Controller
 
         $quantidade = 0;
         if ($request->item_id == null) {
-            $quantidade = str_replace(['.', ','], ['', '.'], $request->item_quantidade);
+            // $quantidade = str_replace(['.', ','], ['', '.'], $request->item_quantidade);
+            $quantidade = $request->item_quantidade;
+            $quantidade_em_estoque = $this->valida_quantidade_em_estoque($request->item_material_id, $quantidade);
             $action = OrcamentosItens::create([
                 "orcamento_id" => $request->item_orcamento_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
@@ -220,6 +222,7 @@ class OrcamentosController extends Controller
         } else {
             $action = OrcamentosItens::findOrFail($request->item_id);
             $quantidade = $request->item_quantidade - $action->quantidade;
+            $quantidade_em_estoque = $this->valida_quantidade_em_estoque($request->item_material_id,$quantidade);
             $action->orcamento_id = $request->item_orcamento_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
             $action->material_id = $request->item_material_id;
@@ -234,10 +237,20 @@ class OrcamentosController extends Controller
         $this->saida_estoque($request->item_material_id, $quantidade);
 
         $valores = $this->atualiza_total($request->item_orcamento_id);
-
+        
         event(new Registered($action));
 
         return $valores->toJson();
+    }
+
+    public function valida_quantidade_em_estoque($material_id, $quantidade) {
+        $estoque = Estoque::where('material_id', $material_id)->first();
+        $quantidade_atualizada = $quantidade;
+        if ($estoque->quantidade - $quantidade < 0) {
+            $excedente = $estoque->quantidade - $quantidade;
+            $quantidade_atualizada = $quantidade - $excedente;
+        }
+        return $quantidade_atualizada;
     }
 
     public function saida_estoque($material_id, $quantidade) {
@@ -557,6 +570,7 @@ class OrcamentosController extends Controller
                         "orcamento_id" => $request->pagamento_orcamento_id,
                         "controle" => $request->pagamento_controle,
                         "banco_id" => $request->pagamento_banco_id,
+                        "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                         "data" => $data_pagamento->format('Y-m-d'),
                         "valor" => $valor_parcela,
                         "especie" => 'venda',
@@ -570,6 +584,7 @@ class OrcamentosController extends Controller
                     "orcamento_id" => $request->pagamento_orcamento_id,
                     "controle" => $request->pagamento_controle,
                     "banco_id" => $request->pagamento_banco_id,
+                    "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                     "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
                     "valor" => $request->pagamento_valor,
                     "especie" => 'venda',
@@ -582,6 +597,7 @@ class OrcamentosController extends Controller
             $action->valor = $request->pagamento_valor;
             $action->controle = $request->pagamento_controle;
             $action->banco_id = $request->pagamento_banco_id;
+            $action->tipo_pagamento = $request->pagamento_tipo_pagamento;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');
             $action->save();
             event(new Registered($action));

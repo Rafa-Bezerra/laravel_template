@@ -9,7 +9,7 @@ use App\Models\Orcamentos;
 use App\Models\Empresas;
 use App\Models\Comissoes;
 
-class OrcamentosComissoes extends Authenticatable
+class OrcamentosComissoes extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

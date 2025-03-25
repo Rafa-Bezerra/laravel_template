@@ -15,7 +15,7 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">{{ __('Home') }}</x-nav-link>
                     <x-nav-link :href="route('tables')" :active="request()->routeIs('tables')">{{ __('Cadastros') }}</x-nav-link>
                     <x-nav-link :href="route('compras')" :active="request()->routeIs('compras')">{{ __('Compras') }}</x-nav-link>
-                    <x-nav-link :href="route('orcamentos')" :active="request()->routeIs('orcamentos')">{{ __('Orçamentos') }}</x-nav-link>
+                    <x-nav-link :href="route('orcamentos')" :active="request()->routeIs('orcamentos')">{{ __('Obras') }}</x-nav-link>
                     <x-nav-link :href="route('relatorios')" :active="request()->routeIs('relatorios')">{{ __('Relatórios') }}</x-nav-link>
                 </div>
             </div>
@@ -89,7 +89,7 @@
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">{{ __('Home') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tables')" :active="request()->routeIs('tables')">{{ __('Cadastros') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('compras')" :active="request()->routeIs('compras')">{{ __('Compras') }}</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('orcamentos')" :active="request()->routeIs('orcamentos')">{{ __('Orçamentos') }}</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('orcamentos')" :active="request()->routeIs('orcamentos')">{{ __('Obras') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('relatorios')" :active="request()->routeIs('relatorios')">{{ __('Relatórios') }}</x-responsive-nav-link>
         </div>
 

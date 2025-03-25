@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Orcamentos;
 use App\Models\Servicos;
 
-class OrcamentosServicos extends Authenticatable
+class OrcamentosServicos extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

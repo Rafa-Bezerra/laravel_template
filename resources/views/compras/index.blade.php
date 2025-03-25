@@ -17,7 +17,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Observação</th>
+                            <th>Nome da obra</th>
                             <th>DT. Compra</th>
                             <th>DT. Prazo</th>
                             <th>DT. Entrega</th>

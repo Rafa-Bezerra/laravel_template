@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Database\Factories\RolesActionsFactory;
 
-class RolesActions extends Authenticatable
+class RolesActions extends BaseModel
 {
     use HasFactory;
     protected $table = "roles_actions";

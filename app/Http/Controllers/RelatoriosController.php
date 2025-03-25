@@ -33,7 +33,7 @@ class RelatoriosController extends Controller
 
     public function orcamentos_por_cliente(Request $request): View
     {
-        $tittle = 'Orçamentos por cliente';
+        $tittle = 'Obras por cliente';
         
         $this->hasPermission('relatorios_orcamentos_por_cliente',$tittle,true);
 

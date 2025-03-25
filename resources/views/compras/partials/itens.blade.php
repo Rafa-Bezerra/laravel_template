@@ -40,21 +40,21 @@
             <!-- PR. Unitário -->
             <div>
                 <x-input-label for="item_preco_unitario" :value="__('PR. Unitário')" />
-                <x-text-input id="item_preco_unitario" class="block mt-1 w-full totalizador" type="text" name="item_preco_unitario" :value="old('item_preco_unitario')" />
+                <x-text-input id="item_preco_unitario" class="moeda block mt-1 w-full totalizador" type="text" name="item_preco_unitario" :value="old('item_preco_unitario')" />
                 <x-input-error :messages="$errors->get('item_preco_unitario')" class="mt-2" />
             </div>
 
             <!-- VL. Desconto -->
             <div>
                 <x-input-label for="item_valor_desconto" :value="__('VL. Desconto')" />
-                <x-text-input id="item_valor_desconto" class="block mt-1 w-full totalizador" type="text" name="item_valor_desconto" :value="old('item_valor_desconto')" />
+                <x-text-input id="item_valor_desconto" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_desconto" :value="old('item_valor_desconto')" />
                 <x-input-error :messages="$errors->get('item_valor_desconto')" class="mt-2" />
             </div>
 
             <!-- VL. Total -->
             <div>
                 <x-input-label for="item_valor_total" :value="__('VL. Total')" />
-                <x-text-input id="item_valor_total" class="block mt-1 w-full totalizador" type="text" name="item_valor_total" :value="old('item_valor_total')" />
+                <x-text-input id="item_valor_total" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_total" :value="old('item_valor_total')" />
                 <x-input-error :messages="$errors->get('item_valor_total')" class="mt-2" />
             </div>
 

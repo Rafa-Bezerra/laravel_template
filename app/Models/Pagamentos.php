@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Bancos;
 
-class Pagamentos extends Authenticatable
+class Pagamentos extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -34,6 +34,8 @@ class Pagamentos extends Authenticatable
         'valor',
         'especie',
         'controle',
+        'tipo_pagamento',
+        'name',
     ];
 
     public function banco()

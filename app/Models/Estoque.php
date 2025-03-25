@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Orcamentos;
 use App\Models\Materiais;
 
-class Estoque extends Authenticatable
+class Estoque extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;

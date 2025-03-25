@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Bancos extends Authenticatable
+class Bancos extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -30,4 +30,9 @@ class Bancos extends Authenticatable
         'conta',
         'tipo',
     ];
+    
+    public function setAttribute($key, $value)
+    {
+        parent::setAttribute($key, is_string($value) ? strtoupper($value) : $value);
+    }
 }

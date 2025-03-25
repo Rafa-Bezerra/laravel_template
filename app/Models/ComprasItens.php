@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Compras;
 use App\Models\Materiais;
 
-class ComprasItens extends Authenticatable
+class ComprasItens extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
