@@ -16,6 +16,7 @@ use App\Models\Compras;
 use App\Models\ComprasItens;
 use App\Models\Estoque;
 use App\Models\Pagamentos;
+use App\Models\GruposDeMaterial;
 
 class ComprasController extends Controller
 {
@@ -84,9 +85,11 @@ class ComprasController extends Controller
         $this->hasPermission('compras_update',$tittle,true);
         $itens = $this->hasPermission('compras_itens');
         $pagamentos = $this->hasPermission('compras_pagamentos');
-        
+
+        $grupos_de_material = GruposDeMaterial::all();
         $materiais = Materiais::all();
         $data = Compras::findOrFail($id);
+        
         return view('compras.edit', [
             'user' => $request->user(),
             'tittle' => $tittle,
@@ -94,6 +97,7 @@ class ComprasController extends Controller
             'data' => $data,
             'itens' => $itens,
             'pagamentos' => $pagamentos,
+            'grupos_de_material' => $grupos_de_material,
         ]);
     }
 
@@ -121,8 +125,9 @@ class ComprasController extends Controller
     public function delete(Request $request, string $id): RedirectResponse
     {
         ComprasItens::where('compra_id', $id)->delete();
+        Pagamentos::where('compra_id', $id)->delete();
         $data = Compras::findOrFail($id)->delete();
-        return redirect(route('compras.index', absolute: false));
+        return redirect(route('compras', absolute: false));
     }
 
     public function getListagemItens(Request $request)
@@ -142,22 +147,32 @@ class ComprasController extends Controller
         $request->validate([
             'item_compra_id' => ['required'],
             'item_data' => ['required', 'string', 'max:255'],
-            'item_material_id' => ['required', 'max:255'],
             'item_quantidade' => ['required'],
             'item_preco_unitario' => ['required'],
             'item_valor_total' => ['required'],
         ]);
 
+        $material_id = $request->item_material_id;
+
+        if ($request->item_novo_material == true) {
+            $action = Materiais::create([
+                "name" => $request->item_name,
+                "unidade_de_medida" => $request->item_unidade_de_medida,
+                "grupo_de_material_id" => $request->item_grupo_de_material_id,
+            ]);
+            $material_id = $action->id;
+        }
+        // dd($material_id);
         $quantidade = 0;
         if ($request->item_id == null) {
             $quantidade = str_replace(['.', ','], ['', '.'], $request->item_quantidade);
             $action = ComprasItens::create([
                 "compra_id" => $request->item_compra_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
-                "material_id" => $request->item_material_id,
+                "material_id" => $material_id,
                 "quantidade" => $request->item_quantidade,
                 "preco_unitario" => $request->item_preco_unitario,
-                "valor_desconto" => $request->item_valor_desconto,
+                "valor_desconto" => $request->item_valor_desconto ? $request->item_valor_desconto : 0,
                 "valor_total" => $request->item_valor_total,
                 "observacao" => $request->item_observacao,
             ]);
@@ -166,7 +181,7 @@ class ComprasController extends Controller
             $quantidade = $request->item_quantidade - $action->quantidade;
             $action->compra_id = $request->item_compra_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
-            $action->material_id = $request->item_material_id;
+            $action->material_id = $material_id;
             $action->quantidade = $request->item_quantidade;
             $action->preco_unitario = $request->item_preco_unitario;
             $action->valor_desconto = $request->item_valor_desconto;
@@ -175,7 +190,7 @@ class ComprasController extends Controller
             $action->save();
         }
 
-        $this->entrada_estoque($request->item_material_id, $quantidade);
+        $this->entrada_estoque($material_id, $quantidade);
 
         $valores = $this->atualiza_total($request->item_compra_id);
 
@@ -237,7 +252,7 @@ class ComprasController extends Controller
         $item = ComprasItens::findOrFail($id);
         $compra = $item->compra_id;
         $quantidade = $item->quantidade * -1;
-        $this->saida_estoque($item->material_id, $quantidade);
+        $this->entrada_estoque($item->material_id, $quantidade);
         $item->delete();
         $valores = $this->atualiza_total($compra);
         return $valores->toJson();

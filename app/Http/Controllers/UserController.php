@@ -62,12 +62,12 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
         ]);
        
         $user = User::create([
             "name" => $request->name,
-            "password" => Hash::make('12345'),
+            "password" => '12345',
             "email" => $request->email,
             "password_expiration" => date("Y-m-d H:i:s", strtotime("+30 days")),
             "active" => true

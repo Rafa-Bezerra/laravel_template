@@ -152,6 +152,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/estoque/json', [EstoqueController::class, 'getListagem'])->name('estoque.json');    
     Route::get('/estoque/edit/{id}', [EstoqueController::class, 'edit'])->name('estoque.edit');
     Route::post('/estoque/edit', [EstoqueController::class, 'update'])->name('estoque.update');
+    Route::get('/estoque/create', [EstoqueController::class, 'create'])->name('estoque.create');
+    Route::post('/estoque/create', [EstoqueController::class, 'register'])->name('estoque.insert');
 });
 
 //SERVICOS

@@ -17,9 +17,14 @@
                 <x-text-input id="item_data" class="block mt-1 w-full" type="text" name="item_data" :value="old('item_data') ? old('item_data') : date('d/m/Y')"  />
                 <x-input-error :messages="$errors->get('item_data')" class="mt-2" />
             </div>   
-            
+
+            <div class="flex items-center mt-4">
+                <input id="item_novo_material" type="checkbox" name="item_novo_material"/>
+                <x-input-label for="item_novo_material" :value="__('Novo material')" />
+            </div>
+
             {{-- Material --}}
-            <div>
+            <div class="select-material">
                 <x-input-label for="item_material_id" :value="__('Material')" />
                 <x-select-input id="item_material_id" class="block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
                     <option></option>
@@ -28,6 +33,31 @@
                     @endforeach
                 </x-select-input>
                 <x-input-error :messages="$errors->get('item_material_id')" class="mt-2" />
+            </div>
+            
+            <!-- Name -->
+            <div class="insert-material" style="display: none;">
+                <x-input-label for="item_name" :value="__('Nome')" />
+                <x-text-input id="item_name" class="block mt-1 w-full" type="text" name="item_name" :value="old('item_name')"/>
+                <x-input-error :messages="$errors->get('item_name')" class="mt-2" />
+            </div>
+    
+            <!-- Unidade de medida -->
+            <div class="insert-material" style="display: none;">
+                <x-input-label for="item_unidade_de_medida" :value="__('Unidade de medida')" />
+                <x-text-input id="item_unidade_de_medida" class="block mt-1 w-full" type="text" name="item_unidade_de_medida" :value="old('item_unidade_de_medida')"/>
+                <x-input-error :messages="$errors->get('item_unidade_de_medida')" class="mt-2" />
+            </div>
+
+            <div class="insert-material" style="display: none;">
+                <x-input-label for="item_grupo_de_material_id" :value="__('Grupo de material')" />
+                <x-select-input id="item_grupo_de_material_id" class="block mt-1 w-full" name="item_grupo_de_material_id" :value="old('item_grupo_de_material_id')">
+                    <option></option>
+                    @foreach ($grupos_de_material as $item)
+                        <option value="{{$item->id}}">{{$item->name}}</option>
+                    @endforeach
+                </x-select-input>
+                <x-input-error :messages="$errors->get('item_grupo_de_material_id')" class="mt-2" />
             </div>
 
             <!-- Quantidade -->
@@ -163,6 +193,16 @@
     });
 
     $(document).ready(function () {
+
+        $('#item_novo_material').on('change', function () {
+            if ($(this).is(':checked')) {
+                $('.insert-material').show();
+                $('.select-material').hide();
+            } else {
+                $('.insert-material').hide();
+                $('.select-material').show();
+            }
+        });
         // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true});
         
         $('#minhaTabelaItens').DataTable({
@@ -230,6 +270,8 @@
                 complete: function (response) {
                     $('#minhaTabelaItens').DataTable().ajax.reload();
                     $('#itensForm')[0].reset();
+                    $('.insert-material').hide();
+                    $('.select-material').show();
                                         
                     $('#valor_itens').val(response.responseJSON.valor_itens);
                     $('#valor_desconto').val(response.responseJSON.valor_desconto);

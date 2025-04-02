@@ -40,7 +40,7 @@ class MateriaisController extends Controller
         return datatables()->of($listagem)->toJson();
     }
 
-    public function create(Request $request): View
+    public function create(Request $request, $grupo_de_material_id = null): View
     {
         $tittle = 'Novo material';
         
@@ -49,10 +49,11 @@ class MateriaisController extends Controller
             'user' => $request->user(),
             'tittle' => $tittle,
             'grupos_de_material' => $grupos_de_material,
+            'grupo_de_material_id' => $grupo_de_material_id,
         ]);
     }
 
-    public function register(Request $request): RedirectResponse
+    public function register(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -67,7 +68,19 @@ class MateriaisController extends Controller
 
         event(new Registered($action));
 
-        return redirect(route('materiais.index', absolute: false));
+        if ($request->inserir_novamente_no_grupo) {
+            $tittle = 'Novo material';
+            // dd($request->grupo_de_material_id);
+            $grupos_de_material = GruposDeMaterial::all();
+            return view('materiais.create', [
+                'user' => $request->user(),
+                'tittle' => $tittle,
+                'grupos_de_material' => $grupos_de_material,
+                'grupo_de_material_id' => $request->grupo_de_material_id,
+            ]);
+        } else {
+            return redirect(route('materiais.index', absolute: false));
+        }
     }
 
     public function edit(Request $request, string $id): View

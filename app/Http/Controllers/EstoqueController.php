@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Estoque;
+use App\Models\Materiais;
 use DataTables;
 
 class EstoqueController extends Controller
@@ -25,10 +26,12 @@ class EstoqueController extends Controller
         
         $this->hasPermission('estoque',$tittle,true);
         $update = $this->hasPermission('estoque_update');
+        $insert = $this->hasPermission('estoque_create');
 
         return view('estoque.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'insert' => $insert,
             'update' => $update,
         ]);
     }
@@ -41,6 +44,42 @@ class EstoqueController extends Controller
                 return $estoque->material->name ?? 'Sem material';
             })
         ->toJson();
+    }
+    
+    public function create(Request $request): View
+    {        
+        $tittle = 'Estoque criar';
+
+        $this->hasPermission('estoque_create',$tittle,true);
+        
+        $materiais = Materiais::leftJoin('estoque', 'materiais.id', '=', 'estoque.material_id')
+            ->whereNull('estoque.material_id')
+            ->select('materiais.*')
+            ->get();
+
+        return view('estoque.create', [
+            'user' => $request->user(),
+            'materiais' => $materiais,
+            'tittle' => $tittle,
+        ]);
+    }
+
+    public function register(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'quantidade' => ['required'],
+            'material_id' => ['required'],
+        ]);
+        
+        $action = Estoque::create([
+            "material_id" => $request->material_id,
+            "quantidade" => $request->quantidade,
+            "orcamento_id" => null,
+        ]);
+
+        event(new Registered($action));
+
+        return redirect(route('estoque', absolute: false));
     }
     
     public function edit(Request $request, string $id): View
