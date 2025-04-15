@@ -29,6 +29,7 @@ class Orcamentos extends BaseModel
     protected $fillable = [
         'empresa_id',
         'empresas_endereco_id',
+        'controle',
         'data_venda',
         'data_prazo',
         'data_entrega',

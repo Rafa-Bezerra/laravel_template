@@ -7,6 +7,8 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">@include('orcamentos.partials.filtro')</div>
+            
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-x-auto">    
                 @if ($insert)
                     <div align="right">
@@ -46,11 +48,24 @@
 
     }
     $(document).ready(function () {
+        $('#filtroForm').submit(function (e) {
+            e.preventDefault();
+            $('#minhaTabela').DataTable().ajax.reload();
+        });
+
         $('#minhaTabela').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": "{{ route('orcamentos.json') }}",
-            "columns": [
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('orcamentos.json') }}",
+                data: function (d) {
+                    d.filtro_data_de = $('#filtro_data_de').val();
+                    d.filtro_data_ate = $('#filtro_data_ate').val();
+                    d.filtro_controle = $('#filtro_controle').val();
+                    d.filtro_empresa_id = $('#filtro_empresa_id').val();
+                }
+            },
+            columns: [
                 { "data": "id" },
                 { "data": "controle" },
                 { "data": "empresa_name" },
@@ -99,7 +114,7 @@
                     }
                 }
             ],
-            "language": {
+            language: {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
             }
         });

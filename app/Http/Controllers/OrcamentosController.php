@@ -24,6 +24,7 @@ use App\Models\Estoque;
 use App\Models\Pagamentos;
 use App\Models\OrcamentosSocios;
 use App\Models\Bancos;
+use Carbon\Carbon;
 
 class OrcamentosController extends Controller
 {
@@ -36,28 +37,52 @@ class OrcamentosController extends Controller
         $update = $this->hasPermission('orcamentos_update');
         $delete = $this->hasPermission('orcamentos_delete');
 
+        $empresas = Empresas::all();
+
         return view('orcamentos.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
             'insert' => $insert,
             'update' => $update,
             'delete' => $delete,
+            'empresas' => $empresas,
         ]);
     }
 
-    public function getListagem()
+    public function getListagem(Request $request)
     {
-        $listagem = Orcamentos::all();
-        return datatables()->of($listagem)
-        ->addColumn('empresa_name', function ($empresa) {
-            return $empresa->empresa->name ?? 'Sem empresa';
-        })
-        ->addColumn('empresas_endereco_descricao', function ($orcamento) {
-            return $orcamento->endereco 
-                ? $orcamento->endereco->rua . " - " . $orcamento->endereco->numero 
-                : 'Sem endereço';
-        })
-        ->toJson();
+        $query = Orcamentos::query();
+
+        // Filtro: controle
+        if ($request->filled('filtro_controle')) {
+            $query->where('controle', 'like', '%' . $request->filtro_controle . '%');
+        }
+
+        // Filtro: empresa (se for um ID ou nome — ajuste conforme seu caso)
+        if ($request->filled('filtro_empresa_id')) {
+            $query->whereHas('empresa', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->filtro_empresa_id . '%');
+            });
+        }
+
+        // Filtro: data venda (entre)
+        if ($request->filled('filtro_data_de') && $request->filled('filtro_data_ate')) {
+            $dataDe = Carbon::createFromFormat('d/m/Y', $request->filtro_data_de)->startOfDay();
+            $dataAte = Carbon::createFromFormat('d/m/Y', $request->filtro_data_ate)->endOfDay();
+
+            $query->whereBetween('data_venda', [$dataDe, $dataAte]);
+        }
+
+        return datatables()->of($query)
+            ->addColumn('empresa_name', function ($orcamento) {
+                return $orcamento->empresa->name ?? 'Sem empresa';
+            })
+            ->addColumn('empresas_endereco_descricao', function ($orcamento) {
+                return $orcamento->endereco 
+                    ? $orcamento->endereco->rua . " - " . $orcamento->endereco->numero 
+                    : 'Sem endereço';
+            })
+            ->toJson();
     }
 
     public function create(Request $request): View

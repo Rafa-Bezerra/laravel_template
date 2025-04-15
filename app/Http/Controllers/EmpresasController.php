@@ -25,7 +25,7 @@ class EmpresasController extends Controller
         $insert = $this->hasPermission('empresas_insert');
         $update = $this->hasPermission('empresas_update');
         $delete = $this->hasPermission('empresas_delete');
-
+        // dd($update);
         return view('empresas.index', [
             'user' => $request->user(),
             'tittle' => $tittle,
