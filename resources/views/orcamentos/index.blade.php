@@ -48,6 +48,14 @@
 
     }
     $(document).ready(function () {
+        $('#limpar_filtro').on('click', function (e) {
+            $('#filtro_data_de').val('');
+            $('#filtro_data_ate').val('');
+            $('#filtro_controle').val('');
+            $('#filtro_empresa_id').val('');
+
+            $('#minhaTabela').DataTable().ajax.reload();
+        });
         $('#filtroForm').submit(function (e) {
             e.preventDefault();
             $('#minhaTabela').DataTable().ajax.reload();

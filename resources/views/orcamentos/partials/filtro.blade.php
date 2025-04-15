@@ -49,9 +49,8 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <x-primary-button class="ms-4">
-                {{ __('Filtrar') }}
-            </x-primary-button>
+            <x-primary-button type="button" class="ms-4" id="limpar_filtro">{{ __('Limpar') }}</x-primary-button>
+            <x-primary-button class="ms-4">{{ __('Filtrar') }}</x-primary-button>
         </div>
     </form>
 </section>

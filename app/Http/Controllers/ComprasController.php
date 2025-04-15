@@ -17,6 +17,7 @@ use App\Models\ComprasItens;
 use App\Models\Estoque;
 use App\Models\Pagamentos;
 use App\Models\GruposDeMaterial;
+use Carbon\Carbon;
 
 class ComprasController extends Controller
 {
@@ -38,9 +39,35 @@ class ComprasController extends Controller
         ]);
     }
 
-    public function getListagem()
+    public function getListagem(Request $request)
     {
-        $listagem = Compras::all();
+        $listagem = Compras::query();
+
+        if ($request->filled('filtro_observacao')) {
+            $listagem->where('observacao', 'like', '%' . $request->filtro_observacao . '%');
+        }
+
+        if ($request->filled('filtro_data_de') && $request->filled('filtro_data_ate')) {
+            $dataDe = Carbon::createFromFormat('d/m/Y', $request->filtro_data_de)->startOfDay();
+            $dataAte = Carbon::createFromFormat('d/m/Y', $request->filtro_data_ate)->endOfDay();
+
+            $listagem->whereBetween('data_compra', [$dataDe, $dataAte]);
+        }
+
+        if ($request->filled('filtro_data_prazo_de') && $request->filled('filtro_data_prazo_ate')) {
+            $dataDe = Carbon::createFromFormat('d/m/Y', $request->filtro_data_prazo_de)->startOfDay();
+            $dataAte = Carbon::createFromFormat('d/m/Y', $request->filtro_data_prazo_ate)->endOfDay();
+
+            $listagem->whereBetween('data_entrega', [$dataDe, $dataAte]);
+        }
+
+        if ($request->filled('filtro_data_entrega_de') && $request->filled('filtro_data_entrega_ate')) {
+            $dataDe = Carbon::createFromFormat('d/m/Y', $request->filtro_data_entrega_de)->startOfDay();
+            $dataAte = Carbon::createFromFormat('d/m/Y', $request->filtro_data_entrega_ate)->endOfDay();
+
+            $listagem->whereBetween('data_entrega', [$dataDe, $dataAte]);
+        }
+
         return datatables()->of($listagem)->toJson();
     }
 

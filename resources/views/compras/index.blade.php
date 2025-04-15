@@ -7,6 +7,9 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">@include('compras.partials.filtro')</div>
+
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">  
                 @if ($insert)          
                     <div align="right">
@@ -34,11 +37,40 @@
 </x-app-layout>
 <script>
     $(document).ready(function () {
-        // $.fn.dataTable.moment('DD/MM/YYYY');
+        $('#limpar_filtro').on('click', function (e) {
+            $('#filtro_observacao').val('');
+            $('#filtro_data_de').val('');
+            $('#filtro_data_ate').val('');
+            $('#filtro_data_entrega_de').val('');
+            $('#filtro_data_entrega_ate').val('');
+            $('#filtro_data_prazo_de').val('');
+            $('#filtro_data_prazo_ate').val('');
+
+            $('#minhaTabela').DataTable().ajax.reload();
+        });
+
+        $('#filtroForm').submit(function (e) {
+            e.preventDefault();
+            $('#minhaTabela').DataTable().ajax.reload();
+        });
+        
         $('#minhaTabela').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ route('compras.json') }}",
+            
+            ajax: {
+                url: "{{ route('compras.json') }}",
+                data: function (d) {
+                    d.filtro_observacao = $('#filtro_observacao').val();
+                    d.filtro_data_de = $('#filtro_data_de').val();
+                    d.filtro_data_ate = $('#filtro_data_ate').val();
+                    d.filtro_data_entrega_de = $('#filtro_data_entrega_de').val();
+                    d.filtro_data_entrega_ate = $('#filtro_data_entrega_ate').val();
+                    d.filtro_data_prazo_de = $('#filtro_data_prazo_de').val();
+                    d.filtro_data_prazo_ate = $('#filtro_data_prazo_ate').val();
+                }
+            },
+
             "columns": [
                 { "data": "id" },
                 { "data": "observacao" },
