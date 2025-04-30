@@ -19,6 +19,7 @@
                             <th>ID</th>
                             <th>Material</th>
                             <th>Quantidade</th>
+                            <th>Valor</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -37,6 +38,7 @@
                 { "data": "id" },
                 { "data": "material_name" },
                 { "data": "quantidade" },
+                { "data": "valor" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {                 

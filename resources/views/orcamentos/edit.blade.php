@@ -15,7 +15,7 @@
                         <!-- Empresa -->
                         <div>
                             <x-input-label for="empresa_id" :value="__('Empresa')" />
-                            <x-select-input id="empresa_id" class="block mt-1 w-full" name="empresa_id" :value="old('empresa_id')">
+                            <x-select-input id="empresa_id" class="select2 block mt-1 w-full" name="empresa_id" :value="old('empresa_id')">
                                 <option></option>
                                 @foreach ($empresas as $item)
                                     <option value="{{$item->id}}" @if ($item->id == $data->empresa_id) @selected(true) @endif>{{$item->name}}</option>
@@ -214,7 +214,7 @@
         }
     });
 
-    $(document).ready(function () {        
+    $(document).ready(function () {  
         $('#orcamentoForm').submit(function (e) {
             e.preventDefault();
             $.ajax({

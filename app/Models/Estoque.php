@@ -30,6 +30,7 @@ class Estoque extends BaseModel
         'material_id',
         'quantidade',
         'orcamento_id',
+        'valor',
     ];
 
     public function orcamento(): BelongsTo

@@ -82,7 +82,9 @@ class User extends BaseModel
 
         if(! $permission) {
             foreach ($actions as $key => $value) {
-                if($value->route == $route) $permission = true;
+                if (strtoupper($value->route) == strtoupper($route)) {
+                    $permission = true;
+                }
             }
         }
         

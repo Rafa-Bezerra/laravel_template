@@ -112,6 +112,7 @@
                     "data": "id", 
                     "render": function (data, type, row) {               
                         let actions = '';
+                        actions += `<a href="/orcamentos/print/${data}">Relatório</a> `;
                         if ({{$update}}) {
                             actions += `<a href="/orcamentos/edit/${data}">Editar</a> `;
                         }
@@ -124,6 +125,13 @@
             ],
             language: {
                 "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+            }
+        });
+
+        $('#minhaTabela tbody').on('dblclick', 'tr', function () {
+            var data = $('#minhaTabela').DataTable().row(this).data();
+            if (data && data.id && {{$update}}) {
+                window.location.href = `/orcamentos/edit/${data.id}`;
             }
         });
     });

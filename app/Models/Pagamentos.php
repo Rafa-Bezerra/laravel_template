@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Bancos;
+use App\Models\Orcamentos;
 
 class Pagamentos extends BaseModel
 {
@@ -41,5 +42,10 @@ class Pagamentos extends BaseModel
     public function banco()
     {
         return $this->belongsTo(Bancos::class);
+    }
+
+    public function orcamento()
+    {
+        return $this->belongsTo(Orcamentos::class);
     }
 }

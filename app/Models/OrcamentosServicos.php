@@ -29,6 +29,7 @@ class OrcamentosServicos extends BaseModel
     protected $fillable = [
         'orcamento_id',
         'servico_id',
+        'data',
         'preco',
     ];
 

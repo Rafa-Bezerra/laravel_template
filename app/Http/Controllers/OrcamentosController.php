@@ -134,12 +134,12 @@ class OrcamentosController extends Controller
         $permissao_pagamentos = $this->hasPermission('orcamentos_pagamentos');
 
         $data = Orcamentos::findOrFail($id);
-        $empresas = Empresas::all();
+        $empresas = Empresas::orderBy('name')->get();
         $empresas_enderecos = EmpresasEnderecos::where('empresa_id', $data->empresa_id)->get();
-        $materiais = Materiais::all();
-        $comissoes = Comissoes::all();
-        $servicos = Servicos::all();
-        $bancos = Bancos::all();
+        $materiais = Materiais::orderBy('name')->get();
+        $comissoes = Comissoes::orderBy('name')->get();
+        $servicos = Servicos::orderBy('name')->get();
+        $bancos = Bancos::orderBy('name')->get();
         
         return view('orcamentos.edit', [
             'user' => $request->user(),
@@ -329,8 +329,18 @@ class OrcamentosController extends Controller
 
     public function getEstoqueMaterial(Request $request)
     {
-        $listagem = Estoque::where('material_id', $request->material_id);
-        return datatables()->of($listagem)->toJson();
+        $estoque = Estoque::where('material_id', $request->material_id)->first();
+
+        // Verifica se o estoque existe, caso contrário, define a quantidade como 0
+        if (!$estoque) {
+            $estoque = new Estoque();  // Cria um objeto vazio para garantir que a resposta seja consistente
+            $estoque->quantidade = 0;  // Define a quantidade como 0
+        }
+
+        // Retorna a resposta em formato JSON
+        return response()->json([
+            'data' => [$estoque]  // Retorna um array com o estoque (ou com quantidade 0)
+        ]);
     }
 
     public function getListagemServicos(Request $request)
@@ -352,23 +362,27 @@ class OrcamentosController extends Controller
             'servico_preco' => ['required'],
         ]);
 
+        $preco = str_replace(['.', ','], ['', '.'], $request->servico_preco);
+
         if ($request->servico_id == null) {
             $action = OrcamentosServicos::create([
                 "orcamento_id" => $request->servico_orcamento_id,
                 "servico_id" => $request->servico_servico_id,
-                "preco" => $request->servico_preco,
+                "data" => DateTime::createFromFormat('d/m/Y', $request->servico_data)->format('Y-m-d'),
+                "preco" => $preco,
             ]);
         } else {
             $action = OrcamentosServicos::findOrFail($request->servico_id);
             $action->orcamento_id = $request->servico_orcamento_id;
             $action->servico_id = $request->servico_servico_id;
-            $action->preco = $request->servico_preco;
+            $action->data = DateTime::createFromFormat('d/m/Y', $request->servico_data)->format('Y-m-d');
+            $action->preco = $preco;
             $action->save();
         }
 
         event(new Registered($action));
 
-        $this->atualiza_total($request->servico_orcamento_id);
+        // $this->atualiza_total($request->servico_orcamento_id);
 
         $valores = $this->atualiza_total($request->servico_orcamento_id);
         return $valores->toJson();
@@ -642,5 +656,29 @@ class OrcamentosController extends Controller
         $pagamento->delete();
         $valores = $this->atualiza_total($pagamento->orcamento_id);
         return $valores->toJson();
+    }
+
+    public function print(Request $request, string $id): View
+    {        
+        $tittle = 'Resumo orçamento';
+
+        $orcamento = Orcamentos::findOrFail($id)->with('empresa')->with('endereco')->where('id', $id)->firstOrFail();
+        $orcamento_itens = OrcamentosItens::where('orcamento_id', $id)->with('material')->get();
+        $orcamento_servicos = OrcamentosServicos::where('orcamento_id', $id)->with('servico')->get();
+        $orcamento_comissoes = OrcamentosComissoes::where('orcamento_id', $id)->with('empresa')->with('comissao')->get();
+        $orcamento_socios = OrcamentosSocios::where('orcamento_id', $id)->with('empresa')->get();
+        $orcamento_pagamentos = Pagamentos::where('orcamento_id', $id)->with('banco')->get();
+        // dd($orcamento);
+
+        return view('orcamentos.print', [
+            'user' => $request->user(),
+            'tittle' => $tittle,
+            'orcamento' => $orcamento,
+            'orcamento_itens' => $orcamento_itens,
+            'orcamento_servicos' => $orcamento_servicos,
+            'orcamento_comissoes' => $orcamento_comissoes,
+            'orcamento_socios' => $orcamento_socios,
+            'orcamento_pagamentos' => $orcamento_pagamentos,
+        ]);
     }
 }

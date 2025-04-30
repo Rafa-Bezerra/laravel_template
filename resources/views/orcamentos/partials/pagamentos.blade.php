@@ -61,7 +61,7 @@
             {{-- Controle --}}
             <div>
                 <x-input-label for="pagamento_banco_id" :value="__('Banco')" />
-                <x-select-input id="pagamento_banco_id" class="block mt-1 w-full" name="pagamento_banco_id" :value="old('pagamento_banco_id')">
+                <x-select-input id="pagamento_banco_id" class="select2 block mt-1 w-full" name="pagamento_banco_id" :value="old('pagamento_banco_id')">
                     <option></option>
                     @foreach ($bancos as $item)
                         <option value="{{$item->id}}">{{$item->name." - ".$item->agencia."-".$item->conta}}</option>

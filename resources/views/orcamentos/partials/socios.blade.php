@@ -14,7 +14,7 @@
             {{-- Empresas --}}
             <div>
                 <x-input-label for="socio_empresa_id" :value="__('Empresa')" />
-                <x-select-input id="socio_empresa_id" class="block mt-1 w-full" name="socio_empresa_id" :value="old('socio_empresa_id')">
+                <x-select-input id="socio_empresa_id" class="select2 block mt-1 w-full" name="socio_empresa_id" :value="old('socio_empresa_id')">
                     <option></option>
                     @foreach ($empresas as $item)
                         <option value="{{$item->id}}">{{$item->name}}</option>

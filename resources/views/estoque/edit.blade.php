@@ -17,6 +17,13 @@
                         <x-text-input id="quantidade" class="block mt-1 w-full" type="text" name="quantidade" :value="old('quantidade') ? old('quantidade') : $data->quantidade" required autofocus />
                         <x-input-error :messages="$errors->get('quantidade')" class="mt-2" />
                     </div>
+                    
+                    <!-- Valor -->
+                    <div>
+                        <x-input-label for="valor" :value="__('Valor')" />
+                        <x-text-input id="valor" class="block mt-1 w-full" type="text" name="valor" :value="old('valor') ? old('valor') : $data->valor" />
+                        <x-input-error :messages="$errors->get('valor')" class="mt-2" />
+                    </div>
             
                     <div class="flex items-center justify-end mt-4">
                         <x-primary-button class="ms-4">

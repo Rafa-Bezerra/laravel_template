@@ -102,9 +102,6 @@ class EmpresasController extends Controller
         $request->validate([
             'contato_empresa_id' => ['required'],
             'contato_contato' => ['required', 'string', 'max:255'],
-            'contato_fone' => ['required', 'max:255'],
-            'contato_email' => ['string', 'max:255'],
-            'contato_observacao' => ['string', 'max:255'],
         ]);
 
         if ($request->contato_id == null) {
@@ -135,11 +132,7 @@ class EmpresasController extends Controller
     {
         $request->validate([
             'endereco_empresa_id' => ['required'],
-            'endereco_cep' => ['required', 'string', 'max:255'],
             'endereco_estado' => ['required', 'max:255'],
-            'endereco_cidade' => ['string', 'max:255'],
-            'endereco_rua' => ['string', 'max:255'],
-            'endereco_numero' => ['required', 'max:255'],
         ]);
 
         if ($request->endereco_id == null) {

@@ -21,14 +21,15 @@
             {{-- Material --}}
             <div>
                 <x-input-label for="item_material_id" :value="__('Material')" />
-                <x-select-input id="item_material_id" class="block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
+                <x-select-input id="item_material_id" class="select2 block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
                     <option></option>
                     @foreach ($materiais as $item)
-                        <option value="{{$item->id}}">{{$item->name}}</option>
+                        <option value="{{$item->id}}">{{$item->id.' - '.$item->name}}</option>
                     @endforeach
                 </x-select-input>
                 <x-input-error :messages="$errors->get('item_material_id')" class="mt-2" />
             </div>
+
 
             <!-- Quantidade -->
             <div>
@@ -256,6 +257,7 @@
                 complete: function (response) {
                     console.log(quantidade); //5
                     console.log(response.responseJSON.data[0].quantidade); //1000.00
+                    console.log(response.responseJSON.data[0]);
                     if (quantidade > response.responseJSON.data[0].quantidade) {
                         $('#item_quantidade').val(response.responseJSON.data[0].quantidade);
                         alert('Quantidade excede o estoque!');

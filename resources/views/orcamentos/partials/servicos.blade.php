@@ -29,6 +29,14 @@
                 <x-text-input id="servico_preco" class="block mt-1 w-full totalizador" type="text" name="servico_preco" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('servico_preco')" class="mt-2" />
             </div>
+
+            <!-- DT. Item -->
+            <div>
+                <x-input-label for="servico_data" :value="__('Data')" />
+                <x-text-input id="servico_data" class="block mt-1 w-full" type="text" name="servico_data" :value="old('servico_data') ? old('servico_data') : date('d/m/Y')"  />
+                <x-input-error :messages="$errors->get('servico_data')" class="mt-2" />
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <x-primary-button class="ms-4">
                     {{ __('Salvar') }}
@@ -43,6 +51,7 @@
                 <th>ID</th>
                 <th>Serviço</th>
                 <th>Preço</th>
+                <th>Data</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -59,6 +68,7 @@
                 $('#servico_id').val(response.id);
                 $('#servico_servico_id').val(response.servico_id);
                 $('#servico_preco').val(response.preco);
+                $('#servico_data').val(formatarData(response.data));
             }
         });
     }
@@ -82,6 +92,24 @@
             }
         });
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        //servico_data
+        let servico_data = document.getElementById("servico_data");
+        servico_data.addEventListener("input", function (e) {
+            let servico_data_value = e.target.value.replace(/\D/g, "");
+            if (servico_data_value.length > 2) servico_data_value = servico_data_value.substring(0,2) + "/" + servico_data_value.substring(2);
+            if (servico_data_value.length > 5) servico_data_value = servico_data_value.substring(0,5) + "/" + servico_data_value.substring(5,9);
+            e.target.value = servico_data_value;
+        });
+        let servico_data_oldValue = "{{ $data->servico_data }}";
+        if (servico_data_oldValue) {
+            let servico_data_date = new Date(servico_data_oldValue);
+            if (!isNaN(servico_data_date)) {
+                servico_data.value = servico_data_date.toLocaleDateString("pt-BR");
+            }
+        }
+    });
     
     $(document).ready(function () {
         $('#minhaTabelaServicos').DataTable({
@@ -100,6 +128,11 @@
                 { "data": "preco",
                     "render": function (data) {
                         return formatarMoeda(data);
+                    } 
+                },
+                { "data": "data",
+                    "render": function (data, type, row) {
+                        return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     } 
                 },
                 { 

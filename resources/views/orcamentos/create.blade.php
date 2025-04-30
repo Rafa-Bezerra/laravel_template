@@ -52,6 +52,13 @@
                         <x-text-input id="data_prazo" class="block mt-1 w-full" type="text" name="data_prazo" :value="old('data_prazo') ? old('data_prazo') : date('d/m/Y', strtotime('+7 days'))"  />
                         <x-input-error :messages="$errors->get('data_prazo')" class="mt-2" />
                     </div>
+
+                    <!-- Orçamento -->
+                    <div>
+                        <x-input-label for="valor_orcamento" :value="__('Orçamento')" />
+                        <x-text-input id="valor_orcamento" class="block mt-1 w-full" type="text" name="valor_orcamento" :value="old('valor_orcamento')" />
+                        <x-input-error :messages="$errors->get('valor_orcamento')" class="mt-2" />
+                    </div>
             
                     <div class="flex items-center justify-end mt-4">
                         <x-primary-button class="ms-4">

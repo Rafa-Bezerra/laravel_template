@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <section>
                         <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Obras') }}</h2></header>
@@ -15,8 +15,8 @@
                     <x-nav-link :href="route('orcamentos_por_cliente')">{{ __('Por cliente') }}</x-nav-link>
                     <x-nav-link :href="route('orcamentos_por_cliente')">{{ __('Comissões') }}</x-nav-link>
                 </div>
-            </div>
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            </div> --}}
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <section>
                         <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Compras') }}</h2></header>
@@ -30,6 +30,15 @@
                         <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Estoque') }}</h2></header>
                     </section>
                     <x-nav-link :href="route('movimentacoes_de_estoque')">{{ __('Movimentações') }}</x-nav-link>
+                </div>
+            </div> --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <section>
+                        <header><h2 class="text-md font-medium text-gray-900 dark:text-gray-100">{{ __('Financeiro') }}</h2></header>
+                    </section>
+                    <x-nav-link :href="route('recebimentos')">{{ __('Recebimentos') }}</x-nav-link>
+                    <x-nav-link :href="route('despesas_vs_recebimentos')">{{ __('Despesas x Recebimentos') }}</x-nav-link>
                 </div>
             </div>
         </div>

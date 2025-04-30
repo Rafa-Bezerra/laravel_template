@@ -14,7 +14,7 @@
             <!-- CEP -->
             <div>
                 <x-input-label for="endereco_cep" :value="__('CEP')" />
-                <x-text-input id="endereco_cep" class="block mt-1 w-full" type="text" name="endereco_cep" :value="old('endereco_cep')" required autofocus autocomplete="endereco_cep" />
+                <x-text-input id="endereco_cep" class="block mt-1 w-full" type="text" name="endereco_cep" :value="old('endereco_cep')" autofocus autocomplete="endereco_cep" />
                 <x-input-error :messages="$errors->get('endereco_cep')" class="mt-2" />
             </div>
 

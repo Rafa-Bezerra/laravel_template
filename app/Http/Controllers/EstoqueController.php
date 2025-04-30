@@ -74,6 +74,7 @@ class EstoqueController extends Controller
         $action = Estoque::create([
             "material_id" => $request->material_id,
             "quantidade" => $request->quantidade,
+            "valor" => $request->valor,
             "orcamento_id" => null,
         ]);
 
@@ -105,6 +106,7 @@ class EstoqueController extends Controller
         
         $action = Estoque::findOrFail($request->id);
         $action->quantidade = $request->quantidade;
+        $action->valor = $request->valor;
         $action->save();
 
         event(new Registered($action));

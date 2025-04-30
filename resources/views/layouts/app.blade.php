@@ -16,9 +16,11 @@
 
         <!-- DataTables CSS -->
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
         <!-- DataTables JS -->
@@ -63,5 +65,11 @@
         //         $(this).val(parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
         //     }
         // });
+        $('.select2').select2({
+            placeholder: 'Selecione uma opção',
+            allowClear: true,
+            width: 'resolve'
+        });
+       
     });
 </script>

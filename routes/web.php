@@ -185,7 +185,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/orcamentos/empresas/enderecos/json', [OrcamentosController::class, 'getEnderecos'])->name('orcamentos.getEnderecos');    
     Route::get('/orcamentos/create', [OrcamentosController::class, 'create'])->name('orcamentos.create');
     Route::post('/orcamentos/create', [OrcamentosController::class, 'register'])->name('orcamentos.insert');    
-    Route::get('/orcamentos/edit/{id}', [OrcamentosController::class, 'edit'])->name('orcamentos.edit');
+    Route::get('/orcamentos/edit/{id}', [OrcamentosController::class, 'edit'])->name('orcamentos.edit');  
+    Route::get('/orcamentos/print/{id}', [OrcamentosController::class, 'print'])->name('orcamentos.print');
     Route::post('/orcamentos/edit', [OrcamentosController::class, 'update'])->name('orcamentos.update');    
     Route::get('/orcamentos/delete/{id}', [OrcamentosController::class, 'delete'])->name('orcamentos.delete');    
     Route::get('/orcamentos/itens/json', [OrcamentosController::class, 'getListagemItens'])->name('orcamentos_itens.json');
@@ -217,6 +218,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/relatorios/orcamentos_por_cliente', [RelatoriosController::class, 'orcamentos_por_cliente'])->name('orcamentos_por_cliente');
     Route::get('/relatorios/compras_por_material', [RelatoriosController::class, 'compras_por_material'])->name('compras_por_material');
     Route::get('/relatorios/movimentacoes_de_estoque', [RelatoriosController::class, 'movimentacoes_de_estoque'])->name('movimentacoes_de_estoque');
+    Route::get('/relatorios/recebimentos', [RelatoriosController::class, 'recebimentos'])->name('recebimentos');
+    Route::get('/relatorios/recebimentos/ajax', [RelatoriosController::class, 'recebimentosAjax'])->name('recebimentos.ajax');
+    Route::get('/relatorios/despesas_vs_recebimentos', [RelatoriosController::class, 'despesas_vs_recebimentos'])->name('despesas_vs_recebimentos');
+    Route::get('/relatorios/despesas_vs_recebimentos/ajax', [RelatoriosController::class, 'despesas_recebimentosAjax'])->name('despesas_recebimentos.ajax');
 });
 
 //RELATÓRIOS
