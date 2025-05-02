@@ -93,7 +93,15 @@ class GruposDeMaterialController extends Controller
 
     public function delete(Request $request, string $id): RedirectResponse
     {
-        $data = GruposDeMaterial::findOrFail($id)->delete();
+        // $data = GruposDeMaterial::findOrFail($id)->delete();
+        $grupo = GruposDeMaterial::findOrFail($id);
+
+        if ($grupo->materiais()->exists()) {
+            return redirect(route('grupos_de_material.index', absolute: false));
+        }
+
+        $grupo->delete();
+        
         return redirect(route('grupos_de_material.index', absolute: false));
     }
 }

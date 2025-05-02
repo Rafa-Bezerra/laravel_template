@@ -35,9 +35,15 @@ class MateriaisController extends Controller
 
     public function getListagem()
     {
-        $listagem = Materiais::all();
+        $listagem = Materiais::with('grupo_de_material')->get();
         // dd($listagem);
-        return datatables()->of($listagem)->toJson();
+        return datatables()->of($listagem)
+            ->addColumn('grupo_name', function ($material) {
+                if ($material->grupo_de_material) {
+                    return "{$material->grupo_de_material->name}";
+                }
+                return 'Sem grupo';
+        })->toJson();
     }
 
     public function create(Request $request, $grupo_de_material_id = null): View

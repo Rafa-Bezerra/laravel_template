@@ -51,7 +51,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- Orçamento Info --}}
-            <div class="bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 shadow sm:rounded-lg">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Informações da obra</h3>
                 <p><strong>ID:</strong> {{ $orcamento->id }}</p>
                 <p><strong>Cliente:</strong> {{ $orcamento->empresa->name ?? '-' }}</p>
@@ -125,6 +125,62 @@
                                 <tr>
                                     <td class="text-right font-bold px-4 py-2">Total dos Serviços:</td>
                                     <td class="px-4 py-2 font-bold">R$ {{ number_format($totalServicos, 2, ',', '.') }}</td>
+                                </tr>
+                            </tfoot>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Gastos --}}
+            <div class="bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Gastos realizados</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
+                        <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            <tr>
+                                <th class="px-4 py-2">Data</th>
+                                <th class="px-4 py-2">Valor</th>
+                                <th class="px-4 py-2">Banco</th>
+                                <th class="px-4 py-2">Controle</th>
+                                <th class="px-4 py-2">OBS.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $gasto_inicial = '';
+                            @endphp
+                            @foreach($orcamento_gastos as $gasto)
+                                @if ($gasto_inicial != $gasto->especie) 
+                                    @php
+                                        $gasto_inicial = $gasto->especie;
+                                    @endphp
+                                    <tr class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                                        <td colspan="5" style="padding-left: 20px;">
+                                            @if ($gasto_inicial == 'pessoas')
+                                                GASTO COM PESSOAL
+                                            @else
+                                                GASTO COM MATERIAIS
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
+                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                    <td class="px-4 py-2">{{ \Carbon\Carbon::parse($gasto->data)->format('d/m/Y') }}</td>
+                                    <td class="px-4 py-2">R$ {{ number_format($gasto->valor, 2, ',', '.') }}</td>
+                                    <td class="px-4 py-2">{{ $gasto->banco->name ? $gasto->banco->name.' - '.$gasto->banco->agencia.' | '.$gasto->banco->conta : '-' }}</td>
+                                    <td class="px-4 py-2">{{ $gasto->controle ?? '-' }}</td>
+                                    <td class="px-4 py-2">{{ $gasto->observacao ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                            @php
+                                $totalGastos = $orcamento_gastos->sum('valor');
+                            @endphp
+                            
+                            <tfoot>
+                                <tr>
+                                    <td class="text-right font-bold px-4 py-2">Total dos Gastos:</td>
+                                    <td class="px-4 py-2 font-bold">R$ {{ number_format($totalGastos, 2, ',', '.') }}</td>
                                 </tr>
                             </tfoot>
                         </tbody>

@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\GruposDeMaterial;
+use App\Models\Orcamentos;
+use App\Models\Bancos;
 
-class Materiais extends BaseModel
+class OrcamentosGastos extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +19,7 @@ class Materiais extends BaseModel
      *
      * @var list<string>
      */
-    protected $table = 'materiais';
+    protected $table = 'orcamentos_gastos';
 
     /**
      * The attributes that are mass assignable.
@@ -26,14 +27,23 @@ class Materiais extends BaseModel
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'unidade_de_medida',
-        'grupo_de_material_id',
+        'orcamento_id',
+        'tipo_pagamento',
+        'valor',
+        'data',
+        'controle',
+        'banco_id',
         'observacao',
+        'especie',
     ];
 
-    public function grupo_de_material()
+    public function orcamento()
     {
-        return $this->belongsTo(GruposDeMaterial::class);
+        return $this->belongsTo(Orcamentos::class);
+    }
+
+    public function banco()
+    {
+        return $this->belongsTo(Bancos::class);
     }
 }

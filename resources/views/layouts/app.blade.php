@@ -45,7 +45,7 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
-            </main>
+            </main>            
         </div>
     </body>
 </html>
@@ -54,17 +54,7 @@
         $("input[type='text'], input[type='email'], input[type='number'], input[type='search']").focus(function() {
             $(this).select();
         });
-
-        // $(".moeda").mask("R$ #.##0,00", { reverse: true });
-
-        // Se já existir um valor no campo, reaplica a máscara corretamente
-        // $(".moeda").each(function() {
-        //     let valor = $(this).val();
-        //     $(this).mask("R$ 000.000.000,00", { reverse: true });
-        //     if (valor) {
-        //         $(this).val(parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-        //     }
-        // });
+        
         $('.select2').select2({
             placeholder: 'Selecione uma opção',
             allowClear: true,

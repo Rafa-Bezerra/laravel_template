@@ -209,7 +209,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/orcamentos/pagamentos/json', [OrcamentosController::class, 'getListagemPagamentos'])->name('orcamentos_pagamentos.json');
     Route::post('/orcamentos/pagamentos/submit', [OrcamentosController::class, 'submitPagamentos'])->name('orcamentos_pagamentos.submit');    
     Route::get('/orcamentos/pagamentos/get/{id}', [OrcamentosController::class, 'getPagamento'])->name('orcamentos_pagamentos.get');
-    Route::get('/orcamentos/pagamentos/delete/{id}', [OrcamentosController::class, 'deletePagamento'])->name('orcamentos_pagamentos.delete');  
+    Route::get('/orcamentos/pagamentos/delete/{id}', [OrcamentosController::class, 'deletePagamento'])->name('orcamentos_pagamentos.delete');      
+    Route::get('/orcamentos/gastos/json', [OrcamentosController::class, 'getListagemGastos'])->name('orcamentos_gastos.json');
+    Route::post('/orcamentos/gastos/submit', [OrcamentosController::class, 'submitGastos'])->name('orcamentos_gastos.submit');    
+    Route::get('/orcamentos/gastos/get/{id}', [OrcamentosController::class, 'getGasto'])->name('orcamentos_gastos.get');
+    Route::get('/orcamentos/gastos/delete/{id}', [OrcamentosController::class, 'deleteGasto'])->name('orcamentos_gastos.delete');  
 });
 
 //RELATÓRIOS

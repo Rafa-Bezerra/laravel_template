@@ -38,7 +38,7 @@
                 { "data": "id" },
                 { "data": "name" },
                 { "data": "unidade_de_medida" },
-                { "data": "grupo_de_material_id" },
+                { "data": "grupo_name" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {               

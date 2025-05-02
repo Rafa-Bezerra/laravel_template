@@ -23,6 +23,7 @@ use App\Models\Servicos;
 use App\Models\Estoque;
 use App\Models\Pagamentos;
 use App\Models\OrcamentosSocios;
+use App\Models\OrcamentosGastos;
 use App\Models\Bancos;
 
 class OrcamentosController extends Controller
@@ -132,6 +133,7 @@ class OrcamentosController extends Controller
         $permissao_servicos = $this->hasPermission('orcamentos_servicos');
         $permissao_socios = $this->hasPermission('orcamentos_socios');
         $permissao_pagamentos = $this->hasPermission('orcamentos_pagamentos');
+        $permissao_gastos = $this->hasPermission('orcamentos_gastos');
 
         $data = Orcamentos::findOrFail($id);
         $empresas = Empresas::orderBy('name')->get();
@@ -156,6 +158,7 @@ class OrcamentosController extends Controller
             'permissao_servicos' => $permissao_servicos,
             'permissao_socios' => $permissao_socios,
             'permissao_pagamentos' => $permissao_pagamentos,
+            'permissao_gastos' => $permissao_gastos,
         ]);
     }
 
@@ -293,7 +296,8 @@ class OrcamentosController extends Controller
         $valor_itens = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_total');
         $valor_desconto = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_desconto');
         $valor_servicos = OrcamentosServicos::where('orcamento_id', $orcamento_id)->sum('preco');
-        $valor_total = $valor_itens + $valor_servicos;
+        $valor_gastos = OrcamentosGastos::where('orcamento_id', $orcamento_id)->sum('valor');
+        $valor_total = $valor_itens + $valor_servicos + $valor_gastos;
 
         $orcamento = Orcamentos::findOrFail($orcamento_id);
         $valor_total = round($valor_total * (1 + ($orcamento->valor_impostos/100)),2);
@@ -362,7 +366,11 @@ class OrcamentosController extends Controller
             'servico_preco' => ['required'],
         ]);
 
-        $preco = str_replace(['.', ','], ['', '.'], $request->servico_preco);
+        $preco = $request->servico_preco;
+
+        if (strpos($preco, ',') !== false) {
+            $preco = str_replace(['.', ','], ['', '.'], $preco);
+        }
 
         if ($request->servico_id == null) {
             $action = OrcamentosServicos::create([
@@ -667,6 +675,7 @@ class OrcamentosController extends Controller
         $orcamento_servicos = OrcamentosServicos::where('orcamento_id', $id)->with('servico')->get();
         $orcamento_comissoes = OrcamentosComissoes::where('orcamento_id', $id)->with('empresa')->with('comissao')->get();
         $orcamento_socios = OrcamentosSocios::where('orcamento_id', $id)->with('empresa')->get();
+        $orcamento_gastos = OrcamentosGastos::where('orcamento_id', $id)->with('banco')->orderBy('especie')->orderBy('data')->get();
         $orcamento_pagamentos = Pagamentos::where('orcamento_id', $id)->with('banco')->get();
         // dd($orcamento);
 
@@ -679,6 +688,82 @@ class OrcamentosController extends Controller
             'orcamento_comissoes' => $orcamento_comissoes,
             'orcamento_socios' => $orcamento_socios,
             'orcamento_pagamentos' => $orcamento_pagamentos,
+            'orcamento_gastos' => $orcamento_gastos,
         ]);
+    }
+
+    public function getListagemGastos(Request $request)
+    {
+        $orcamento_id = $request->input('orcamento_id');
+        $listagem = OrcamentosGastos::where('orcamento_id', $orcamento_id)->with('banco')->get();
+        // dd($listagem->material);
+        return datatables()->of($listagem)
+            ->addColumn('banco_name', function ($pagamento) {
+                if ($pagamento->banco) {
+                    return "{$pagamento->banco->name} - {$pagamento->banco->agencia}-{$pagamento->banco->conta}";
+                }
+                return 'Sem banco';
+            })
+        ->toJson();
+    }
+
+    public function submitGastos(Request $request)
+    {
+        $request->validate([
+            'gasto_valor' => ['required'],
+        ]);
+
+        $valor = $request->gasto_valor;
+
+        if (strpos($valor, ',') !== false) {
+            $valor = str_replace(['.', ','], ['', '.'], $valor);
+        }
+        
+        if ($request->gasto_id == null) {
+            $action = OrcamentosGastos::create([
+                "valor" => $valor,
+                "orcamento_id" => $request->gasto_orcamento_id,
+                "controle" => $request->gasto_controle,
+                "especie" => $request->gasto_especie,
+                "banco_id" => $request->gasto_banco_id,
+                "tipo_pagamento" => $request->gasto_tipo_pagamento,
+                "observacao" => $request->gasto_observacao,
+                "data" => DateTime::createFromFormat('d/m/Y', $request->gasto_data)->format('Y-m-d'),
+            ]);
+        } else {
+            $action = OrcamentosGastos::findOrFail($request->gasto_id);
+            $action->valor = $valor;
+            $action->orcamento_id = $request->gasto_orcamento_id;
+            $action->controle = $request->gasto_controle;
+            $action->especie = $request->gasto_especie;
+            $action->banco_id = $request->gasto_banco_id;
+            $action->tipo_pagamento = $request->gasto_tipo_pagamento;
+            $action->observacao = $request->gasto_observacao;
+            $action->data = DateTime::createFromFormat('d/m/Y', $request->gasto_data)->format('Y-m-d');
+            $action->save();
+        }
+
+        event(new Registered($action));
+
+        // $this->atualiza_total($request->servico_orcamento_id);
+
+        $valores = $this->atualiza_total($request->gasto_orcamento_id);
+        return $valores->toJson();
+    }
+
+    public function getGasto(Request $request, string $id)
+    {     
+        return OrcamentosGastos::findOrFail($id)->toJson();
+    }
+
+    public function deleteGasto(Request $request, string $id)
+    {
+        $gasto = OrcamentosGastos::findOrFail($id);
+        $orcamento = $gasto->orcamento_id;
+        $gasto->delete();
+        $this->atualiza_total($orcamento);
+
+        $valores = $this->atualiza_total($orcamento);
+        return $valores->toJson();
     }
 }
