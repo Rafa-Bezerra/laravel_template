@@ -26,7 +26,7 @@
             {{-- Material --}}
             <div class="select-material">
                 <x-input-label for="item_material_id" :value="__('Material')" />
-                <x-select-input id="item_material_id" class="block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
+                <x-select-input id="item_material_id" class="select2 block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
                     <option></option>
                     @foreach ($materiais as $item)
                         <option value="{{$item->id}}">{{$item->name}}</option>

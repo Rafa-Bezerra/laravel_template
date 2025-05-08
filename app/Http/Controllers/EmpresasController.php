@@ -132,7 +132,6 @@ class EmpresasController extends Controller
     {
         $request->validate([
             'endereco_empresa_id' => ['required'],
-            'endereco_estado' => ['required', 'max:255'],
         ]);
 
         if ($request->endereco_id == null) {
@@ -220,8 +219,6 @@ class EmpresasController extends Controller
         $action->save();
 
         event(new Registered($action));
-
-        // return redirect(route('empresas.index', absolute: false));
         return;
     }
 
@@ -233,12 +230,12 @@ class EmpresasController extends Controller
         return redirect(route('empresas.index', absolute: false));
     }
 
-    public function deleteContatos(Request $request, string $id): RedirectResponse
+    public function deleteContatos(Request $request, string $id)
     {
         return EmpresasContatos::findOrFail($id)->delete();
     }
 
-    public function deleteEnderecos(Request $request, string $id): RedirectResponse
+    public function deleteEnderecos(Request $request, string $id)
     {
         return EmpresasEnderecos::findOrFail($id)->delete();
     }
