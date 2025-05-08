@@ -104,7 +104,6 @@
                 $('#item_preco_unitario').val(formatMonetario(response.preco_unitario));
                 $('#item_valor_desconto').val(formatMonetario(response.valor_desconto));
                 $('#item_valor_total').val(formatMonetario(response.valor_total));
-                // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true}).trigger('input');
             }
         });
     }
@@ -150,8 +149,6 @@
     });
 
     $(document).ready(function () {
-        // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true});
-        
         $('#minhaTabelaItens').DataTable({
             "processing": true,
             "serverSide": true,
@@ -207,6 +204,33 @@
             }
         });
 
+        $('#item_material_id').on('change', function () {
+            let materialId = $('#item_material_id').val();
+            $.ajax({
+                url: "{{ route('orcamentos_itens.estoque') }}",
+                type: "POST",
+                data: {
+                    material_id: materialId,
+                    _token: "{{ csrf_token() }}"
+                },
+                dataType: "json",
+                complete: function (response) {
+                    let data = response.responseJSON.data[0];
+                    console.log(data.valor);
+
+                    $('#item_preco_unitario').val(formatMonetario(data.valor));
+
+                    let quantidade = parseToFloatBr($('#item_quantidade').val());
+                    let preco = parseToFloatBr($('#item_preco_unitario').val());
+                    let desconto = parseToFloatBr($('#item_valor_desconto').val());
+
+                    let total = (quantidade * preco) - desconto;
+
+                    $('#item_valor_total').val(formatMonetario(total));
+                }
+            });
+        });
+
         $('#itensForm').submit(function (e) {
             e.preventDefault();
             $.ajax({
@@ -230,9 +254,7 @@
             });
         });
 
-
         $('.totalizador').on('input', function() {
-
             let quantidade = parseToFloatBr($('#item_quantidade').val());
             let preco = parseToFloatBr($('#item_preco_unitario').val());
             let desconto = parseToFloatBr($('#item_valor_desconto').val());

@@ -343,7 +343,7 @@ class OrcamentosController extends Controller
 
         // Retorna a resposta em formato JSON
         return response()->json([
-            'data' => [$estoque]  // Retorna um array com o estoque (ou com quantidade 0)
+            'data' => [$estoque]
         ]);
     }
 
@@ -351,7 +351,7 @@ class OrcamentosController extends Controller
     {
         $orcamento_id = $request->input('orcamento_id');
         $listagem = OrcamentosServicos::where('orcamento_id', $orcamento_id);
-        // dd($listagem->material);
+        
         return datatables()->of($listagem)
             ->addColumn('servico_name', function ($item) {
                 return $item->servico->name ?? 'Sem serviço';
@@ -385,8 +385,6 @@ class OrcamentosController extends Controller
         }
 
         event(new Registered($action));
-
-        // $this->atualiza_total($request->servico_orcamento_id);
 
         $valores = $this->atualiza_total($request->servico_orcamento_id);
         return $valores->toJson();
