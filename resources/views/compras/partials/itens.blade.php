@@ -63,28 +63,28 @@
             <!-- Quantidade -->
             <div>
                 <x-input-label for="item_quantidade" :value="__('Quantidade')" />
-                <x-text-input id="item_quantidade" class="block mt-1 w-full totalizador" type="text" name="item_quantidade" :value="old('fone')"  />
+                <x-number-input id="item_quantidade" class="block mt-1 w-full totalizador" type="text" name="item_quantidade" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('item_quantidade')" class="mt-2" />
             </div>
 
             <!-- PR. Unitário -->
             <div>
                 <x-input-label for="item_preco_unitario" :value="__('PR. Unitário')" />
-                <x-text-input id="item_preco_unitario" class="moeda block mt-1 w-full totalizador" type="text" name="item_preco_unitario" :value="old('item_preco_unitario')" />
+                <x-money-input id="item_preco_unitario" class="moeda block mt-1 w-full totalizador" type="text" name="item_preco_unitario" :value="old('item_preco_unitario')" />
                 <x-input-error :messages="$errors->get('item_preco_unitario')" class="mt-2" />
             </div>
 
             <!-- VL. Desconto -->
             <div>
                 <x-input-label for="item_valor_desconto" :value="__('VL. Desconto')" />
-                <x-text-input id="item_valor_desconto" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_desconto" :value="old('item_valor_desconto')" />
+                <x-money-input id="item_valor_desconto" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_desconto" :value="old('item_valor_desconto')" />
                 <x-input-error :messages="$errors->get('item_valor_desconto')" class="mt-2" />
             </div>
 
             <!-- VL. Total -->
             <div>
                 <x-input-label for="item_valor_total" :value="__('VL. Total')" />
-                <x-text-input id="item_valor_total" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_total" :value="old('item_valor_total')" />
+                <x-money-input id="item_valor_total" class="moeda block mt-1 w-full totalizador" type="text" name="item_valor_total" :value="old('item_valor_total')" />
                 <x-input-error :messages="$errors->get('item_valor_total')" class="mt-2" />
             </div>
 
@@ -148,10 +148,10 @@
                 $('#item_id').val(response.id);
                 $('#item_data').val(formatarData(response.data));
                 $('#item_material_id').val(response.material_id);
-                $('#item_quantidade').val(response.quantidade);
-                $('#item_preco_unitario').val(response.preco_unitario);
-                $('#item_valor_desconto').val(response.valor_desconto);
-                $('#item_valor_total').val(response.valor_total);
+                $('#item_quantidade').val(formatNumerico(response.quantidade));
+                $('#item_preco_unitario').val(formatMonetario(response.preco_unitario));
+                $('#item_valor_desconto').val(formatMonetario(response.valor_desconto));
+                $('#item_valor_total').val(formatMonetario(response.valor_total));
                 // $('#item_quantidade, #item_preco_unitario, #item_valor_desconto, #item_valor_total').mask('#.##0,00', {reverse: true}).trigger('input');
             }
         });
@@ -165,11 +165,13 @@
             dataType: "json",
             complete: function (response) {
                 $('#minhaTabelaItens').DataTable().ajax.reload();
-                $('#itensForm')[0].reset();           
-                
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
+                $('#itensForm')[0].reset();      
+
+                let data = response.responseJSON;
+
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
             }
         });
     }
@@ -272,29 +274,25 @@
                     $('#itensForm')[0].reset();
                     $('.insert-material').hide();
                     $('.select-material').show();
-                                        
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
+
+                    let data = response.responseJSON;
+
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
                 }
             });
         });
 
 
         $('.totalizador').on('input', function() {
-            // let quantidade = parseFloat($('#item_quantidade').val()) || 0;
-            // let preco = parseFloat($('#item_preco_unitario').val().replace('.', '').replace(',', '.')) || 0;
-            // let desconto = parseFloat($('#item_valor_desconto').val().replace('.', '').replace(',', '.')) || 0;
-
-            let quantidade = $('#item_quantidade').val();
-            let preco = $('#item_preco_unitario').val();
-            let desconto = $('#item_valor_desconto').val();
+            let quantidade = parseToFloatBr($('#item_quantidade').val());
+            let preco = parseToFloatBr($('#item_preco_unitario').val());
+            let desconto = parseToFloatBr($('#item_valor_desconto').val());
 
             let total = (quantidade * preco) - desconto;
 
-            // $('#item_valor_total').val(total.toLocaleString('pt-BR', {minimumFractionDigits: 2}));
-
-            $('#item_valor_total').val(total);
+            $('#item_valor_total').val(formatMonetario(total));
         });
     });
 </script>

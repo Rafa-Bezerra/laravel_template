@@ -176,8 +176,8 @@ class OrcamentosController extends Controller
         $action->data_prazo = $request->data_prazo != null ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : $request->data_prazo;
         $action->data_entrega = $request->data_entrega != null ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : $request->data_entrega;
         $action->observacao = $request->observacao;
-        $action->valor_orcamento = $request->valor_orcamento;
-        $action->valor_impostos = $request->valor_impostos;
+        $action->valor_orcamento = desformatarDinheiro($request->valor_orcamento);
+        $action->valor_impostos = desformatarPercentual($request->valor_impostos);
         $action->controle = $request->controle;
         $action->save();
 
@@ -226,37 +226,37 @@ class OrcamentosController extends Controller
             'item_preco_unitario' => ['required'],
             'item_valor_total' => ['required'],
         ]);
+        
+        $valor_total = desformatarDinheiro($request->item_valor_total);
+        $preco_unitario = desformatarDinheiro($request->item_preco_unitario);
+        $valor_desconto = desformatarDinheiro($request->item_valor_desconto);
+        $item_quantidade = desformatarNumerico($request->item_quantidade);
 
         $quantidade = 0;
         if ($request->item_id == null) {
-            // $quantidade = str_replace(['.', ','], ['', '.'], $request->item_quantidade);
-            $quantidade = $request->item_quantidade;
+            $quantidade = $item_quantidade;
             $quantidade_em_estoque = $this->valida_quantidade_em_estoque($request->item_material_id, $quantidade);
             $action = OrcamentosItens::create([
                 "orcamento_id" => $request->item_orcamento_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
                 "material_id" => $request->item_material_id,
-                // "quantidade" => str_replace(['.', ','], ['', '.'], $request->item_quantidade),
-                // "preco_unitario" => str_replace(['.', ','], ['', '.'], $request->item_preco_unitario),
-                // "valor_desconto" => str_replace(['.', ','], ['', '.'], $request->item_valor_desconto),
-                // "valor_total" => str_replace(['.', ','], ['', '.'], $request->item_valor_total),
-                "quantidade" => $request->item_quantidade,
-                "preco_unitario" => $request->item_preco_unitario,
-                "valor_desconto" => $request->item_valor_desconto ? $request->item_valor_desconto : 0,
-                "valor_total" => $request->item_valor_total,
+                "quantidade" => $item_quantidade,
+                "preco_unitario" => $preco_unitario,
+                "valor_desconto" => $valor_desconto,
+                "valor_total" => $valor_total,
                 "observacao" => $request->item_observacao,
             ]);
         } else {
             $action = OrcamentosItens::findOrFail($request->item_id);
-            $quantidade = $request->item_quantidade - $action->quantidade;
+            $quantidade = $item_quantidade - $action->quantidade;
             $quantidade_em_estoque = $this->valida_quantidade_em_estoque($request->item_material_id,$quantidade);
             $action->orcamento_id = $request->item_orcamento_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
             $action->material_id = $request->item_material_id;
-            $action->quantidade = $request->item_quantidade;
-            $action->preco_unitario = $request->item_preco_unitario;
-            $action->valor_desconto = $request->item_valor_desconto;
-            $action->valor_total = $request->item_valor_total;
+            $action->quantidade = $item_quantidade;
+            $action->preco_unitario = $preco_unitario;
+            $action->valor_desconto = $valor_desconto;
+            $action->valor_total = $valor_total;
             $action->observacao = $request->item_observacao;
             $action->save();
         }
@@ -300,12 +300,12 @@ class OrcamentosController extends Controller
         $valor_total = $valor_itens + $valor_servicos + $valor_gastos;
 
         $orcamento = Orcamentos::findOrFail($orcamento_id);
-        $valor_total = round($valor_total * (1 + ($orcamento->valor_impostos/100)),2);
+        $valor_total_impostos = round($orcamento->valor_orcamento * (1 + ($orcamento->valor_impostos/100)),2);
         $orcamento->valor_itens = $valor_itens;
         $orcamento->valor_desconto = $valor_desconto;
         $orcamento->valor_total = $valor_total;
         $orcamento->valor_servicos = $valor_servicos;
-        $orcamento->valor_saldo = $orcamento->valor_orcamento - $valor_total;
+        $orcamento->valor_saldo = $orcamento->valor_orcamento - $valor_total - $valor_total_impostos;
         $orcamento->save();
 
         event(new Registered($orcamento));
@@ -366,11 +366,7 @@ class OrcamentosController extends Controller
             'servico_preco' => ['required'],
         ]);
 
-        $preco = $request->servico_preco;
-
-        if (strpos($preco, ',') !== false) {
-            $preco = str_replace(['.', ','], ['', '.'], $preco);
-        }
+        $preco = desformatarDinheiro($request->servico_preco);
 
         if ($request->servico_id == null) {
             $action = OrcamentosServicos::create([
@@ -434,13 +430,13 @@ class OrcamentosController extends Controller
             'comissao_comissao_id' => ['required'],
             'comissao_porcentagem' => ['required'],
         ]);
-
+        
         if ($request->comissao_id == null) {
             $action = OrcamentosComissoes::create([
                 "orcamento_id" => $request->comissao_orcamento_id,
                 "empresa_id" => $request->comissao_empresa_id,
                 "comissao_id" => $request->comissao_comissao_id,
-                "porcentagem" => $request->comissao_porcentagem,
+                "porcentagem" => desformatarPercentual($request->comissao_porcentagem),
                 "valor_total" => 0,
             ]);
         } else {
@@ -448,7 +444,7 @@ class OrcamentosController extends Controller
             $action->orcamento_id = $request->comissao_orcamento_id;
             $action->empresa_id = $request->comissao_empresa_id;
             $action->comissao_id = $request->comissao_comissao_id;
-            $action->porcentagem = $request->comissao_porcentagem;
+            $action->porcentagem = desformatarPercentual($request->comissao_porcentagem);
             $action->save();
         }
 
@@ -530,18 +526,20 @@ class OrcamentosController extends Controller
             'socio_porcentagem' => ['required'],
         ]);
 
+        $porcentagem = desformatarPercentual($request->socio_porcentagem);
+
         if ($request->socio_id == null) {
             $action = OrcamentosSocios::create([
                 "orcamento_id" => $request->socio_orcamento_id,
                 "empresa_id" => $request->socio_empresa_id,
-                "porcentagem" => $request->socio_porcentagem,
+                "porcentagem" => $porcentagem,
                 "valor_total" => 0,
             ]);
         } else {
             $action = OrcamentosSocios::findOrFail($request->socio_id);
             $action->orcamento_id = $request->socio_orcamento_id;
             $action->empresa_id = $request->socio_empresa_id;
-            $action->porcentagem = $request->socio_porcentagem;
+            $action->porcentagem = $porcentagem;
             $action->save();
         }
 
@@ -604,11 +602,13 @@ class OrcamentosController extends Controller
             'pagamento_banco_id' => ['required'],
         ]);
 
+        $valor = desformatarDinheiro($request->pagamento_valor);
+
         if ($request->pagamento_id == null) {
             if($request->pagamento_quantidade > 1) {
-                $valor_parcela = round($request->pagamento_valor / $request->pagamento_quantidade, 2);
+                $valor_parcela = round($valor / $request->pagamento_quantidade, 2);
                 $soma_parcelas = $valor_parcela * $request->pagamento_quantidade;
-                $resto = round($request->pagamento_valor - $soma_parcelas, 2);
+                $resto = round($valor - $soma_parcelas, 2);
                 $data_pagamento = DateTime::createFromFormat('d/m/Y', $request->pagamento_data);
                 for ($i=1; $i <= $request->pagamento_quantidade; $i++) {
                     $valor_parcela = ($i == $request->pagamento_quantidade) ? ($valor_parcela + $resto) : $valor_parcela;
@@ -632,7 +632,7 @@ class OrcamentosController extends Controller
                     "banco_id" => $request->pagamento_banco_id,
                     "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                     "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
-                    "valor" => $request->pagamento_valor,
+                    "valor" => $valor,
                     "especie" => 'venda',
                     "parcela" => 1,
                 ]);
@@ -640,7 +640,7 @@ class OrcamentosController extends Controller
             }
         } else {
             $action = Pagamentos::findOrFail($request->pagamento_id);
-            $action->valor = $request->pagamento_valor;
+            $action->valor = $valor;
             $action->controle = $request->pagamento_controle;
             $action->banco_id = $request->pagamento_banco_id;
             $action->tipo_pagamento = $request->pagamento_tipo_pagamento;
@@ -713,11 +713,7 @@ class OrcamentosController extends Controller
             'gasto_valor' => ['required'],
         ]);
 
-        $valor = $request->gasto_valor;
-
-        if (strpos($valor, ',') !== false) {
-            $valor = str_replace(['.', ','], ['', '.'], $valor);
-        }
+        $valor = desformatarDinheiro($request->gasto_valor);
         
         if ($request->gasto_id == null) {
             $action = OrcamentosGastos::create([

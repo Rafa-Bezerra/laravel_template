@@ -26,7 +26,7 @@
             <!-- Porcentagem -->
             <div>
                 <x-input-label for="socio_porcentagem" :value="__('Porcentagem')" />
-                <x-text-input id="socio_porcentagem" class="block mt-1 w-full totalizador" type="text" name="socio_porcentagem" :value="old('fone')"  />
+                <x-percent-input id="socio_porcentagem" class="block mt-1 w-full totalizador" type="text" name="socio_porcentagem" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('socio_porcentagem')" class="mt-2" />
             </div>
 
@@ -60,7 +60,7 @@
             success: function (response) {
                 $('#socio_id').val(response.id);
                 $('#socio_empresa_id').val(response.empresa_id);
-                $('#socio_porcentagem').val(response.porcentagem);
+                $('#socio_porcentagem').val(formatPercentual(response.porcentagem));
             }
         });
     }
@@ -76,11 +76,13 @@
                 $('.datatable').DataTable().ajax.reload();
                 $('#socioForm')[0].reset();     
                 
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
-                $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                $('#valor_saldo').val(response.responseJSON.valor_saldo);   
+                let data = response.responseJSON;
+
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
+                $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                $('#valor_saldo').val(formatMonetario(data.valor_saldo));
             }
         });
     }
@@ -101,7 +103,7 @@
                 { "data": "empresa_name" },
                 { "data": "porcentagem",
                     "render": function (data) {
-                        return formatarNumero(data);
+                        return formatarPercentual(data);
                     } 
                 },
                 { "data": "valor_total",
@@ -138,11 +140,13 @@
                     $('#socioForm')[0].reset();
                     $('#socio_id').val('');
                 
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
-                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                    let data = response.responseJSON;
+
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
+                    $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                    $('#valor_saldo').val(formatMonetario(data.valor_saldo));
                 }
             });
         });

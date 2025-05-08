@@ -26,3 +26,24 @@ if (!function_exists('formatar_moeda')) {
         return 'R$ ' . number_format($valor, 2, ',', '.');
     }
 }
+
+if (!function_exists('desformatarNumerico')) {
+    function desformatarNumerico(string $valor): float
+    {
+        return (float) str_replace(',', '.', str_replace('.', '', trim($valor)));
+    }
+}
+
+if (!function_exists('desformatarDinheiro')) {
+    function desformatarDinheiro(string $valor): float
+    {
+        return (float) str_replace(',', '.', str_replace(['R$', '.'], '', trim($valor)));
+    }
+}
+
+if (!function_exists('desformatarPercentual')) {
+    function desformatarPercentual(string $valor): float
+    {
+        return (float) str_replace(',', '.', str_replace(['%', '.'], '', trim($valor)));
+    }
+}

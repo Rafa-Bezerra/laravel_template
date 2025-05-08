@@ -54,3 +54,24 @@
         </div>
     </form>
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        //filtro_data_de
+        let filtro_data_de = document.getElementById("filtro_data_de");
+        filtro_data_de.addEventListener("input", function (e) {
+            let filtro_data_de_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_de_value.length > 2) filtro_data_de_value = filtro_data_de_value.substring(0,2) + "/" + filtro_data_de_value.substring(2);
+            if (filtro_data_de_value.length > 5) filtro_data_de_value = filtro_data_de_value.substring(0,5) + "/" + filtro_data_de_value.substring(5,9);
+            e.target.value = filtro_data_de_value;
+        });
+
+        //filtro_data_ate
+        let filtro_data_ate = document.getElementById("filtro_data_ate");
+        filtro_data_ate.addEventListener("input", function (e) {
+            let filtro_data_ate_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_ate_value.length > 2) filtro_data_ate_value = filtro_data_ate_value.substring(0,2) + "/" + filtro_data_ate_value.substring(2);
+            if (filtro_data_ate_value.length > 5) filtro_data_ate_value = filtro_data_ate_value.substring(0,5) + "/" + filtro_data_ate_value.substring(5,9);
+            e.target.value = filtro_data_ate_value;
+        });
+    });
+</script>

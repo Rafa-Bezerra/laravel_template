@@ -59,3 +59,60 @@
         </div>
     </form>
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        //filtro_data_de
+        let filtro_data_de = document.getElementById("filtro_data_de");
+        filtro_data_de.addEventListener("input", function (e) {
+            let filtro_data_de_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_de_value.length > 2) filtro_data_de_value = filtro_data_de_value.substring(0,2) + "/" + filtro_data_de_value.substring(2);
+            if (filtro_data_de_value.length > 5) filtro_data_de_value = filtro_data_de_value.substring(0,5) + "/" + filtro_data_de_value.substring(5,9);
+            e.target.value = filtro_data_de_value;
+        });
+
+        //filtro_data_ate
+        let filtro_data_ate = document.getElementById("filtro_data_ate");
+        filtro_data_ate.addEventListener("input", function (e) {
+            let filtro_data_ate_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_ate_value.length > 2) filtro_data_ate_value = filtro_data_ate_value.substring(0,2) + "/" + filtro_data_ate_value.substring(2);
+            if (filtro_data_ate_value.length > 5) filtro_data_ate_value = filtro_data_ate_value.substring(0,5) + "/" + filtro_data_ate_value.substring(5,9);
+            e.target.value = filtro_data_ate_value;
+        });
+
+        //filtro_data_prazo_de
+        let filtro_data_prazo_de = document.getElementById("filtro_data_prazo_de");
+        filtro_data_prazo_de.addEventListener("input", function (e) {
+            let filtro_data_prazo_de_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_prazo_de_value.length > 2) filtro_data_prazo_de_value = filtro_data_prazo_de_value.substring(0,2) + "/" + filtro_data_prazo_de_value.substring(2);
+            if (filtro_data_prazo_de_value.length > 5) filtro_data_prazo_de_value = filtro_data_prazo_de_value.substring(0,5) + "/" + filtro_data_prazo_de_value.substring(5,9);
+            e.target.value = filtro_data_prazo_de_value;
+        });
+
+        //filtro_data_prazo_ate
+        let filtro_data_prazo_ate = document.getElementById("filtro_data_prazo_ate");
+        filtro_data_prazo_ate.addEventListener("input", function (e) {
+            let filtro_data_prazo_ate_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_prazo_ate_value.length > 2) filtro_data_prazo_ate_value = filtro_data_prazo_ate_value.substring(0,2) + "/" + filtro_data_prazo_ate_value.substring(2);
+            if (filtro_data_prazo_ate_value.length > 5) filtro_data_prazo_ate_value = filtro_data_prazo_ate_value.substring(0,5) + "/" + filtro_data_prazo_ate_value.substring(5,9);
+            e.target.value = filtro_data_prazo_ate_value;
+        });
+        
+        //filtro_data_entrega_de
+        let filtro_data_entrega_de = document.getElementById("filtro_data_entrega_de");
+        filtro_data_entrega_de.addEventListener("input", function (e) {
+            let filtro_data_entrega_de_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_entrega_de_value.length > 2) filtro_data_entrega_de_value = filtro_data_entrega_de_value.substring(0,2) + "/" + filtro_data_entrega_de_value.substring(2);
+            if (filtro_data_entrega_de_value.length > 5) filtro_data_entrega_de_value = filtro_data_entrega_de_value.substring(0,5) + "/" + filtro_data_entrega_de_value.substring(5,9);
+            e.target.value = filtro_data_entrega_de_value;
+        });
+
+        //filtro_data_ate
+        let filtro_data_entrega_ate = document.getElementById("filtro_data_entrega_ate");
+        filtro_data_entrega_ate.addEventListener("input", function (e) {
+            let filtro_data_entrega_ate_value = e.target.value.replace(/\D/g, "");
+            if (filtro_data_entrega_ate_value.length > 2) filtro_data_entrega_ate_value = filtro_data_entrega_ate_value.substring(0,2) + "/" + filtro_data_entrega_ate_value.substring(2);
+            if (filtro_data_entrega_ate_value.length > 5) filtro_data_entrega_ate_value = filtro_data_entrega_ate_value.substring(0,5) + "/" + filtro_data_entrega_ate_value.substring(5,9);
+            e.target.value = filtro_data_entrega_ate_value;
+        });
+    });
+</script>

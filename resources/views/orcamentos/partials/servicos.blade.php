@@ -26,7 +26,7 @@
             <!-- Preço -->
             <div>
                 <x-input-label for="servico_preco" :value="__('Preço')" />
-                <x-text-input id="servico_preco" class="block mt-1 w-full totalizador" type="text" name="servico_preco" :value="old('fone')"  />
+                <x-money-input id="servico_preco" class="block mt-1 w-full totalizador" type="text" name="servico_preco" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('servico_preco')" class="mt-2" />
             </div>
 
@@ -67,7 +67,7 @@
             success: function (response) {
                 $('#servico_id').val(response.id);
                 $('#servico_servico_id').val(response.servico_id);
-                $('#servico_preco').val(response.preco);
+                $('#servico_preco').val(formatMonetario(response.preco));
                 $('#servico_data').val(formatarData(response.data));
             }
         });
@@ -84,11 +84,13 @@
                 $('.datatable').DataTable().ajax.reload();
                 $('#servicosForm')[0].reset();  
                 
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
-                $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                let data = response.responseJSON;
+
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
+                $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                $('#valor_saldo').val(formatMonetario(data.valor_saldo));
             }
         });
     }
@@ -164,11 +166,13 @@
                     $('#servicosForm')[0].reset();
                     $('#servico_id').val('');
                 
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
-                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                    let data = response.responseJSON;
+
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
+                    $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                    $('#valor_saldo').val(formatMonetario(data.valor_saldo));
                 }
             });
         });

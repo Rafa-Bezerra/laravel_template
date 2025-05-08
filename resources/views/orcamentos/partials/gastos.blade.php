@@ -39,7 +39,7 @@
             <!-- Valor -->
             <div>
                 <x-input-label for="gasto_valor" :value="__('Valor')" />
-                <x-text-input id="gasto_valor" class="block mt-1 w-full totalizador" type="text" name="gasto_valor" :value="old('gasto_valor')"  />
+                <x-money-input id="gasto_valor" class="block mt-1 w-full totalizador" type="text" name="gasto_valor" :value="old('gasto_valor')"  />
                 <x-input-error :messages="$errors->get('gasto_valor')" class="mt-2" />
             </div>
 
@@ -115,7 +115,7 @@
                 $('#gasto_id').val(response.id);
                 $('#gasto_especie').val(response.especie);
                 $('#gasto_tipo_pagamento').val(response.tipo_pagamento);
-                $('#gasto_valor').val(response.valor);
+                $('#gasto_valor').val(formatMonetario(response.valor));
                 $('#gasto_data').val(formatarData(response.data));
                 $('#gasto_controle').val(response.controle);
                 $('#gasto_banco_id').val(response.banco_id);
@@ -134,11 +134,13 @@
                 $('.datatable').DataTable().ajax.reload();
                 $('#gastosForm')[0].reset();        
                 
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
-                $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                let data = response.responseJSON;
+
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
+                $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                $('#valor_saldo').val(formatMonetario(data.valor_saldo));
             }
         });
     }
@@ -169,7 +171,11 @@
                 { "data": "id" },
                 { "data": "especie" },
                 { "data": "tipo_pagamento" },
-                { "data": "valor" },
+                { "data": "valor",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { "data": "data" ,
                     "render": function (data, type, row) {
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
@@ -206,12 +212,14 @@
                     $('.datatable').DataTable().ajax.reload();
                     $('#gastosForm')[0].reset();
                     $('#gasto_id').val('');
+                
+                    let data = response.responseJSON;
 
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
-                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
+                    $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                    $('#valor_saldo').val(formatMonetario(data.valor_saldo));
                 }
             });
         });

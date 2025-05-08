@@ -29,6 +29,16 @@
     </div>
 </x-app-layout>
 <script>
+    function formatarMoeda(valor) {
+        if (!valor) return "R$ 0,00"; // Caso o valor seja null ou undefined
+        return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatarNumero(valor) {
+        if (!valor) return "0"; // Evita exibição de "NaN"
+        return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     $(document).ready(function () {
         $('#minhaTabela').DataTable({
             "processing": true,
@@ -37,8 +47,16 @@
             "columns": [
                 { "data": "id" },
                 { "data": "material_name" },
-                { "data": "quantidade" },
-                { "data": "valor" },
+                { "data": "quantidade",
+                    "render": function (data) {
+                        return formatarNumero(data);
+                    } 
+                },
+                { "data": "valor",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {                 

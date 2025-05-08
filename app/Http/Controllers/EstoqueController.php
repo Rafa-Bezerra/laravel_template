@@ -73,8 +73,8 @@ class EstoqueController extends Controller
         
         $action = Estoque::create([
             "material_id" => $request->material_id,
-            "quantidade" => $request->quantidade,
-            "valor" => $request->valor,
+            "quantidade" => desformatarNumerico($request->quantidade),
+            "valor" => desformatarDinheiro($request->valor),
             "orcamento_id" => null,
         ]);
 
@@ -105,8 +105,8 @@ class EstoqueController extends Controller
         ]);
         
         $action = Estoque::findOrFail($request->id);
-        $action->quantidade = $request->quantidade;
-        $action->valor = $request->valor;
+        $action->quantidade = desformatarNumerico($request->quantidade);
+        $action->valor = desformatarDinheiro($request->valor);
         $action->save();
 
         event(new Registered($action));

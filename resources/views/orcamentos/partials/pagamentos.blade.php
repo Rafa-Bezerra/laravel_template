@@ -29,7 +29,7 @@
             <!-- Valor -->
             <div>
                 <x-input-label for="pagamento_valor" :value="__('Valor')" />
-                <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
+                <x-money-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
                 <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
             </div>
             
@@ -103,7 +103,7 @@
             dataType: "json",
             success: function (response) {
                 $('#pagamento_id').val(response.id);
-                $('#pagamento_valor').val(response.valor);
+                $('#pagamento_valor').val(formatMonetario(response.valor));
                 $('#pagamento_quantidade').val(1);
                 $('#pagamento_data').val(formatarData(response.data));
                 $('#pagamento_controle').val(response.controle);
@@ -121,13 +121,15 @@
             dataType: "json",
             complete: function (response) {
                 $('.datatable').DataTable().ajax.reload();
-                $('#pagamentoForm')[0].reset();        
+                $('#pagamentoForm')[0].reset();
                 
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
-                $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                let data = response.responseJSON;
+
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
+                $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                $('#valor_saldo').val(formatMonetario(data.valor_saldo));
             }
         });
     }
@@ -157,7 +159,11 @@
             "columns": [
                 { "data": "id" },
                 { "data": "tipo_pagamento" },
-                { "data": "valor" },
+                { "data": "valor",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { "data": "parcela" },
                 { "data": "data" ,
                     "render": function (data, type, row) {
@@ -194,12 +200,14 @@
                     $('.datatable').DataTable().ajax.reload();
                     $('#pagamentoForm')[0].reset();
                     $('#pagamento_id').val('');
+                
+                    let data = response.responseJSON;
 
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
-                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
+                    $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                    $('#valor_saldo').val(formatMonetario(data.valor_saldo));
                 }
             });
         });

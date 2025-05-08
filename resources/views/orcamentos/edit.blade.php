@@ -79,49 +79,49 @@
                         <!-- VL. Itens -->
                         <div>
                             <x-input-label for="valor_itens" :value="__('VL. Itens')" />
-                            <x-text-input id="valor_itens" class="block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens" />
+                            <x-money-input id="valor_itens" class="block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens" />
                             <x-input-error :messages="$errors->get('valor_itens')" class="mt-2" />
                         </div>
 
                         <!-- VL. Serviços -->
                         <div>
                             <x-input-label for="valor_servicos" :value="__('VL. Serviços')" />
-                            <x-text-input id="valor_servicos" class="block mt-1 w-full" type="text" name="valor_servicos" :value="old('valor_servicos') ? old('valor_servicos') : $data->valor_servicos" />
+                            <x-money-input id="valor_servicos" class="block mt-1 w-full" type="text" name="valor_servicos" :value="old('valor_servicos') ? old('valor_servicos') : $data->valor_servicos" />
                             <x-input-error :messages="$errors->get('valor_servicos')" class="mt-2" />
                         </div>
 
                         <!-- VL. Desconto -->
                         <div>
                             <x-input-label for="valor_desconto" :value="__('VL. Desconto')" />
-                            <x-text-input id="valor_desconto" class="block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto" />
+                            <x-money-input id="valor_desconto" class="block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto" />
                             <x-input-error :messages="$errors->get('valor_desconto')" class="mt-2" />
                         </div>
 
                         <!-- VL. Impostos -->
                         <div>
-                            <x-input-label for="valor_impostos" :value="__('VL. Impostos')" />
-                            <x-text-input id="valor_impostos" class="block mt-1 w-full" type="text" name="valor_impostos" :value="old('valor_impostos') ? old('valor_impostos') : $data->valor_impostos" />
+                            <x-input-label for="valor_impostos" :value="__('Percentual impostos')" />
+                            <x-percent-input id="valor_impostos" class="block mt-1 w-full" type="text" name="valor_impostos" :value="old('valor_impostos') ? old('valor_impostos') : $data->valor_impostos" />
                             <x-input-error :messages="$errors->get('valor_impostos')" class="mt-2" />
                         </div>
                         
                         <!-- VL. Total -->
                         <div>
                             <x-input-label for="valor_total" :value="__('VL. Total')" />
-                            <x-text-input id="valor_total" class="block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total" />
+                            <x-money-input id="valor_total" class="block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total" />
                             <x-input-error :messages="$errors->get('valor_total')" class="mt-2" />
                         </div>
 
                         <!-- Orçamento -->
                         <div>
                             <x-input-label for="valor_orcamento" :value="__('Orçamento')" />
-                            <x-text-input id="valor_orcamento" class="block mt-1 w-full" type="text" name="valor_orcamento" :value="old('valor_orcamento') ? old('valor_orcamento') : $data->valor_orcamento" />
+                            <x-money-input id="valor_orcamento" class="block mt-1 w-full" type="text" name="valor_orcamento" :value="old('valor_orcamento') ? old('valor_orcamento') : $data->valor_orcamento" />
                             <x-input-error :messages="$errors->get('valor_orcamento')" class="mt-2" />
                         </div>
 
                         <!-- Saldo -->
                         <div>
                             <x-input-label for="valor_saldo" :value="__('Saldo')" />
-                            <x-text-input id="valor_saldo" class="block mt-1 w-full" type="text" name="valor_saldo" :value="old('valor_saldo') ? old('valor_saldo') : $data->valor_saldo" />
+                            <x-money-input id="valor_saldo" class="block mt-1 w-full" type="text" name="valor_saldo" :value="old('valor_saldo') ? old('valor_saldo') : $data->valor_saldo" />
                             <x-input-error :messages="$errors->get('valor_saldo')" class="mt-2" />
                         </div>
             
@@ -155,8 +155,12 @@
 
     function formatarNumero(valor) {
         if (!valor) return "0"; // Evita exibição de "NaN"
-    return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
+    function formatarPercentual(valor) {
+        if (!valor) return "0"; // Evita exibição de "NaN"
+        return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " %";
     }
     
     function formatarData(dataHora) {
@@ -166,6 +170,7 @@
         let partesData = data.split("-");
         return partesData[2] + "/" + partesData[1] + "/" + partesData[0]; // Converte para DD/MM/YYYY
     }
+    
     document.addEventListener("DOMContentLoaded", function () {
         //data_venda
         let data_venda = document.getElementById("data_venda");
@@ -225,11 +230,13 @@
                 data: $(this).serialize(),
                 dataType: "json",
                 complete: function (response) {
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
-                    $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                    $('#valor_saldo').val(response.responseJSON.valor_saldo);
+                    let data = response.responseJSON;
+
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
+                    $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                    $('#valor_saldo').val(formatMonetario(data.valor_saldo));
                 }
             });
         });

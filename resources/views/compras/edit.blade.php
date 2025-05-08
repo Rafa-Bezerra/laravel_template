@@ -43,7 +43,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_itens" :value="__('VL. Itens')" />
-                        <x-text-input id="valor_itens" class="moeda block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens"  />
+                        <x-money-input id="valor_itens" class="moeda block mt-1 w-full" type="text" name="valor_itens" :value="old('valor_itens') ? old('valor_itens') : $data->valor_itens"  />
                         <x-input-error :messages="$errors->get('valor_itens')" class="mt-2" />
                     </div>
                     
@@ -51,7 +51,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_desconto" :value="__('VL. Desconto')" />
-                        <x-text-input id="valor_desconto" class="moeda block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto"  />
+                        <x-money-input id="valor_desconto" class="moeda block mt-1 w-full" type="text" name="valor_desconto" :value="old('valor_desconto') ? old('valor_desconto') : $data->valor_desconto"  />
                         <x-input-error :messages="$errors->get('valor_desconto')" class="mt-2" />
                     </div>
                     
@@ -59,7 +59,7 @@
                     <!-- DT. Entrega -->
                     <div>
                         <x-input-label for="valor_total" :value="__('VL. Total')" />
-                        <x-text-input id="valor_total" class="moeda block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total"  />
+                        <x-money-input id="valor_total" class="moeda block mt-1 w-full" type="text" name="valor_total" :value="old('valor_total') ? old('valor_total') : $data->valor_total"  />
                         <x-input-error :messages="$errors->get('valor_total')" class="mt-2" />
                     </div>
             
@@ -136,10 +136,12 @@
                 type: "POST",
                 data: $(this).serialize(),
                 dataType: "json",
-                complete: function (response) {
-                    $('#valor_itens').val(response.responseJSON.valor_itens);
-                    $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                    $('#valor_total').val(response.responseJSON.valor_total);
+                complete: function (response) {                    
+                    let data = response.responseJSON;
+
+                    $('#valor_itens').val(formatMonetario(data.valor_itens));
+                    $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                    $('#valor_total').val(formatMonetario(data.valor_total));
                 }
             });
         });

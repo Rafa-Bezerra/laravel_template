@@ -50,6 +50,71 @@
     </body>
 </html>
 <script>
+    function parseToFloatBr(value) {
+        if (value == null || value === '') return 0;
+
+        // Converte para string antes de aplicar replace
+        value = String(value).replace(/[^0-9.,-]/g, '');
+
+        if (value.includes(',') && value.includes('.')) {
+            value = value.replace(/\./g, '').replace(',', '.');
+        } else if (value.includes(',')) {
+            value = value.replace(',', '.');
+        }
+
+        return parseFloat(value) || 0;
+    }
+
+    function formatNumerico(value) {
+        const num = parseToFloatBr(value);
+        return num.toFixed(2)
+            .replace('.', ',')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatMonetario(value) {
+        const num = parseToFloatBr(value);
+        return 'R$ ' + num.toFixed(2)
+            .replace('.', ',')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatPercentual(value) {
+        const num = parseToFloatBr(value);
+        return num.toFixed(2)
+            .replace('.', ',')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' %';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input.monetario').forEach(input => {
+            // Formata ao carregar a página
+            input.value = formatMonetario(input.value);
+
+            input.addEventListener('blur', () => {
+                input.value = formatMonetario(input.value);
+            });
+        });
+        
+        document.querySelectorAll('input.quantidade').forEach(input => {
+            // Formata ao carregar a página
+            input.value = formatNumerico(input.value);
+
+            input.addEventListener('blur', () => {
+                input.value = formatNumerico(input.value);
+            });
+        });
+
+        document.querySelectorAll('input.percentual').forEach(input => {
+            // Formata ao carregar a página
+            input.value = formatPercentual(input.value);
+
+            input.addEventListener('blur', () => {
+                input.value = formatPercentual(input.value);
+            });
+        });
+    });
+
     $(document).ready(function() {
         $("input[type='text'], input[type='email'], input[type='number'], input[type='search']").focus(function() {
             $(this).select();

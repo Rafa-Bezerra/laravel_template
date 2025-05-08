@@ -93,9 +93,9 @@ class ComprasController extends Controller
             "data_compra" => $request->data_compra ? DateTime::createFromFormat('d/m/Y', $request->data_compra)->format('Y-m-d') : null,
             "data_prazo" => $request->data_prazo ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : null,
             "data_entrega" => $request->data_entrega ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : null,
-            "valor_itens" => formatar_moeda($request->valor_itens),
-            "valor_desconto" => formatar_moeda($request->valor_desconto),
-            "valor_total" => formatar_moeda($request->valor_total),
+            "valor_itens" => desformatarDinheiro($request->valor_itens),
+            "valor_desconto" => desformatarDinheiro($request->valor_desconto),
+            "valor_total" => desformatarDinheiro($request->valor_total),
             "observacao" => $request->observacao,
         ]);
         
@@ -189,33 +189,38 @@ class ComprasController extends Controller
             ]);
             $material_id = $action->id;
         }
-        // dd($material_id);
+        
+        $item_quantidade = desformatarNumerico($request->item_quantidade);
+        $item_preco_unitario = desformatarDinheiro($request->item_preco_unitario);
+        $item_valor_desconto = desformatarDinheiro($request->item_valor_desconto);
+        $item_valor_total = desformatarDinheiro($request->item_valor_total);
+
         $quantidade = 0;
         $preco = 0;
         if ($request->item_id == null) {
-            $quantidade = $request->item_quantidade;
-            $preco = $request->item_preco_unitario;
+            $quantidade = $item_quantidade;
+            $preco = $item_preco_unitario;
             $action = ComprasItens::create([
                 "compra_id" => $request->item_compra_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
                 "material_id" => $material_id,
-                "quantidade" => $request->item_quantidade,
-                "preco_unitario" => $request->item_preco_unitario,
-                "valor_desconto" => $request->item_valor_desconto ? $request->item_valor_desconto : 0,
-                "valor_total" => $request->item_valor_total,
+                "quantidade" => $item_quantidade,
+                "preco_unitario" => $item_preco_unitario,
+                "valor_desconto" => $item_valor_desconto,
+                "valor_total" => $item_valor_total,
                 "observacao" => $request->item_observacao,
             ]);
         } else {
             $action = ComprasItens::findOrFail($request->item_id);
-            $quantidade = $request->item_quantidade - $action->quantidade;
-            $preco = $request->item_preco_unitario;
+            $quantidade = $item_quantidade - $action->quantidade;
+            $preco = $item_preco_unitario;
             $action->compra_id = $request->item_compra_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
             $action->material_id = $material_id;
-            $action->quantidade = $request->item_quantidade;
-            $action->preco_unitario = $request->item_preco_unitario;
-            $action->valor_desconto = $request->item_valor_desconto;
-            $action->valor_total = $request->item_valor_total;
+            $action->quantidade = $item_quantidade;
+            $action->preco_unitario = $item_preco_unitario;
+            $action->valor_desconto = $item_valor_desconto;
+            $action->valor_total = $item_valor_total;
             $action->observacao = $request->item_observacao;
             $action->save();
         }
@@ -304,12 +309,14 @@ class ComprasController extends Controller
             'pagamento_quantidade' => ['required'],
             'pagamento_data' => ['required'],
         ]);
+        
+        $pagamento_valor = desformatarDinheiro($request->pagamento_valor);
 
         if ($request->pagamento_id == null) {
             if($request->pagamento_quantidade > 1) {
-                $valor_parcela = round($request->pagamento_valor / $request->pagamento_quantidade, 2);
+                $valor_parcela = round($pagamento_valor / $request->pagamento_quantidade, 2);
                 $soma_parcelas = $valor_parcela * $request->pagamento_quantidade;
-                $resto = round($request->pagamento_valor - $soma_parcelas, 2);
+                $resto = round($pagamento_valor - $soma_parcelas, 2);
                 $data_pagamento = DateTime::createFromFormat('d/m/Y', $request->pagamento_data);
                 for ($i=1; $i <= $request->pagamento_quantidade; $i++) {
                     $valor_parcela = ($i == $request->pagamento_quantidade) ? ($valor_parcela + $resto) : $valor_parcela;
@@ -331,7 +338,7 @@ class ComprasController extends Controller
                     "tipo_pagamento" => $request->pagamento_tipo_pagamento,
                     "controle" => $request->pagamento_controle,
                     "data" => DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d'),
-                    "valor" => $request->pagamento_valor,
+                    "valor" => $pagamento_valor,
                     "especie" => 'venda',
                     "parcela" => 1,
                 ]);
@@ -339,7 +346,7 @@ class ComprasController extends Controller
             }
         } else {
             $action = Pagamentos::findOrFail($request->pagamento_id);
-            $action->valor = $request->pagamento_valor;
+            $action->valor = $pagamento_valor;
             $action->controle = $request->pagamento_controle;
             $action->tipo_pagamento = $request->pagamento_tipo_pagamento;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->pagamento_data)->format('Y-m-d');

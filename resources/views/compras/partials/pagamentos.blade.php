@@ -29,7 +29,7 @@
             <!-- Valor -->
             <div>
                 <x-input-label for="pagamento_valor" :value="__('Valor')" />
-                <x-text-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
+                <x-money-input id="pagamento_valor" class="block mt-1 w-full totalizador" type="text" name="pagamento_valor" :value="old('pagamento_valor')"  />
                 <x-input-error :messages="$errors->get('pagamento_valor')" class="mt-2" />
             </div>
             
@@ -90,7 +90,7 @@
             dataType: "json",
             success: function (response) {
                 $('#pagamento_id').val(response.id);
-                $('#pagamento_valor').val(response.valor);
+                $('#pagamento_valor').val(formatMonetario(response.valor));
                 $('#pagamento_quantidade').val(1);
                 $('#pagamento_data').val(formatarData(response.data));
                 $('#pagamento_controle').val(response.controle);
@@ -137,7 +137,11 @@
             "columns": [
                 { "data": "id" },
                 { "data": "tipo_pagamento" },
-                { "data": "valor" },
+                { "data": "valor",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { "data": "parcela" },
                 { "data": "data" ,
                     "render": function (data, type, row) {

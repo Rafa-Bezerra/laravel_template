@@ -36,6 +36,16 @@
     </div>
 </x-app-layout>
 <script>
+    function formatarMoeda(valor) {
+        if (!valor) return "R$ 0,00"; // Caso o valor seja null ou undefined
+        return parseFloat(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatarNumero(valor) {
+        if (!valor) return "0"; // Evita exibição de "NaN"
+        return parseFloat(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     $(document).ready(function () {
         $('#limpar_filtro').on('click', function (e) {
             $('#filtro_observacao').val('');
@@ -90,9 +100,21 @@
                         return data ? new Date(data).toLocaleDateString('pt-BR') : "";
                     } 
                 },
-                { "data": "valor_itens" },
-                { "data": "valor_desconto" },
-                { "data": "valor_total" },
+                { "data": "valor_itens",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
+                { "data": "valor_desconto",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
+                { "data": "valor_total",
+                    "render": function (data) {
+                        return formatarMoeda(data);
+                    } 
+                },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {                      

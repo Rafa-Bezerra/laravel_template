@@ -38,7 +38,7 @@
             <!-- Porcentagem -->
             <div>
                 <x-input-label for="comissao_porcentagem" :value="__('Porcentagem')" />
-                <x-text-input id="comissao_porcentagem" class="block mt-1 w-full totalizador" type="text" name="comissao_porcentagem" :value="old('fone')"  />
+                <x-percent-input id="comissao_porcentagem" class="block mt-1 w-full totalizador" type="text" name="comissao_porcentagem" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('comissao_porcentagem')" class="mt-2" />
             </div>
 
@@ -74,7 +74,7 @@
                 $('#comissao_id').val(response.id);
                 $('#comissao_empresa_id').val(response.empresa_id);
                 $('#comissao_comissao_id').val(response.comissao_id);
-                $('#comissao_porcentagem').val(response.porcentagem);
+                $('#comissao_porcentagem').val(formatPercentual(response.porcentagem));
             }
         });
     }
@@ -89,11 +89,12 @@
                 $('.datatable').DataTable().ajax.reload();
                 $('#comissaoForm')[0].reset();     
 
-                $('#valor_itens').val(response.responseJSON.valor_itens);
-                $('#valor_desconto').val(response.responseJSON.valor_desconto);
-                $('#valor_total').val(response.responseJSON.valor_total);
-                $('#valor_servicos').val(response.responseJSON.valor_servicos);
-                $('#valor_saldo').val(response.responseJSON.valor_saldo);   
+                let data = response.responseJSON;
+                $('#valor_itens').val(formatMonetario(data.valor_itens));
+                $('#valor_desconto').val(formatMonetario(data.valor_desconto));
+                $('#valor_total').val(formatMonetario(data.valor_total));
+                $('#valor_servicos').val(formatMonetario(data.valor_servicos));
+                $('#valor_saldo').val(formatMonetario(data.valor_saldo));
             }
         });
     }
@@ -115,7 +116,7 @@
                 { "data": "comissao_name" },
                 { "data": "porcentagem",
                     "render": function (data) {
-                        return formatarNumero(data);
+                        return formatarPercentual(data);
                     } 
                 },
                 { "data": "valor_total",

@@ -56,7 +56,7 @@
                     <!-- Orçamento -->
                     <div>
                         <x-input-label for="valor_orcamento" :value="__('Orçamento')" />
-                        <x-text-input id="valor_orcamento" class="block mt-1 w-full" type="text" name="valor_orcamento" :value="old('valor_orcamento')" />
+                        <x-money-input id="valor_orcamento" class="block mt-1 w-full" type="text" name="valor_orcamento" :value="old('valor_orcamento')" />
                         <x-input-error :messages="$errors->get('valor_orcamento')" class="mt-2" />
                     </div>
             

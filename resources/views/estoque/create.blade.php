@@ -26,14 +26,14 @@
                     <!-- Quantidade -->
                     <div>
                         <x-input-label for="quantidade" :value="__('Quantidade')" />
-                        <x-text-input id="quantidade" class="block mt-1 w-full" type="text" name="quantidade" :value="old('quantidade')" />
+                        <x-number-input id="quantidade" class="block mt-1 w-full" type="text" name="quantidade" :value="old('quantidade')" />
                         <x-input-error :messages="$errors->get('quantidade')" class="mt-2" />
                     </div>
                     
                     <!-- Valor -->
                     <div>
                         <x-input-label for="valor" :value="__('Valor')" />
-                        <x-text-input id="valor" class="block mt-1 w-full" type="text" name="valor" :value="old('valor')" />
+                        <x-money-input id="valor" class="block mt-1 w-full" type="text" name="valor" :value="old('valor')" />
                         <x-input-error :messages="$errors->get('valor')" class="mt-2" />
                     </div>
             
