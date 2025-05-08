@@ -335,13 +335,11 @@ class OrcamentosController extends Controller
     {
         $estoque = Estoque::where('material_id', $request->material_id)->first();
 
-        // Verifica se o estoque existe, caso contrário, define a quantidade como 0
         if (!$estoque) {
-            $estoque = new Estoque();  // Cria um objeto vazio para garantir que a resposta seja consistente
-            $estoque->quantidade = 0;  // Define a quantidade como 0
+            $estoque = new Estoque();
+            $estoque->quantidade = 0;
         }
-
-        // Retorna a resposta em formato JSON
+        
         return response()->json([
             'data' => [$estoque]
         ]);
