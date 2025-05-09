@@ -16,6 +16,7 @@ use App\Models\Compras;
 use App\Models\ComprasItens;
 use App\Models\Estoque;
 use App\Models\Pagamentos;
+use App\Models\Empresas;
 use App\Models\GruposDeMaterial;
 use Carbon\Carbon;
 
@@ -29,6 +30,8 @@ class ComprasController extends Controller
         $insert = $this->hasPermission('compras_insert');
         $update = $this->hasPermission('compras_update');
         $delete = $this->hasPermission('compras_delete');
+        
+        $empresas = Empresas::all();
 
         return view('compras.index', [
             'user' => $request->user(),
@@ -36,13 +39,14 @@ class ComprasController extends Controller
             'insert' => $insert,
             'update' => $update,
             'delete' => $delete,
+            'empresas' => $empresas,
         ]);
     }
 
     public function getListagem(Request $request)
     {
         $listagem = Compras::query();
-
+        // dd($request->filtro_empresa_id);
         if ($request->filled('filtro_observacao')) {
             $listagem->where('observacao', 'like', '%' . $request->filtro_observacao . '%');
         }
@@ -68,17 +72,29 @@ class ComprasController extends Controller
             $listagem->whereBetween('data_entrega', [$dataDe, $dataAte]);
         }
 
-        return datatables()->of($listagem)->toJson();
+        if ($request->filled('filtro_empresa_id')) {
+            $listagem->whereHas('empresa', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->filtro_empresa_id . '%');
+            });
+        }
+
+        return datatables()->of($listagem)
+            ->addColumn('empresa_name', function ($orcamento) {
+                return $orcamento->empresa->name ?? 'Sem empresa';
+            })
+            ->toJson();
     }
 
     public function create(Request $request): View
     {
         $tittle = 'Nova compra';
         
+        $empresas = Empresas::all();
 
         return view('compras.create', [
             'user' => $request->user(),
             'tittle' => $tittle,
+            'empresas' => $empresas,
         ]);
     }
 
@@ -87,16 +103,14 @@ class ComprasController extends Controller
         $request->validate([
             'data_compra' => ['required'],
         ]);
-        
+        // dd($request->empresa_id);
         $action = Compras::create([
             "orcamento_id" => $request->orcamento_id,
             "data_compra" => $request->data_compra ? DateTime::createFromFormat('d/m/Y', $request->data_compra)->format('Y-m-d') : null,
             "data_prazo" => $request->data_prazo ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : null,
             "data_entrega" => $request->data_entrega ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : null,
-            "valor_itens" => desformatarDinheiro($request->valor_itens),
-            "valor_desconto" => desformatarDinheiro($request->valor_desconto),
-            "valor_total" => desformatarDinheiro($request->valor_total),
             "observacao" => $request->observacao,
+            "empresa_id" => $request->empresa_id,
         ]);
         
         event(new Registered($action));
@@ -113,6 +127,7 @@ class ComprasController extends Controller
         $itens = $this->hasPermission('compras_itens');
         $pagamentos = $this->hasPermission('compras_pagamentos');
 
+        $empresas = Empresas::all();
         $grupos_de_material = GruposDeMaterial::all();
         $materiais = Materiais::all();
         $data = Compras::findOrFail($id);
@@ -125,6 +140,7 @@ class ComprasController extends Controller
             'itens' => $itens,
             'pagamentos' => $pagamentos,
             'grupos_de_material' => $grupos_de_material,
+            'empresas' => $empresas,
         ]);
     }
 
@@ -140,6 +156,7 @@ class ComprasController extends Controller
         $action->data_prazo = $request->data_prazo ? DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d') : null;
         $action->data_entrega = $request->data_entrega ? DateTime::createFromFormat('d/m/Y', $request->data_entrega)->format('Y-m-d') : null;
         $action->observacao = $request->observacao;
+        $action->empresa_id = $request->empresa_id;
         $action->save();
 
         $valores = $this->atualiza_total($request->id);

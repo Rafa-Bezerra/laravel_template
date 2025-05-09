@@ -21,6 +21,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Nome da obra</th>
+                            <th>Empresa</th>
                             <th>DT. Compra</th>
                             <th>DT. Prazo</th>
                             <th>DT. Entrega</th>
@@ -48,6 +49,7 @@
 
     $(document).ready(function () {
         $('#limpar_filtro').on('click', function (e) {
+            $('#filtro_empresa_id').val('');
             $('#filtro_observacao').val('');
             $('#filtro_data_de').val('');
             $('#filtro_data_ate').val('');
@@ -78,12 +80,14 @@
                     d.filtro_data_entrega_ate = $('#filtro_data_entrega_ate').val();
                     d.filtro_data_prazo_de = $('#filtro_data_prazo_de').val();
                     d.filtro_data_prazo_ate = $('#filtro_data_prazo_ate').val();
+                    d.filtro_empresa_id = $('#filtro_empresa_id').val();
                 }
             },
 
             "columns": [
                 { "data": "id" },
                 { "data": "observacao" },
+                { "data": "empresa_name" },
                 // { "data": "orcamento_id" },
                 { "data": "data_compra",
                     "render": function (data, type, row) {

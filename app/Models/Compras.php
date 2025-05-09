@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Orcamentos;
+use App\Models\Empresas;
 
 class Compras extends BaseModel
 {
@@ -34,10 +35,16 @@ class Compras extends BaseModel
         'valor_desconto',
         'valor_total',
         'observacao',
+        'empresa_id',
     ];
 
-    public function orcamento(): BelongsTo
+    public function orcamento()
     {
         return $this->belongsTo(Orcamentos::class);
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(Empresas::class);
     }
 }

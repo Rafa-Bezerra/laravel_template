@@ -33,7 +33,7 @@ class Estoque extends BaseModel
         'valor',
     ];
 
-    public function orcamento(): BelongsTo
+    public function orcamento()
     {
         return $this->belongsTo(Orcamentos::class);
     }

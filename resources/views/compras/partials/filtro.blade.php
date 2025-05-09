@@ -7,6 +7,19 @@
     
     <form id="filtroForm">
         @csrf
+        
+        {{-- Empresas --}}
+        <div>
+            <x-input-label for="filtro_empresa_id" :value="__('Empresa')" />
+            <x-select-input id="filtro_empresa_id" class="select2 block mt-1 w-full" name="filtro_empresa_id" :value="old('filtro_empresa_id')">
+                <option></option>
+                @foreach ($empresas as $item)
+                    <option value="{{$item->name}}">{{$item->name}}</option>
+                @endforeach
+            </x-select-input>
+            <x-input-error :messages="$errors->get('filtro_empresa_id')" class="mt-2" />
+        </div>
+
         <div>
             <x-input-label for="filtro_observacao" :value="__('Nome da obra')" />
             <x-text-input id="filtro_observacao" class="block mt-1 w-full" type="text" name="filtro_observacao" />
