@@ -45,6 +45,13 @@
                         <th class="px-4 py-2">Banco</th>
                         <th class="px-4 py-2">Controle</th>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2" style="text-align: right;">Resultado:</th>
+                            <th id="total_valor"></th>
+                            <th colspan="4"></th>
+                        </tr>
+                    </tfoot>
                 </table>                    
             </div>
         </div>
@@ -57,7 +64,8 @@
             $('#filtro_data_ate').val('');
             $('#filtro_banco').val('');
             $('#filtro_controle').val('');
-            $('#filtro_empresa_id').val('');
+            $('#filtro_empresa_id').val('').trigger('change');
+            $('#filtro_especie').val('');
 
             $('#minhaTabela').DataTable().ajax.reload();
         });
@@ -80,6 +88,7 @@
                     d.filtro_data_ate = $('#filtro_data_ate').val();
                     d.filtro_banco = $('#filtro_banco').val();
                     d.filtro_controle = $('#filtro_controle').val();
+                    d.filtro_especie = $('#filtro_especie').val();
                 }
             },
             language: {
@@ -94,7 +103,19 @@
                 { data: 'banco', name: 'banco' },
                 { data: 'controle', name: 'controle' },
             ],
-            order: [[0, 'desc']]
+            order: [[0, 'desc']],
+            footerCallback: function (row, data, start, end, display) {
+                let total = 0;
+
+                data.forEach(function (item) {
+                    let valor = parseFloat(item.valor.replace(/[R$\.\s]/g, '').replace(',', '.')) || 0;
+                    total += valor;
+                });
+
+                $('#total_valor').html(
+                    'R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                );
+            }
         });
     });
 </script>

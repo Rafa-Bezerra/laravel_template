@@ -11,7 +11,7 @@
             {{-- Empresas --}}
             <div>
                 <x-input-label for="filtro_empresa_id" :value="__('Empresa')" />
-                <x-select-input id="filtro_empresa_id" class="block mt-1 w-full" name="filtro_empresa_id" :value="old('filtro_empresa_id')">
+                <x-select-input id="filtro_empresa_id" class="select2 block mt-1 w-full" name="filtro_empresa_id" :value="old('filtro_empresa_id')">
                     <option></option>
                     @foreach ($empresas as $item)
                         <option value="{{$item->name}}">{{$item->name}}</option>
@@ -20,15 +20,20 @@
                 <x-input-error :messages="$errors->get('filtro_empresa_id')" class="mt-2" />
             </div>
 
+            @php
+                use Carbon\Carbon;
+                $inicioMes = Carbon::now()->startOfMonth()->format('d/m/Y');
+                $fimMes = Carbon::now()->endOfMonth()->format('d/m/Y');
+            @endphp
             <div>
                 <x-input-label for="filtro_data_de" :value="__('Data de')" />
-                <x-text-input id="filtro_data_de" class="block mt-1 w-full" type="text" name="filtro_data_de" />
+                <x-text-input id="filtro_data_de" class="block mt-1 w-full" type="text" name="filtro_data_de" :value="$inicioMes" />
                 <x-input-error :messages="$errors->get('filtro_data_de')" class="mt-2" />
             </div>
 
             <div>
                 <x-input-label for="filtro_data_ate" :value="__('Data até')" />
-                <x-text-input id="filtro_data_ate" class="block mt-1 w-full" type="text" name="filtro_data_ate" />
+                <x-text-input id="filtro_data_ate" class="block mt-1 w-full" type="text" name="filtro_data_ate" :value="$fimMes" />
                 <x-input-error :messages="$errors->get('filtro_data_ate')" class="mt-2" />
             </div>
 
@@ -49,11 +54,25 @@
                 <x-input-label for="filtro_controle" :value="__('Controle')" />
                 <x-select-input id="filtro_controle" class="block mt-1 w-full" name="filtro_controle" :value="old('filtro_controle')">
                     <option></option>
+                    <option value="pendente">Pendente</option>
+                    <option value="pago">Pago</option>
+                    <option value="cancelado">Cancelado</option>
+                </x-select-input>
+                <x-input-error :messages="$errors->get('filtro_controle')" class="mt-2" />
+            </div>
+
+            <!-- Espécie -->
+            <div>
+                <x-input-label for="filtro_especie" :value="__('Espécie')" />
+                <x-select-input id="filtro_especie" class="block mt-1 w-full" name="filtro_especie" :value="old('filtro_especie')">
+                    <option></option>
                     <option value="compra">Compra</option>
                     <option value="venda">Venda</option>
                     <option value="despesa">Despesa</option>
+                    <option value="pessoas">Pessoas</option>
+                    <option value="material">Material</option>
                 </x-select-input>
-                <x-input-error :messages="$errors->get('filtro_controle')" class="mt-2" />
+                <x-input-error :messages="$errors->get('filtro_especie')" class="mt-2" />
             </div>
         </div>
 

@@ -52,7 +52,7 @@
             $('#filtro_data_de').val('');
             $('#filtro_data_ate').val('');
             $('#filtro_controle').val('');
-            $('#filtro_empresa_id').val('');
+            $('#filtro_empresa_id').val('').trigger('change');
 
             $('#minhaTabela').DataTable().ajax.reload();
         });

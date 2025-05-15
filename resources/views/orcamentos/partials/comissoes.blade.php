@@ -72,7 +72,7 @@
             dataType: "json",
             success: function (response) {
                 $('#comissao_id').val(response.id);
-                $('#comissao_empresa_id').val(response.empresa_id);
+                $('#comissao_empresa_id').val(response.empresa_id).trigger('change');
                 $('#comissao_comissao_id').val(response.comissao_id);
                 $('#comissao_porcentagem').val(formatPercentual(response.porcentagem));
             }
@@ -151,6 +151,7 @@
                 complete: function (response) {
                     $('.datatable').DataTable().ajax.reload();
                     $('#comissaoForm')[0].reset();
+                    $('#comissao_empresa_id').val('').trigger('change');
                     $('#comissao_id').val('');
 
                     $('#valor_itens').val(response.responseJSON.valor_itens);

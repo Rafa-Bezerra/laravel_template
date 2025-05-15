@@ -118,7 +118,7 @@
                 $('#gasto_valor').val(formatMonetario(response.valor));
                 $('#gasto_data').val(formatarData(response.data));
                 $('#gasto_controle').val(response.controle);
-                $('#gasto_banco_id').val(response.banco_id);
+                $('#gasto_banco_id').val(response.banco_id).trigger('change');
                 $('#gasto_observacao').val(response.observacao);
             }
         });
@@ -210,7 +210,8 @@
                 dataType: "json",
                 complete: function (response) {
                     $('.datatable').DataTable().ajax.reload();
-                    $('#gastosForm')[0].reset();
+                    $('#gastosForm')[0].reset();                    
+                    $('#gasto_banco_id').val('').trigger('change');
                     $('#gasto_id').val('');
                 
                     let data = response.responseJSON;

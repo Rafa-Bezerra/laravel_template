@@ -107,7 +107,7 @@
                 $('#pagamento_quantidade').val(1);
                 $('#pagamento_data').val(formatarData(response.data));
                 $('#pagamento_controle').val(response.controle);
-                $('#pagamento_banco_id').val(response.banco_id);
+                $('#pagamento_banco_id').val(response.banco_id).trigger('change');
                 $('#pagamento_tipo_pagamento').val(response.tipo_pagamento);
             }
         });
@@ -199,6 +199,7 @@
                 complete: function (response) {
                     $('.datatable').DataTable().ajax.reload();
                     $('#pagamentoForm')[0].reset();
+                    $('#pagamento_banco_id').val('').trigger('change');
                     $('#pagamento_id').val('');
                 
                     let data = response.responseJSON;

@@ -147,7 +147,7 @@
             success: function (response) {
                 $('#item_id').val(response.id);
                 $('#item_data').val(formatarData(response.data));
-                $('#item_material_id').val(response.material_id);
+                $('#item_material_id').val(response.material_id).trigger('change');
                 $('#item_quantidade').val(formatNumerico(response.quantidade));
                 $('#item_preco_unitario').val(formatMonetario(response.preco_unitario));
                 $('#item_valor_desconto').val(formatMonetario(response.valor_desconto));
@@ -272,6 +272,7 @@
                 complete: function (response) {
                     $('#minhaTabelaItens').DataTable().ajax.reload();
                     $('#itensForm')[0].reset();
+                    $('#item_material_id').val('').trigger('change');
                     $('.insert-material').hide();
                     $('.select-material').show();
 

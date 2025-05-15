@@ -59,7 +59,7 @@
             dataType: "json",
             success: function (response) {
                 $('#socio_id').val(response.id);
-                $('#socio_empresa_id').val(response.empresa_id);
+                $('#socio_empresa_id').val(response.empresa_id).trigger('change');
                 $('#socio_porcentagem').val(formatPercentual(response.porcentagem));
             }
         });
@@ -138,6 +138,7 @@
                 complete: function (response) {
                     $('.datatable').DataTable().ajax.reload();
                     $('#socioForm')[0].reset();
+                    $('#socio_empresa_id').val('').trigger('change');
                     $('#socio_id').val('');
                 
                     let data = response.responseJSON;

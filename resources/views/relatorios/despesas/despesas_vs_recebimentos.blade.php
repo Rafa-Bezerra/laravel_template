@@ -42,7 +42,7 @@
                         <th class="px-4 py-2">Empresa</th>
                         <th class="px-4 py-2">Valor</th>
                         <th class="px-4 py-2">Parcela</th>
-                        <th class="px-4 py-2">Vencimento</th>
+                        <th class="px-4 py-2">Data</th>
                         <th class="px-4 py-2">Banco</th>
                         <th class="px-4 py-2">Controle</th>
                     </thead>
@@ -65,7 +65,8 @@
             $('#filtro_data_ate').val('');
             $('#filtro_banco').val('');
             $('#filtro_controle').val('');
-            $('#filtro_empresa_id').val('');
+            $('#filtro_empresa_id').val('').trigger('change');
+            $('#filtro_especie').val('');
 
             $('#minhaTabela').DataTable().ajax.reload();
         });
@@ -88,6 +89,7 @@
                     d.filtro_data_ate = $('#filtro_data_ate').val();
                     d.filtro_banco = $('#filtro_banco').val();
                     d.filtro_controle = $('#filtro_controle').val();
+                    d.filtro_especie = $('#filtro_especie').val();
                 }
             },
             language: {
@@ -112,7 +114,7 @@
 
                     if (item.especie === 'venda') {
                         total += valor;
-                    } else if (item.especie === 'compra' || item.especie === 'despesa') {
+                    } else if (item.especie === 'compra' || item.especie === 'despesa' || item.especie === 'material' || item.especie === 'pessoas') {
                         total -= valor;
                     }
                 });

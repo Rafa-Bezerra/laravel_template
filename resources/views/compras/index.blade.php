@@ -49,7 +49,7 @@
 
     $(document).ready(function () {
         $('#limpar_filtro').on('click', function (e) {
-            $('#filtro_empresa_id').val('');
+            $('#filtro_empresa_id').val('').trigger('change');
             $('#filtro_observacao').val('');
             $('#filtro_data_de').val('');
             $('#filtro_data_ate').val('');
