@@ -18,6 +18,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Material</th>
+                            <th>Empresa</th>
                             <th>Quantidade</th>
                             <th>Valor</th>
                             <th>Ações</th>
@@ -47,6 +48,7 @@
             "columns": [
                 { "data": "id" },
                 { "data": "material_name" },
+                { "data": "empresa_name" },
                 { "data": "quantidade",
                     "render": function (data) {
                         return formatarNumero(data);

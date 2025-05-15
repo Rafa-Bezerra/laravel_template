@@ -138,7 +138,11 @@ class OrcamentosController extends Controller
         $data = Orcamentos::findOrFail($id);
         $empresas = Empresas::orderBy('name')->get();
         $empresas_enderecos = EmpresasEnderecos::where('empresa_id', $data->empresa_id)->get();
-        $materiais = Materiais::orderBy('name')->get();
+        $materiais = Materiais::with('estoques')->orderBy('name')->get();
+        foreach ($materiais as $material) {
+            $material->disponibilidade_geral = $material->getDisponibilidadeGeral();
+            $material->disponibilidade_local = $material->getDisponibilidadeLocal($data->empresa_id);
+        }
         $comissoes = Comissoes::orderBy('name')->get();
         $servicos = Servicos::orderBy('name')->get();
         $bancos = Bancos::orderBy('name')->get();
@@ -333,15 +337,41 @@ class OrcamentosController extends Controller
 
     public function getEstoqueMaterial(Request $request)
     {
-        $estoque = Estoque::where('material_id', $request->material_id)->first();
+        // Tenta obter o estoque da empresa (estoque local)
+        $estoque = Estoque::where('material_id', $request->material_id)
+                            ->where('empresa_id', $request->empresa_id)
+                            ->first();
 
-        if (!$estoque) {
-            $estoque = new Estoque();
-            $estoque->quantidade = 0;
+        $tipo_estoque = 'local';
+        $quantidade = 0;
+        $valor = 0;
+        $estoque_encontrado = false;
+
+        if ($estoque) {
+            // Se encontrar estoque local, define os valores de quantidade e valor
+            $quantidade = $estoque->quantidade;
+            $valor = $estoque->valor;
+            $estoque_encontrado = true;
+        } else {
+            // Soma total de todos os estoques do material (estoque geral)
+            $quantidadeGeral = Estoque::where('material_id', $request->material_id)->sum('quantidade');
+            $valorGeral = Estoque::where('material_id', $request->material_id)->sum('quantidade' * 'valor'); // Calcula o valor total do estoque geral
+
+            $quantidade = $quantidadeGeral; // será 0 se não houver nenhum registro
+            $valor = $valorGeral > 0 ? $valorGeral / $quantidadeGeral : 0; // Valor médio por unidade do estoque geral
+            $tipo_estoque = 'geral';
+            $estoque_encontrado = $quantidadeGeral > 0;
         }
-        
+
         return response()->json([
-            'data' => [$estoque]
+            'data' => [
+                'material_id' => $request->material_id,
+                'empresa_id' => $request->empresa_id,
+                'quantidade' => $quantidade,
+                'valor' => $valor,
+                'tipo_estoque' => $tipo_estoque,
+                'estoque_encontrado' => $estoque_encontrado
+            ]
         ]);
     }
 

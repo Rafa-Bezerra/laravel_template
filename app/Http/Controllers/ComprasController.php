@@ -211,12 +211,9 @@ class ComprasController extends Controller
         $item_preco_unitario = desformatarDinheiro($request->item_preco_unitario);
         $item_valor_desconto = desformatarDinheiro($request->item_valor_desconto);
         $item_valor_total = desformatarDinheiro($request->item_valor_total);
-
-        $quantidade = 0;
-        $preco = 0;
+        
         if ($request->item_id == null) {
             $quantidade = $item_quantidade;
-            $preco = $item_preco_unitario;
             $action = ComprasItens::create([
                 "compra_id" => $request->item_compra_id,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d'),
@@ -230,7 +227,6 @@ class ComprasController extends Controller
         } else {
             $action = ComprasItens::findOrFail($request->item_id);
             $quantidade = $item_quantidade - $action->quantidade;
-            $preco = $item_preco_unitario;
             $action->compra_id = $request->item_compra_id;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->item_data)->format('Y-m-d');
             $action->material_id = $material_id;
@@ -242,7 +238,7 @@ class ComprasController extends Controller
             $action->save();
         }
 
-        $this->entrada_estoque($material_id, $quantidade, $preco);
+        $this->entrada_estoque($material_id, $quantidade, $item_preco_unitario, $request->item_compra_id);
 
         $valores = $this->atualiza_total($request->item_compra_id);
 
@@ -251,20 +247,44 @@ class ComprasController extends Controller
         return $valores->toJson();
     }
 
-    public function entrada_estoque($material_id, $quantidade, $valor) {
-        $estoque = Estoque::where('material_id', $material_id)->first();
+    public function entrada_estoque($material_id, $quantidade, $valor, $compra_id) {
+        $compra = Compras::findOrFail($compra_id);
+        if ($compra->empresa_id != null) {
+            $estoque = Estoque::where('material_id', $material_id)->where('empresa_id', $compra->empresa_id)->first();
+        } else {
+            $estoque = Estoque::where('material_id', $material_id)->first();
+        }
 
         if(!$estoque) {
             $estoque = Estoque::create([
                 "material_id" => $material_id,
                 "quantidade" => $quantidade,
+                "empresa_id" => $compra->empresa_id,
                 "valor" => $valor,
                 "orcamento_id" => null,
             ]);
         } else {
             $estoque->quantidade += $quantidade;
+            $estoque->valor = $valor;
             $estoque->save();
         }
+
+        event(new Registered($estoque));
+
+        return;
+    }
+
+    public function saida_estoque($material_id, $quantidade, $compra_id) {
+        
+        $compra = Compras::findOrFail($compra_id);
+        if ($compra->empresa_id != null) {
+            $estoque = Estoque::where('material_id', $material_id)->where('empresa_id', $compra->empresa_id)->first();
+        } else {
+            $estoque = Estoque::where('material_id', $material_id)->first();
+        }
+
+        $estoque->quantidade += $quantidade;
+        $estoque->save();
 
         event(new Registered($estoque));
 
@@ -305,7 +325,7 @@ class ComprasController extends Controller
         $item = ComprasItens::findOrFail($id);
         $compra = $item->compra_id;
         $quantidade = $item->quantidade * -1;
-        $this->entrada_estoque($item->material_id, $quantidade);
+        $this->saida_estoque($item->material_id, $quantidade, $item->compra_id);
         $item->delete();
         $valores = $this->atualiza_total($compra);
         return $valores->toJson();

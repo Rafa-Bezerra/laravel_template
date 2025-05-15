@@ -36,4 +36,19 @@ class Materiais extends BaseModel
     {
         return $this->belongsTo(GruposDeMaterial::class);
     }
+
+    public function estoques()
+    {
+        return $this->hasMany(Estoque::class, 'material_id');
+    }
+
+    public function getDisponibilidadeGeral(): float
+    {
+        return $this->estoques->sum('quantidade');
+    }
+    
+    public function getDisponibilidadeLocal(int $empresa_id): float
+    {
+        return $this->estoques->where('empresa_id', $empresa_id)->sum('quantidade');
+    }
 }

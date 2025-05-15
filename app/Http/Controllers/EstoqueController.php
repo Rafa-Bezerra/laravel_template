@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Estoque;
 use App\Models\Materiais;
+use App\Models\Empresas;
 use DataTables;
 
 class EstoqueController extends Controller
@@ -38,10 +39,13 @@ class EstoqueController extends Controller
 
     public function getListagem()
     {
-        $listagem = Estoque::with('material')->get();
+        $listagem = Estoque::with('material')->with('empresa')->get();
         return datatables()->of($listagem)
             ->addColumn('material_name', function ($estoque) {
                 return $estoque->material->name ?? 'Sem material';
+            })
+            ->addColumn('empresa_name', function ($orcamento) {
+                return $orcamento->empresa->name ?? 'Sem empresa';
             })
         ->toJson();
     }
@@ -52,14 +56,18 @@ class EstoqueController extends Controller
 
         $this->hasPermission('estoque_create',$tittle,true);
         
-        $materiais = Materiais::leftJoin('estoque', 'materiais.id', '=', 'estoque.material_id')
-            ->whereNull('estoque.material_id')
-            ->select('materiais.*')
-            ->get();
+        // $materiais = Materiais::leftJoin('estoque', 'materiais.id', '=', 'estoque.material_id')
+        //     ->whereNull('estoque.material_id')
+        //     ->select('materiais.*')
+        //     ->get();
+
+        $materiais = Materiais::all();
+        $empresas = Empresas::all();
 
         return view('estoque.create', [
             'user' => $request->user(),
             'materiais' => $materiais,
+            'empresas' => $empresas,
             'tittle' => $tittle,
         ]);
     }
@@ -73,6 +81,7 @@ class EstoqueController extends Controller
         
         $action = Estoque::create([
             "material_id" => $request->material_id,
+            "empresa_id" => $request->empresa_id,
             "quantidade" => desformatarNumerico($request->quantidade),
             "valor" => desformatarDinheiro($request->valor),
             "orcamento_id" => null,
@@ -90,10 +99,12 @@ class EstoqueController extends Controller
         $this->hasPermission('estoque_update',$tittle,true);
         
         $data = Estoque::findOrFail($id);
+        $empresas = Empresas::all();
 
         return view('estoque.edit', [
             'user' => $request->user(),
             'data' => $data,
+            'empresas' => $empresas,
             'tittle' => $tittle,
         ]);
     }
@@ -105,6 +116,7 @@ class EstoqueController extends Controller
         ]);
         
         $action = Estoque::findOrFail($request->id);
+        $action->empresa_id = $request->empresa_id;
         $action->quantidade = desformatarNumerico($request->quantidade);
         $action->valor = desformatarDinheiro($request->valor);
         $action->save();

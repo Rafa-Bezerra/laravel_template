@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Orcamentos;
 use App\Models\Materiais;
+use App\Models\Empresas;
 
 class Estoque extends BaseModel
 {
@@ -30,6 +31,7 @@ class Estoque extends BaseModel
         'material_id',
         'quantidade',
         'orcamento_id',
+        'empresa_id',
         'valor',
     ];
 
@@ -41,5 +43,10 @@ class Estoque extends BaseModel
     public function material()
     {
         return $this->belongsTo(Materiais::class);
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(Empresas::class);
     }
 }

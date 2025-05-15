@@ -23,6 +23,18 @@
                         <x-input-error :messages="$errors->get('material_id')" class="mt-2" />
                     </div>
                     
+                    <!-- Empresa -->
+                    <div>
+                        <x-input-label for="empresa_id" :value="__('Empresa')" />
+                        <x-select-input id="empresa_id" class="select2 block mt-1 w-full" name="empresa_id" :value="old('empresa_id')">
+                            <option></option>
+                            @foreach ($empresas as $item)
+                                <option value="{{$item->id}}">{{$item->name}}</option>
+                            @endforeach
+                        </x-select-input>
+                        <x-input-error :messages="$errors->get('empresa_id')" class="mt-2" />
+                    </div>
+                    
                     <!-- Quantidade -->
                     <div>
                         <x-input-label for="quantidade" :value="__('Quantidade')" />

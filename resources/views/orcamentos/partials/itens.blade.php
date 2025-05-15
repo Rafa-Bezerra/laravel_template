@@ -24,7 +24,7 @@
                 <x-select-input id="item_material_id" class="select2 block mt-1 w-full" name="item_material_id" :value="old('item_material_id')">
                     <option></option>
                     @foreach ($materiais as $item)
-                        <option value="{{$item->id}}">{{$item->id.' - '.$item->name}}</option>
+                        <option value="{{$item->id}}">{{$item->id.' - '.$item->name.' || ESTOQUE GERAL: '.$item->disponibilidade_geral.' '.$item->unidade_de_medida.' || ESTOQUE LOCAL: '.$item->disponibilidade_local.' '.$item->unidade_de_medida}}</option>
                     @endforeach
                 </x-select-input>
                 <x-input-error :messages="$errors->get('item_material_id')" class="mt-2" />
@@ -206,17 +206,18 @@
 
         $('#item_material_id').on('change', function () {
             let materialId = $('#item_material_id').val();
+            let empresaId = $('#empresa_id').val();
             $.ajax({
                 url: "{{ route('orcamentos_itens.estoque') }}",
                 type: "POST",
                 data: {
                     material_id: materialId,
+                    empresa_id : empresaId,
                     _token: "{{ csrf_token() }}"
                 },
                 dataType: "json",
                 complete: function (response) {
-                    let data = response.responseJSON.data[0];
-                    console.log(data.valor);
+                    let data = response.responseJSON.data;
 
                     $('#item_preco_unitario').val(formatMonetario(data.valor));
 
@@ -267,21 +268,40 @@
         $('#item_quantidade').on('input', function () {
             let quantidade = parseToFloatBr($('#item_quantidade').val());
             let materialId = $('#item_material_id').val();
+            let empresaId = $('#empresa_id').val();
             $.ajax({
                 url: "{{ route('orcamentos_itens.estoque') }}",
                 type: "POST",
                 data: {
                     material_id : materialId,
+                    empresa_id : empresaId,
                     _token: "{{ csrf_token() }}"
                 },
                 dataType: "json",
-                complete: function (response) {
-                    console.log(quantidade); //5
-                    console.log(response.responseJSON.data[0].quantidade); //1000.00
-                    console.log(response.responseJSON.data[0]);
-                    if (quantidade > response.responseJSON.data[0].quantidade) {
-                        $('#item_quantidade').val(formatNumerico(response.responseJSON.data[0].quantidade));
-                        alert('Quantidade excede o estoque!');
+                success: function (response) {
+                    const data = response.data;
+                    const estoqueDisponivel = data.quantidade;
+                    const tipoEstoque = data.tipo_estoque;
+                    const estoqueEncontrado = data.estoque_encontrado;
+
+                    if (quantidade > estoqueDisponivel) {
+                        $('#item_quantidade').val(formatNumerico(estoqueDisponivel));
+
+                        let msg = '';
+
+                        if (!estoqueEncontrado) {
+                            msg = 'Não há estoque disponível para este material. A quantidade foi ajustada para 0.';
+                        } else {
+                            msg = `A quantidade informada excede o estoque disponível (${estoqueDisponivel}). 
+                                O valor foi ajustado para o máximo permitido com base no estoque ${tipoEstoque}.`;
+                        }
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Atenção',
+                            text: msg,
+                            confirmButtonText: 'Entendi'
+                        });
                     }
                 }
             });
