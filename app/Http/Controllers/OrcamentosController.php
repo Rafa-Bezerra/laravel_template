@@ -105,15 +105,14 @@ class OrcamentosController extends Controller
         $request->validate([
             'empresa_id' => ['required'],
             'data_venda' => ['required'],
-        ]);
-
+        ]);        
         $action = Orcamentos::create([
             "empresa_id" => $request->empresa_id,
             "empresas_endereco_id" => $request->empresas_endereco_id,
             "data_venda" => DateTime::createFromFormat('d/m/Y', $request->data_venda)->format('Y-m-d'),
             "data_prazo" => DateTime::createFromFormat('d/m/Y', $request->data_prazo)->format('Y-m-d'),
             "observacao" => $request->observacao,
-            "valor_orcamento" => $request->valor_orcamento,
+            "valor_orcamento" => desformatarDinheiro($request->valor_orcamento),
             "controle" => 'pendente',
         ]);
 
@@ -301,15 +300,17 @@ class OrcamentosController extends Controller
         $valor_desconto = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_desconto');
         $valor_servicos = OrcamentosServicos::where('orcamento_id', $orcamento_id)->sum('preco');
         $valor_gastos = OrcamentosGastos::where('orcamento_id', $orcamento_id)->sum('valor');
+        $valor_pagamentos = Pagamentos::where('orcamento_id', $orcamento_id)->where('controle', 'pago')->sum('valor');
         $valor_total = $valor_itens + $valor_servicos + $valor_gastos;
 
         $orcamento = Orcamentos::findOrFail($orcamento_id);
         $valor_total_impostos = round($orcamento->valor_orcamento * (1 + ($orcamento->valor_impostos/100)),2);
+        // dd($valor_gastos);
         $orcamento->valor_itens = $valor_itens;
         $orcamento->valor_desconto = $valor_desconto;
         $orcamento->valor_total = $valor_total;
         $orcamento->valor_servicos = $valor_servicos;
-        $orcamento->valor_saldo = $orcamento->valor_orcamento - $valor_total - $valor_total_impostos;
+        $orcamento->valor_saldo = $valor_pagamentos - $valor_total - $valor_total_impostos;
         $orcamento->save();
 
         event(new Registered($orcamento));
@@ -400,6 +401,7 @@ class OrcamentosController extends Controller
             $action = OrcamentosServicos::create([
                 "orcamento_id" => $request->servico_orcamento_id,
                 "servico_id" => $request->servico_servico_id,
+                "observacao" => $request->servico_observacao,
                 "data" => DateTime::createFromFormat('d/m/Y', $request->servico_data)->format('Y-m-d'),
                 "preco" => $preco,
             ]);
@@ -407,6 +409,7 @@ class OrcamentosController extends Controller
             $action = OrcamentosServicos::findOrFail($request->servico_id);
             $action->orcamento_id = $request->servico_orcamento_id;
             $action->servico_id = $request->servico_servico_id;
+            $action->observacao = $request->servico_observacao;
             $action->data = DateTime::createFromFormat('d/m/Y', $request->servico_data)->format('Y-m-d');
             $action->preco = $preco;
             $action->save();
@@ -457,19 +460,22 @@ class OrcamentosController extends Controller
             'comissao_porcentagem' => ['required'],
         ]);
         
+        $valor_total = desformatarDinheiro($request->comissao_valor_total);
+
         if ($request->comissao_id == null) {
             $action = OrcamentosComissoes::create([
                 "orcamento_id" => $request->comissao_orcamento_id,
                 "empresa_id" => $request->comissao_empresa_id,
                 "comissao_id" => $request->comissao_comissao_id,
                 "porcentagem" => desformatarPercentual($request->comissao_porcentagem),
-                "valor_total" => 0,
+                "valor_total" => $valor_total,
             ]);
         } else {
             $action = OrcamentosComissoes::findOrFail($request->comissao_id);
             $action->orcamento_id = $request->comissao_orcamento_id;
             $action->empresa_id = $request->comissao_empresa_id;
             $action->comissao_id = $request->comissao_comissao_id;
+            $action->valor_total = $request->comissao_valor_total;
             $action->porcentagem = desformatarPercentual($request->comissao_porcentagem);
             $action->save();
         }
@@ -516,12 +522,13 @@ class OrcamentosController extends Controller
             switch ($value->comissao_id) {
                 case 1:
                     $valor_total = $total_servicos * ($value->porcentagem/100);
-                    break;
-                
+                    break;                
                 case 2:
                     $valor_total = $total_itens * ($value->porcentagem/100);
-                    break;
-                
+                    break;        
+                case 5:
+                    $valor_total = $listagem->valor_total;
+                    break;        
                 default:
                     $valor_total = ($total_servicos + $total_itens) * ($value->porcentagem/100);
                     break;

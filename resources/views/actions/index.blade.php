@@ -10,7 +10,7 @@
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    
                 @if ($insert)                    
                     <div align="right">
-                        <x-nav-link :href="route('actions.create')">{{ __('Nova ação') }}</x-nav-link>      
+                        <x-nav-link-create :href="route('actions.create')" class="bg-green-500 dark:bg-green-500 dark:text-white font-semibold px-4 py-2 rounded">{{ __('Nova ação') }}</x-nav-link-create>      
                     </div>      
                 @endif
                 <table id="minhaTabela" class="table table-striped datatable">

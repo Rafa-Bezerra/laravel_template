@@ -41,6 +41,13 @@
                 <x-percent-input id="comissao_porcentagem" class="block mt-1 w-full totalizador" type="text" name="comissao_porcentagem" :value="old('fone')"  />
                 <x-input-error :messages="$errors->get('comissao_porcentagem')" class="mt-2" />
             </div>
+            
+            <!-- Valor da Comissão (cliente pode digitar, mas não envia) -->
+            <div>
+                <x-input-label for="comissao_valor_total" :value="__('Valor da Comissão')" />
+                <x-money-input id="comissao_valor_total" class="block mt-1 w-full totalizador" type="text" name="comissao_valor_total" :value="old('comissao_valor_total')"  />
+                <x-input-error :messages="$errors->get('comissao_valor_total')" class="mt-2" />
+            </div>
 
             <div class="flex items-center justify-end mt-4">
                 <x-primary-button class="ms-4">
@@ -75,6 +82,7 @@
                 $('#comissao_empresa_id').val(response.empresa_id).trigger('change');
                 $('#comissao_comissao_id').val(response.comissao_id);
                 $('#comissao_porcentagem').val(formatPercentual(response.porcentagem));
+                $('#comissao_valor_total').val(formatMonetario(response.valor_total));
             }
         });
     }

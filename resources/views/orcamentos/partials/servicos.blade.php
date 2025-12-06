@@ -37,6 +37,13 @@
                 <x-input-error :messages="$errors->get('servico_data')" class="mt-2" />
             </div>
 
+            <!-- Observação -->
+            <div>
+                <x-input-label for="servico_observacao" :value="__('Observação')" />
+                <x-text-input id="servico_observacao" class="block mt-1 w-full totalizador" type="text" name="servico_observacao" :value="old('servico_observacao')"  />
+                <x-input-error :messages="$errors->get('servico_observacao')" class="mt-2" />
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <x-primary-button class="ms-4">
                     {{ __('Salvar') }}
@@ -50,6 +57,7 @@
             <tr>
                 <th>ID</th>
                 <th>Serviço</th>
+                <th>Observação</th>
                 <th>Preço</th>
                 <th>Data</th>
                 <th>Ações</th>
@@ -68,6 +76,7 @@
                 $('#servico_id').val(response.id);
                 $('#servico_servico_id').val(response.servico_id);
                 $('#servico_preco').val(formatMonetario(response.preco));
+                $('#servico_observacao').val(response.observacao);
                 $('#servico_data').val(formatarData(response.data));
             }
         });
@@ -127,6 +136,7 @@
             "columns": [
                 { "data": "id" },
                 { "data": "servico_name" },
+                { "data": "observacao" },
                 { "data": "preco",
                     "render": function (data) {
                         return formatarMoeda(data);

@@ -203,6 +203,7 @@
                     $('#pagamento_id').val('');
                 
                     let data = response.responseJSON;
+                    console.log(data);
 
                     $('#valor_itens').val(formatMonetario(data.valor_itens));
                     $('#valor_desconto').val(formatMonetario(data.valor_desconto));
