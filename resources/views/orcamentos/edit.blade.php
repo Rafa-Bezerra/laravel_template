@@ -1,10 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __($tittle) }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __($tittle) }}
+            </h2>
+            <div class="flex justify-end gap-4 mb-4 no-print">
+                <a
+                    href="{{ url('orcamentos/print/' . $data->id) }}"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 px-6 py-3
+                            dark:bg-gray-900
+                            bg-emerald-600
+                            dark:text-white text-base font-bold
+                            rounded-lg shadow-lg
+                            transform transition
+                            hover:scale-105 hover:shadow-xl"
+                >
+                    📊 Relatório Analítico
+                </a>        
+                <a
+                    href="{{ url('orcamentos/sintetico/' . $data->id) }}"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 px-6 py-3
+                            dark:bg-gray-900
+                            bg-emerald-600
+                            dark:text-white text-base font-bold
+                            rounded-lg shadow-lg
+                            transform transition
+                            hover:scale-105 hover:shadow-xl"
+                >
+                    📄 Relatório Sintético
+                </a>
+            </div>
+        </div>
     </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">    

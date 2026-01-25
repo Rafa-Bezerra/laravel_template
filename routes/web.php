@@ -186,6 +186,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orcamentos/create', [OrcamentosController::class, 'create'])->name('orcamentos.create');
     Route::post('/orcamentos/create', [OrcamentosController::class, 'register'])->name('orcamentos.insert');    
     Route::get('/orcamentos/edit/{id}', [OrcamentosController::class, 'edit'])->name('orcamentos.edit');  
+    Route::get('/orcamentos/sintetico/{id}', [OrcamentosController::class, 'sintetico'])->name('orcamentos.sintetico');  
     Route::get('/orcamentos/print/{id}', [OrcamentosController::class, 'print'])->name('orcamentos.print');
     Route::post('/orcamentos/edit', [OrcamentosController::class, 'update'])->name('orcamentos.update');    
     Route::get('/orcamentos/delete/{id}', [OrcamentosController::class, 'delete'])->name('orcamentos.delete');    

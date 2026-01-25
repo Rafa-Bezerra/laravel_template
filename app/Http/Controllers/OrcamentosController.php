@@ -300,17 +300,35 @@ class OrcamentosController extends Controller
         $valor_desconto = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_desconto');
         $valor_servicos = OrcamentosServicos::where('orcamento_id', $orcamento_id)->sum('preco');
         $valor_gastos = OrcamentosGastos::where('orcamento_id', $orcamento_id)->sum('valor');
-        $valor_pagamentos = Pagamentos::where('orcamento_id', $orcamento_id)->where('controle', 'pago')->sum('valor');
-        $valor_total = $valor_itens + $valor_servicos + $valor_gastos;
+        $valor_pagamentos = Pagamentos::where('orcamento_id', $orcamento_id)
+            ->where('controle', 'pago')
+            ->sum('valor');
 
         $orcamento = Orcamentos::findOrFail($orcamento_id);
-        $valor_total_impostos = round($orcamento->valor_orcamento * (1 + ($orcamento->valor_impostos/100)),2);
-        // dd($valor_gastos);
+
+        /* Receita */
+        $valor_venda = $valor_itens + $valor_servicos - $valor_desconto;
+
+        /* Impostos */
+        $valor_impostos = round(
+            $valor_venda * ($orcamento->valor_impostos / 100),
+            2
+        );
+
+        /* Saldo correto */
+        $valor_saldo =
+            $valor_pagamentos
+            - $valor_venda
+            - $valor_impostos
+            - $valor_gastos;
+
+        /* Persistência */
         $orcamento->valor_itens = $valor_itens;
         $orcamento->valor_desconto = $valor_desconto;
-        $orcamento->valor_total = $valor_total;
         $orcamento->valor_servicos = $valor_servicos;
-        $orcamento->valor_saldo = $valor_pagamentos - $valor_total - $valor_total_impostos;
+        $orcamento->valor_total = $valor_venda;
+        $orcamento->valor_saldo = $valor_saldo;
+
         $orcamento->save();
 
         event(new Registered($orcamento));
@@ -713,6 +731,32 @@ class OrcamentosController extends Controller
         // dd($orcamento);
 
         return view('orcamentos.print', [
+            'user' => $request->user(),
+            'tittle' => $tittle,
+            'orcamento' => $orcamento,
+            'orcamento_itens' => $orcamento_itens,
+            'orcamento_servicos' => $orcamento_servicos,
+            'orcamento_comissoes' => $orcamento_comissoes,
+            'orcamento_socios' => $orcamento_socios,
+            'orcamento_pagamentos' => $orcamento_pagamentos,
+            'orcamento_gastos' => $orcamento_gastos,
+        ]);
+    }
+
+    public function sintetico(Request $request, string $id): View
+    {        
+        $tittle = 'Resumo orçamento';
+
+        $orcamento = Orcamentos::findOrFail($id)->with('empresa')->with('endereco')->where('id', $id)->firstOrFail();
+        $orcamento_itens = OrcamentosItens::where('orcamento_id', $id)->with('material')->get();
+        $orcamento_servicos = OrcamentosServicos::where('orcamento_id', $id)->with('servico')->get();
+        $orcamento_comissoes = OrcamentosComissoes::where('orcamento_id', $id)->with('empresa')->with('comissao')->get();
+        $orcamento_socios = OrcamentosSocios::where('orcamento_id', $id)->with('empresa')->get();
+        $orcamento_gastos = OrcamentosGastos::where('orcamento_id', $id)->with('banco')->orderBy('especie')->orderBy('data')->get();
+        $orcamento_pagamentos = Pagamentos::where('orcamento_id', $id)->with('banco')->get();
+        // dd($orcamento);
+
+        return view('orcamentos.sintetico', [
             'user' => $request->user(),
             'tittle' => $tittle,
             'orcamento' => $orcamento,

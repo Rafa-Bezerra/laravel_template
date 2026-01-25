@@ -1,49 +1,170 @@
 <style>
     @media print {
-        body {
-            background: white;
-            color: black;
+    
+        /* ===============================
+           CONFIGURAÇÕES GERAIS
+           =============================== */
+    
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            box-shadow: none !important;
+            font-size: 12px !important;
         }
     
+        body {
+            background: #ffffff !important;
+            color: #111827 !important;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px !important;
+            line-height: 1.4;
+        }
+    
+        /* Remove dark mode */
+        .dark,
+        [class*="dark:"] {
+            background: #ffffff !important;
+            color: #111827 !important;
+        }
+    
+        /* Elementos não imprimíveis */
         .no-print {
             display: none !important;
         }
     
-        .print\:block {
-            display: block !important;
+        /* ===============================
+           LAYOUT
+           =============================== */
+    
+        .max-w-7xl {
+            max-width: 100% !important;
         }
     
-        .print\:w-full {
-            width: 100% !important;
+        .py-12 {
+            padding: 0 !important;
         }
     
-        .print\:text-sm {
-            font-size: 0.875rem !important;
+        .shadow,
+        .shadow-sm,
+        .shadow-md {
+            box-shadow: none !important;
         }
+    
+        .rounded,
+        .rounded-lg,
+        .sm\:rounded-lg {
+            border-radius: 0 !important;
+        }
+    
+        .bg-white,
+        .dark\:bg-gray-800 {
+            background: #ffffff !important;
+            border: 1px solid #d1d5db;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+    
+        /* ===============================
+           TÍTULOS
+           =============================== */
+    
+        h2 {
+            font-size: 16px !important;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 4px;
+        }
+    
+        h3 {
+            font-size: 13px !important;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            color: #1f2937;
+        }
+    
+        /* ===============================
+           TABELAS
+           =============================== */
     
         table {
-            border-collapse: collapse !important;
             width: 100% !important;
-        }
-    
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px 8px;
+            border-collapse: collapse !important;
+            margin-top: 6px;
+            font-size: 12px !important;
+            page-break-inside: auto !important;
         }
     
         thead {
-            background-color: #f3f4f6;
+            background: #f3f4f6 !important;
         }
+    
+        th {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px !important;
+            color: #374151;
+        }
+    
+        th,
+        td {
+            border: 1px solid #d1d5db !important;
+            padding: 6px 8px !important;
+            vertical-align: top;
+        }
+    
+        tfoot td {
+            font-weight: bold;
+            background: #f9fafb !important;
+        }
+    
+        tr {
+            page-break-inside: avoid !important;
+        }
+    
+        /* ===============================
+           OVERFLOW
+           =============================== */
+    
+        .overflow-x-auto {
+            overflow: visible !important;
+        }
+    
+        /* ===============================
+           QUEBRAS
+           =============================== */
     
         .page-break {
             page-break-after: always;
         }
+
+        /* Permite quebrar o bloco se necessário */
+        .print-section {
+            page-break-inside: auto !important;
+        }
+
+        /* Nunca separar título da tabela */
+        .print-section-title {
+            page-break-after: avoid !important;
+        }
+
+        /* Evita quebra antes da tabela */
+        .print-table {
+            page-break-before: avoid !important;
+        }
+    
     }
 </style>
+    
+    
+    
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __($tittle) }}
+            {{ __($tittle) }} — Relatório Analítico
         </h2>
     </x-slot>
 
@@ -59,6 +180,7 @@
                 <p><strong>Data:</strong> {{ \Carbon\Carbon::parse($orcamento->data_venda)->format('d/m/Y') }}</p>
                 <p><strong>Prazo:</strong> {{ \Carbon\Carbon::parse($orcamento->data_prazo)->format('d/m/Y') }}</p>
                 <p><strong>Orçamento:</strong> R$ {{ number_format($orcamento->valor_orcamento, 2, ',', '.') }}</p>
+                <p><strong>Impostos:</strong> {{ number_format($orcamento->valor_impostos, 2, ',', '.') }} %</p>
                 <p><strong>Saldo:</strong> R$ {{ number_format($orcamento->valor_saldo, 2, ',', '.') }}</p>
             </div>
 
@@ -133,17 +255,17 @@
             </div>
 
             {{-- Gastos --}}
-            <div class="bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Gastos realizados</h3>
-                <div class="overflow-x-auto">
+            <div class="bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg print-section">
+                <h3 class="print-section-title text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Gastos realizados</h3>
+                <div class="overflow-x-auto print-table">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
                         <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                             <tr>
                                 <th class="px-4 py-2">Data</th>
-                                <th class="px-4 py-2">Valor</th>
                                 <th class="px-4 py-2">Banco</th>
                                 <th class="px-4 py-2">Controle</th>
                                 <th class="px-4 py-2">OBS.</th>
+                                <th class="px-4 py-2">Valor</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -167,10 +289,10 @@
                                 @endif
                                 <tr class="border-b border-gray-200 dark:border-gray-700">
                                     <td class="px-4 py-2">{{ \Carbon\Carbon::parse($gasto->data)->format('d/m/Y') }}</td>
-                                    <td class="px-4 py-2">R$ {{ number_format($gasto->valor, 2, ',', '.') }}</td>
                                     <td class="px-4 py-2">{{ $gasto->banco->name ? $gasto->banco->name.' - '.$gasto->banco->agencia.' | '.$gasto->banco->conta : '-' }}</td>
                                     <td class="px-4 py-2">{{ $gasto->controle ?? '-' }}</td>
                                     <td class="px-4 py-2">{{ $gasto->observacao ?? '-' }}</td>
+                                    <td class="px-4 py-2">R$ {{ number_format($gasto->valor, 2, ',', '.') }}</td>
                                 </tr>
                             @endforeach
                             @php
@@ -179,7 +301,7 @@
                             
                             <tfoot>
                                 <tr>
-                                    <td class="text-right font-bold px-4 py-2">Total dos Gastos:</td>
+                                    <td colspan="4" class="text-right font-bold px-4 py-2">Total dos Gastos:</td>
                                     <td class="px-4 py-2 font-bold">R$ {{ number_format($totalGastos, 2, ',', '.') }}</td>
                                 </tr>
                             </tfoot>
@@ -243,21 +365,31 @@
                     <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                         <tr>
                             <th class="px-4 py-2">Banco</th>
-                            <th class="px-4 py-2">Valor</th>
                             <th class="px-4 py-2">Data</th>
                             <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Valor</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($orcamento_pagamentos as $pagamento)
                             <tr class="border-b border-gray-200 dark:border-gray-700">
                                 <td class="px-4 py-2">{{ $pagamento->banco->name ? $pagamento->banco->name.' - '.$pagamento->banco->agencia.' | '.$pagamento->banco->conta : '-' }}</td>
-                                <td class="px-4 py-2">R$ {{ number_format($pagamento->valor, 2, ',', '.') }}</td>
                                 <td class="px-4 py-2">{{ \Carbon\Carbon::parse($pagamento->data)->format('d/m/Y') }}</td>
                                 <td class="px-4 py-2">{{ ucfirst($pagamento->controle) }}</td>
+                                <td class="px-4 py-2">R$ {{ number_format($pagamento->valor, 2, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
+                    @php
+                        $totalPagamentos = $orcamento_pagamentos->sum('valor');
+                    @endphp
+                    
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right font-bold px-4 py-2">Total dos Pagamentos:</td>
+                            <td class="px-4 py-2 font-bold">R$ {{ number_format($totalPagamentos, 2, ',', '.') }}</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
             <div class="no-print mb-6">
@@ -268,8 +400,3 @@
         </div>
     </div>
 </x-app-layout>
-<script>
-    $(document).ready(function () {
-       
-    });
-</script>
