@@ -1,10 +1,36 @@
 <style>
+    .print-only {
+        display: none;
+    }
+
     @media print {
     
         /* ===============================
            CONFIGURAÇÕES GERAIS
            =============================== */
-    
+        .print-only {
+            display: block !important;
+            margin-top: 40px;
+        }
+
+        .assinaturas {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .assinatura {
+            width: 45%;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .assinatura .linha {
+            border-top: 1px solid #111827;
+            margin-bottom: 6px;
+        }
+
         * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
@@ -157,15 +183,16 @@
         }
     
     }
-</style>
-    
-    
+</style>    
     
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __($tittle) }} — Relatório Analítico
-        </h2>
+        <div class="flex items-center gap-3">
+            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __($tittle) }} — Relatório Analítico
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -392,6 +419,45 @@
                     </tfoot>
                 </table>
             </div>
+
+            {{-- RESUMO FINANCEIRO --}}
+            @php
+                $totalGastos = $orcamento_gastos->sum('valor');
+                $totalPagamentos = $orcamento_pagamentos->sum('valor');
+                $totalComissoes = $orcamento_comissoes->sum('valor_total');
+                $totalItens = $orcamento_itens->sum('valor_total');
+                $totalServicos = $orcamento_servicos->sum('preco');
+
+                $resultado = $totalPagamentos - $totalGastos - $totalComissoes - $totalItens - $totalServicos;
+            @endphp
+            <div class="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 shadow sm:rounded-lg">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Resumo Financeiro</h3>
+                <p><strong>Valor do Orçamento:</strong> R$ {{ number_format($orcamento->valor_orcamento, 2, ',', '.') }}</p>
+                <p><strong>Total de Gastos:</strong> R$ {{ number_format($totalGastos, 2, ',', '.') }}</p>
+                <p><strong>Total de Materiais:</strong> R$ {{ number_format($totalItens, 2, ',', '.') }}</p>
+                <p><strong>Total de Serviços:</strong> R$ {{ number_format($totalServicos, 2, ',', '.') }}</p>
+                <p><strong>Total Recebido:</strong> R$ {{ number_format($totalPagamentos, 2, ',', '.') }}</p>
+                <p><strong>Total de Comissões:</strong> R$ {{ number_format($totalComissoes, 2, ',', '.') }}</p>
+                <p><strong>Resultado Líquido:</strong> R$ {{ number_format($resultado, 2, ',', '.') }}</p>
+            </div>
+
+            {{-- ASSINATURAS --}}
+            <div class="print-only">
+                <div class="assinaturas">
+                    <div class="assinatura">
+                        <div class="linha"></div>
+                        <strong>Responsável pela Obra</strong><br>
+                        Assinatura
+                    </div>
+            
+                    <div class="assinatura">
+                        <div class="linha"></div>
+                        <strong>Cliente</strong><br>
+                        Assinatura
+                    </div>
+                </div>
+            </div>
+
             <div class="no-print mb-6">
                 <button onclick="window.print()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Imprimir

@@ -1,5 +1,31 @@
 <style>
+    .print-only {
+        display: none;
+    }
+
     @media print {
+        .print-only {
+            display: block !important;
+            margin-top: 40px;
+        }
+
+        .assinaturas {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .assinatura {
+            width: 45%;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .assinatura .linha {
+            border-top: 1px solid #111827;
+            margin-bottom: 6px;
+        }
     
         /* ===============================
            CONFIGURAÇÕES GERAIS
@@ -160,10 +186,13 @@
 </style>
     
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __($tittle) }} — Relatório Sintético
-        </h2>
+    <x-slot name="header">        
+        <div class="flex items-center gap-3">
+            <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __($tittle) }} — Relatório Sintético
+            </h2>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -201,6 +230,23 @@
                 <p><strong>Total Recebido:</strong> R$ {{ number_format($totalPagamentos, 2, ',', '.') }}</p>
                 <p><strong>Total de Comissões:</strong> R$ {{ number_format($totalComissoes, 2, ',', '.') }}</p>
                 <p><strong>Resultado Líquido:</strong> R$ {{ number_format($resultado, 2, ',', '.') }}</p>
+            </div>
+
+            {{-- ASSINATURAS --}}
+            <div class="print-only">
+                <div class="assinaturas">
+                    <div class="assinatura">
+                        <div class="linha"></div>
+                        <strong>Responsável pela Obra</strong><br>
+                        Assinatura
+                    </div>
+            
+                    <div class="assinatura">
+                        <div class="linha"></div>
+                        <strong>Cliente</strong><br>
+                        Assinatura
+                    </div>
+                </div>
             </div>
 
             <div class="no-print mb-6">
