@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Empresas;
 use App\Models\Bancos;
 use App\Models\Pagamentos;
+use App\Models\UsersRoles;
 use App\Models\OrcamentosGastos;
 
 class RelatoriosController extends Controller
@@ -71,7 +72,16 @@ class RelatoriosController extends Controller
 
     public function recebimentosAjax(Request $request)
     {
+        $user = Auth::user();
+        $isAdmin = UsersRoles::where('user_id', $user->id)->where('role_id', 1)->exists();
+        $relatorios = UsersRoles::where('user_id', $user->id)->where('role_id', 9)->exists();
         $query = Pagamentos::with(['banco', 'orcamento.empresa'])->where('especie', 'venda');
+
+        if (!$isAdmin && !$relatorios) {
+            $query->whereHas('orcamento', function ($q) use ($user) {
+                $q->where('empresa_id', $user->empresa_id);
+            });
+        }
 
         if ($request->filled('filtro_empresa_id')) {
             $query->whereHas('orcamento.empresa', function ($q) use ($request) {
@@ -124,8 +134,16 @@ class RelatoriosController extends Controller
 
     public function despesas_recebimentosAjax(Request $request)
     {
-        // Pagamentos
+        $user = Auth::user();
+        $isAdmin = UsersRoles::where('user_id', $user->id)->where('role_id', 1)->exists();
+        $relatorios = UsersRoles::where('user_id', $user->id)->where('role_id', 9)->exists();
         $pagamentos = Pagamentos::with(['banco', 'orcamento.empresa']);
+
+        if (!$isAdmin && !$relatorios) {
+            $query->whereHas('orcamento', function ($q) use ($user) {
+                $q->where('empresa_id', $user->empresa_id);
+            });
+        }
 
         if ($request->filled('filtro_empresa_id')) {
             $pagamentos->whereHas('orcamento.empresa', function ($q) use ($request) {

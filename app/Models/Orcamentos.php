@@ -52,4 +52,9 @@ class Orcamentos extends BaseModel
     {
         return $this->belongsTo(EmpresasEnderecos::class, 'empresas_endereco_id', 'id');
     }
+    
+    public function socios()
+    {
+        return $this->hasMany(OrcamentosSocios::class, 'orcamento_id');
+    }
 }

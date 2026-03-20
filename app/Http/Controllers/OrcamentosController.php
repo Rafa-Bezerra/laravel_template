@@ -26,6 +26,7 @@ use App\Models\OrcamentosSocios;
 use App\Models\OrcamentosGastos;
 use App\Models\Bancos;
 use App\Models\OrcamentosFuncionarios;
+use App\Models\UsersRoles;
 
 class OrcamentosController extends Controller
 {
@@ -52,7 +53,19 @@ class OrcamentosController extends Controller
 
     public function getListagem(Request $request)
     {
-        $query = Orcamentos::query();
+        $user = Auth::user();
+        $isAdmin = UsersRoles::where('user_id', $user->id)->where('role_id', 1)->exists();
+        $isObras = UsersRoles::where('user_id', $user->id)->where('role_id', 10)->exists();
+        $query = Orcamentos::with(['empresa', 'endereco', 'socios']);
+
+        if (!$isAdmin && !$isObras) {
+            $query->where(function ($q) use ($user) {
+                $q->where('empresa_id', $user->empresa_id)
+                  ->orWhereHas('socios', function ($q2) use ($user) {
+                      $q2->where('empresa_id', $user->empresa_id);
+                  });
+            });
+        }
 
         // Filtro: controle
         if ($request->filled('filtro_controle')) {

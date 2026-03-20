@@ -13,8 +13,8 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">{{ __('Home') }}</x-nav-link>
-                    <x-nav-link :href="route('tables')" :active="request()->routeIs('tables')">{{ __('Cadastros') }}</x-nav-link>
-                    <x-nav-link :href="route('compras')" :active="request()->routeIs('compras')">{{ __('Compras') }}</x-nav-link>
+                    @if (!$isInvestidor || $isAdmin)<x-nav-link :href="route('tables')" :active="request()->routeIs('tables')">{{ __('Cadastros') }}</x-nav-link>@endif
+                    @if (!$isInvestidor || $isAdmin)<x-nav-link :href="route('compras')" :active="request()->routeIs('compras')">{{ __('Compras') }}</x-nav-link>@endif
                     <x-nav-link :href="route('orcamentos')" :active="request()->routeIs('orcamentos')">{{ __('Obras') }}</x-nav-link>
                     <x-nav-link :href="route('relatorios')" :active="request()->routeIs('relatorios')">{{ __('Relatórios') }}</x-nav-link>
                 </div>
