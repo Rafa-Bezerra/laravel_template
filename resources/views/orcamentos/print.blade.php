@@ -420,6 +420,40 @@
                 </table>
             </div>
 
+            {{-- Funcionários --}}
+            <div class="bg-white dark:bg-gray-800 p-6 shadow sm:rounded-lg">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Funcionários</h3>
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
+                    <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        <tr>
+                            <th class="px-4 py-2">Funcionário</th>
+                            <th class="px-4 py-2">Quantidade</th>
+                            <th class="px-4 py-2">Valor</th>
+                            <th class="px-4 py-2">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($orcamento_funcionarios as $funcionario)
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="px-4 py-2">{{ $funcionario->empresa->name ? $funcionario->empresa->name : '-' }}</td>
+                                <td class="px-4 py-2">{{ number_format($funcionario->quantidade, 2, ',', '.') }}</td>
+                                <td class="px-4 py-2">R$ {{ number_format($funcionario->valor, 2, ',', '.') }}</td>
+                                <td class="px-4 py-2">R$ {{ number_format(($funcionario->valor * $funcionario->quantidade), 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    @php
+                        $totalFuncionarios = $orcamento_funcionarios->sum('valor * quantidade');
+                    @endphp                    
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right font-bold px-4 py-2">Total dos Funcionários:</td>
+                            <td class="px-4 py-2 font-bold">R$ {{ number_format($totalFuncionarios, 2, ',', '.') }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
             {{-- RESUMO FINANCEIRO --}}
             @php
                 $totalGastos = $orcamento_gastos->sum('valor');
@@ -427,8 +461,8 @@
                 $totalComissoes = $orcamento_comissoes->sum('valor_total');
                 $totalItens = $orcamento_itens->sum('valor_total');
                 $totalServicos = $orcamento_servicos->sum('preco');
-
-                $resultado = $totalPagamentos - $totalGastos - $totalComissoes - $totalItens - $totalServicos;
+                $totalFuncionarios = $orcamento_funcionarios->sum('valor * quantidade');
+                $resultado = $totalPagamentos - $totalGastos - $totalComissoes - $totalItens - $totalServicos - $totalFuncionarios;
             @endphp
             <div class="bg-white dark:bg-gray-800 dark:text-gray-100 p-6 shadow sm:rounded-lg">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Resumo Financeiro</h3>
@@ -438,6 +472,7 @@
                 <p><strong>Total de Serviços:</strong> R$ {{ number_format($totalServicos, 2, ',', '.') }}</p>
                 <p><strong>Total Recebido:</strong> R$ {{ number_format($totalPagamentos, 2, ',', '.') }}</p>
                 <p><strong>Total de Comissões:</strong> R$ {{ number_format($totalComissoes, 2, ',', '.') }}</p>
+                <p><strong>Total de Funcionários:</strong> R$ {{ number_format($totalFuncionarios, 2, ',', '.') }}</p>
                 <p><strong>Resultado Líquido:</strong> R$ {{ number_format($resultado, 2, ',', '.') }}</p>
             </div>
 

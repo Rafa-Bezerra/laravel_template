@@ -748,6 +748,7 @@ class OrcamentosController extends Controller
         $orcamento_socios = OrcamentosSocios::where('orcamento_id', $id)->with('empresa')->get();
         $orcamento_gastos = OrcamentosGastos::where('orcamento_id', $id)->with('banco')->orderBy('especie')->orderBy('data')->get();
         $orcamento_pagamentos = Pagamentos::where('orcamento_id', $id)->with('banco')->get();
+        $orcamento_funcionarios = OrcamentosFuncionarios::where('orcamento_id', $id)->with('empresa')->get();
         // dd($orcamento);
 
         return view('orcamentos.print', [
@@ -760,6 +761,7 @@ class OrcamentosController extends Controller
             'orcamento_socios' => $orcamento_socios,
             'orcamento_pagamentos' => $orcamento_pagamentos,
             'orcamento_gastos' => $orcamento_gastos,
+            'orcamento_funcionarios' => $orcamento_funcionarios,
         ]);
     }
 
@@ -774,6 +776,7 @@ class OrcamentosController extends Controller
         $orcamento_socios = OrcamentosSocios::where('orcamento_id', $id)->with('empresa')->get();
         $orcamento_gastos = OrcamentosGastos::where('orcamento_id', $id)->with('banco')->orderBy('especie')->orderBy('data')->get();
         $orcamento_pagamentos = Pagamentos::where('orcamento_id', $id)->with('banco')->get();
+        $orcamento_funcionarios = OrcamentosFuncionarios::where('orcamento_id', $id)->with('empresa')->get();
         // dd($orcamento);
 
         return view('orcamentos.sintetico', [
@@ -786,6 +789,7 @@ class OrcamentosController extends Controller
             'orcamento_socios' => $orcamento_socios,
             'orcamento_pagamentos' => $orcamento_pagamentos,
             'orcamento_gastos' => $orcamento_gastos,
+            'orcamento_funcionarios' => $orcamento_funcionarios,
         ]);
     }
 
