@@ -30,6 +30,7 @@ class User extends BaseModel
         'auth_token',
         'auth_token_expiration',
         'remember_token',
+        'empresa_id'
     ];
 
     /**

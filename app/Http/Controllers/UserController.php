@@ -6,6 +6,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Models\User;
 use App\Models\Roles;
 use App\Models\UsersRoles;
+use App\Models\Empresas;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,7 +43,15 @@ class UserController extends Controller
 
     public function getUsuarios()
     {
-        $usuarios = User::select(['id', 'name', 'email']);
+        $usuarios = User::select([
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.empresa_id',
+                'empresas.name as empresa_nome'
+            ])
+            ->leftjoin('empresas', 'empresas.id', '=', 'users.empresa_id');
+
         return datatables()->of($usuarios)->toJson();
     }
 
@@ -51,10 +60,12 @@ class UserController extends Controller
         $tittle = 'Novo usuário';
         $this->hasPermission('users_insert',$tittle,true);
 
+        $empresas = Empresas::orderBy('name')->get();
         $roles = DB::table('roles')->where('active',1)->get();
         return view('usuarios.create', [
             'user' => $request->user(),
             'roles' => $roles,
+            'empresas' => $empresas,
         ]);
     }
 
@@ -69,6 +80,7 @@ class UserController extends Controller
             "name" => $request->name,
             "password" => '12345',
             "email" => $request->email,
+            "empresa_id" => $request->empresa_id,
             "password_expiration" => date("Y-m-d H:i:s", strtotime("+30 days")),
             "active" => true
         ]);
@@ -83,10 +95,12 @@ class UserController extends Controller
         $tittle = 'Editar usuário';
         $this->hasPermission('users_update',$tittle,true);
         
+        $empresas = Empresas::orderBy('name')->get();
         $data = User::findOrFail($id);
         return view('usuarios.edit', [
             'user' => $request->user(),
             'data' => $data,
+            'empresas' => $empresas,
         ]);
     }
 
@@ -94,12 +108,13 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255'],
         ]);
         
         $action = User::findOrFail($request->id);
         $action->name = $request->name;
         $action->email = $request->email;
+        $action->empresa_id = $request->empresa_id;
         $action->save();
 
         event(new Registered($action));

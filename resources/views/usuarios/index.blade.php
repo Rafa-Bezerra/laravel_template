@@ -19,6 +19,7 @@
                             <th>ID</th>
                             <th>Nome</th>
                             <th>Email</th>
+                            <th>Empresa</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -37,6 +38,7 @@
                 { "data": "id" },
                 { "data": "name" },
                 { "data": "email" },
+                { "data": "empresa_nome" },
                 { 
                     "data": "id", 
                     "render": function (data, type, row) {
