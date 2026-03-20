@@ -173,6 +173,8 @@
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">@include('orcamentos.partials.comissoes')</div>
 
             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">@include('orcamentos.partials.socios')</div>
+
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">@include('orcamentos.partials.funcionarios')</div>
         </div>
     </div>
 </x-app-layout>

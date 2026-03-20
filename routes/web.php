@@ -214,7 +214,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/orcamentos/gastos/json', [OrcamentosController::class, 'getListagemGastos'])->name('orcamentos_gastos.json');
     Route::post('/orcamentos/gastos/submit', [OrcamentosController::class, 'submitGastos'])->name('orcamentos_gastos.submit');    
     Route::get('/orcamentos/gastos/get/{id}', [OrcamentosController::class, 'getGasto'])->name('orcamentos_gastos.get');
-    Route::get('/orcamentos/gastos/delete/{id}', [OrcamentosController::class, 'deleteGasto'])->name('orcamentos_gastos.delete');  
+    Route::get('/orcamentos/gastos/delete/{id}', [OrcamentosController::class, 'deleteGasto'])->name('orcamentos_gastos.delete');      
+    Route::get('/orcamentos/funcionarios/json', [OrcamentosController::class, 'getListagemFuncionarios'])->name('orcamentos_funcionarios.json');
+    Route::post('/orcamentos/funcionarios/submit', [OrcamentosController::class, 'submitFuncionarios'])->name('orcamentos_funcionarios.submit');    
+    Route::get('/orcamentos/funcionarios/get/{id}', [OrcamentosController::class, 'getFuncionario'])->name('orcamentos_funcionarios.get');
+    Route::get('/orcamentos/funcionarios/delete/{id}', [OrcamentosController::class, 'deleteFuncionario'])->name('orcamentos_funcionarios.delete');        
 });
 
 //RELATÓRIOS

@@ -25,6 +25,7 @@ use App\Models\Pagamentos;
 use App\Models\OrcamentosSocios;
 use App\Models\OrcamentosGastos;
 use App\Models\Bancos;
+use App\Models\OrcamentosFuncionarios;
 
 class OrcamentosController extends Controller
 {
@@ -133,9 +134,11 @@ class OrcamentosController extends Controller
         $permissao_socios = $this->hasPermission('orcamentos_socios');
         $permissao_pagamentos = $this->hasPermission('orcamentos_pagamentos');
         $permissao_gastos = $this->hasPermission('orcamentos_gastos');
+        $permissao_funcionarios = $this->hasPermission('orcamentos_funcionarios');
 
         $data = Orcamentos::findOrFail($id);
         $empresas = Empresas::orderBy('name')->get();
+        $funcionarios = Empresas::where('divisao_id', 4)->orderBy('name')->get();
         $empresas_enderecos = EmpresasEnderecos::where('empresa_id', $data->empresa_id)->get();
         $materiais = Materiais::with('estoques')->orderBy('name')->get();
         foreach ($materiais as $material) {
@@ -151,6 +154,7 @@ class OrcamentosController extends Controller
             'tittle' => $tittle,
             'data' => $data,
             'empresas' => $empresas,
+            'funcionarios' => $funcionarios,
             'empresas_enderecos' => $empresas_enderecos,
             'materiais' => $materiais,
             'comissoes' => $comissoes,
@@ -162,6 +166,7 @@ class OrcamentosController extends Controller
             'permissao_socios' => $permissao_socios,
             'permissao_pagamentos' => $permissao_pagamentos,
             'permissao_gastos' => $permissao_gastos,
+            'permissao_funcionarios' => $permissao_funcionarios,
         ]);
     }
 
@@ -300,6 +305,7 @@ class OrcamentosController extends Controller
         $valor_desconto = OrcamentosItens::where('orcamento_id', $orcamento_id)->sum('valor_desconto');
         $valor_servicos = OrcamentosServicos::where('orcamento_id', $orcamento_id)->sum('preco');
         $valor_gastos = OrcamentosGastos::where('orcamento_id', $orcamento_id)->sum('valor');
+        $valor_funcionarios = OrcamentosFuncionarios::where('orcamento_id', $orcamento_id)->sum('valor * quantidade');
         $valor_pagamentos = Pagamentos::where('orcamento_id', $orcamento_id)
             ->where('controle', 'pago')
             ->sum('valor');
@@ -320,7 +326,8 @@ class OrcamentosController extends Controller
             $valor_pagamentos
             - $valor_venda
             - $valor_impostos
-            - $valor_gastos;
+            - $valor_gastos
+            - $valor_funcionarios;
 
         /* Persistência */
         $orcamento->valor_itens = $valor_itens;
@@ -838,5 +845,68 @@ class OrcamentosController extends Controller
 
         $valores = $this->atualiza_total($orcamento);
         return $valores->toJson();
+    }
+
+    public function getListagemFuncionarios(Request $request)
+    {
+        $orcamento_id = $request->input('orcamento_id');
+        $listagem = OrcamentosFuncionarios::where('orcamento_id', $orcamento_id);
+        // dd($listagem->material);
+        return datatables()->of($listagem)
+            ->addColumn('empresa_name', function ($item) {
+                return $item->empresa->name ?? 'Sem serviço';
+            })
+            ->addColumn('valor_total', function ($item) {
+                return $item->quantidade * $item->valor;
+            })
+        ->toJson();
+    }
+
+    public function submitFuncionarios(Request $request)
+    {
+        $request->validate([
+            'funcionario_empresa_id' => ['required'],
+            'funcionario_quantidade' => ['required'],
+            'funcionario_valor' => ['required'],
+        ]);
+
+        $valor = desformatarDinheiro($request->funcionario_valor);
+        $quantidade = desformatarNumerico($request->funcionario_quantidade);
+
+        if ($request->funcionario_id == null) {
+            $action = OrcamentosFuncionarios::create([
+                "orcamento_id" => $request->funcionario_orcamento_id,
+                "empresa_id" => $request->funcionario_empresa_id,
+                "quantidade" => $quantidade,
+                "valor" => $valor,
+            ]);
+        } else {
+            $action = OrcamentosFuncionarios::findOrFail($request->funcionario_id);
+            $action->orcamento_id = $request->funcionario_orcamento_id;
+            $action->empresa_id = $request->funcionario_empresa_id;
+            $action->quantidade = $quantidade;
+            $action->valor = $valor;
+            $action->save();
+        }
+
+        event(new Registered($action));
+
+        $this->atualiza_total($request->funcionario_orcamento_id);
+
+        return;
+    }
+
+    public function getFuncionario(Request $request, string $id)
+    {     
+        return OrcamentosFuncionarios::findOrFail($id)->toJson();
+    }
+
+    public function deleteFuncionario(Request $request, string $id)
+    {
+        $funcionario = OrcamentosFuncionarios::findOrFail($id);
+        $orcamento = $funcionario->orcamento_id;
+        $funcionario->delete();
+        $this->atualiza_total($orcamento);
+        return;
     }
 }
